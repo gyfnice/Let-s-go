@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -25,18 +24,23 @@ app.use(flash());
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
-app.use(express.bodyParser( { keepExtensions: true, uploadDir: __dirname + '/src/img/uploads/uploadedFileName' } ));
+app.use(express.bodyParser({
+	keepExtensions: true,
+	uploadDir: __dirname + '/src/img/uploads/uploadedFileName'
+}));
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 
 app.use(express.cookieParser());
 app.use(express.session({
-  secret: settings.cookieSecret,
-  key: settings.db,//cookie name
-  cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//30 days
-  store: new MongoStore({
-    db: settings.db
-  })
+	secret: settings.cookieSecret,
+	key: settings.db, //cookie name
+	cookie: {
+		maxAge: 1000 * 60 * 60 * 24 * 30
+	}, //30 days
+	store: new MongoStore({
+		db: settings.db
+	})
 }));
 
 app.use(app.router);
@@ -44,11 +48,11 @@ app.use(express.static(path.join(__dirname, 'src')));
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+	app.use(express.errorHandler());
 }
 
 require('./config/routes')(app)
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+http.createServer(app).listen(app.get('port'), function() {
+	console.log('Express server listening on port ' + app.get('port'));
 });

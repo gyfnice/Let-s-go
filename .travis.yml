@@ -4,3 +4,10 @@ node_js:
   - "0.10"
   - "0.8"
   - "0.6"
+
+branches:
+  only:
+        - master
+notifications:
+  email:
+        - 18985551726@163.com
