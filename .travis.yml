@@ -7,8 +7,6 @@ branches:
         - master
 services:
   - mongodb
-before_script:
-  - mongo blog --eval 'db.addUser("travis", "test");
 notifications:
   email:
         - 18985551726@163.com
