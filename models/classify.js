@@ -27,7 +27,7 @@ Classify.prototype.save = function(callback,result) {
 }
 
 Classify.get = function(id, callback) {
-	classifyModel.findById(id.toString(),function(err, classify) {
+	classifyModel.findById(id,function(err, classify) {
 		console.log(id);
 		if (err) {
 			console.log(12111);

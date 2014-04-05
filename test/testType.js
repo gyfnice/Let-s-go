@@ -17,7 +17,8 @@ describe('test Type', function() {
 	});
 	describe('#find',function () {
 	    it('should return one result by pass id',function(){
-	    	Classify.get(ClassId[0],function(err,res){
+	    	console.log(ClassId[0]);
+	    	Classify.get(ClassId[0].toString(),function(err,res){
 	    		assert.equal(res.name,"运动");
 	    	});
 	    })
