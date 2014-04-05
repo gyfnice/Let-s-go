@@ -1,0 +1,6 @@
+node_modules
+dist
+uploads
+.tmp
+.sass-cache
+app/bower_components
