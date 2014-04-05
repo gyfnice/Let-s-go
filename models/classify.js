@@ -22,6 +22,7 @@ Classify.prototype.save = function(callback,result) {
 		if (err) {
 			return callback(err);
 		}
+              console.log(res);
 		callback(null,res);
 	});
 }
