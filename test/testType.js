@@ -10,8 +10,10 @@ describe('test Type', function() {
 			typeArray.forEach(function(elem) {
 				new Classify(elem).save(function(err,result) {
 					 ClassId.push(result._id.valueOf());
-                                   console.log(ClassId);console.log(result);
+                                   console.log(ClassId);
+                                   console.log(result);
 					 assert.equal(null, err);
+                                   assert.equal(ClassId[0],undefined);
 				});
 			})
 		})
