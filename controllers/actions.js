@@ -1,5 +1,6 @@
 var mongoose = require('../models/db');
 var classifyModel = mongoose.model('classifys');
+var sub_classifyModel = mongoose.model('sub_classifys');
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
