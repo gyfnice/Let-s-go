@@ -1,4 +1,5 @@
-var Action = require('../models/action');
+var mongoose = require('../models/db');
+var classifyModel = mongoose.model('classifys');
 var path = require('path');
 var fs = require('fs');
 var url = require('url');

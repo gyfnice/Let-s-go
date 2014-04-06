@@ -1,4 +1,4 @@
-var mongodb = require('./db');
+/*var mongodb = require('./db');
 
 function User(user) {
   this.name = user.name;
@@ -66,4 +66,4 @@ User.get = function(name, callback) {
       });
     });
   });
-};
+};*/

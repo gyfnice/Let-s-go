@@ -1,4 +1,4 @@
-var mongoose = require('./db');
+var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
 var actionSchema = new mongoose.Schema({
 	subClaId: String,

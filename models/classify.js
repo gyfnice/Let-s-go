@@ -1,40 +1,46 @@
 var mongoose = require('./db');
 var ObjectId = mongoose.Schema.ObjectId;
-var ObjectID = require('mongodb').ObjectID;
 var classifySchema = new mongoose.Schema({
-	name: String,
+	name: String
 }, {
 	collection: 'classifys'
 });
 
+
+
+classifySchema.statics = {
+	getByid: function(id, callback) {
+		this.findById(id.toString(), function(err, classify) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, classify);
+		});
+	},
+	findAll: function(callback) {
+		this.find({}, function(err, docs) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, docs);
+		});
+	},
+	removeAll: function(callback) {
+		this.find({}).remove().exec();
+		callback();
+	},
+	savetype: function(name, callback) {
+		var classify = {
+			name: name
+		};
+		var newclassify = new classifyModel(classify);
+		newclassify.save(function(err, res) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, res);
+		});
+	}
+}
+
 var classifyModel = mongoose.model('classifys', classifySchema);
-
-function Classify(name) {
-	this.name = name;
-}
-module.exports = Classify;
-Classify.prototype.save = function(callback,result) {
-	var classify = {
-		name: this.name
-	};
-	var newclassify = new classifyModel(classify);
-	newclassify.save(function(err,res) {
-		if (err) {
-			return callback(err);
-		}
-              console.log(res);
-		callback(null,res);
-	});
-}
-
-Classify.get = function(id, callback) {
-	classifyModel.findById(id.toString(),function(err, classify) {
-		console.log(id);
-		if (err) {
-			console.log(12111);
-			return callback(err);
-		}
-		console.log(classify);
-		callback(null, classify);
-	});
-}

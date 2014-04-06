@@ -7,6 +7,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var fs = require('fs');
 var MongoStore = require('connect-mongo')(express);
 var settings = require('./settings');
 var flash = require('connect-flash');
@@ -43,8 +44,21 @@ app.use(express.session({
 	})
 }));
 
-app.use(app.router);
+
+
 app.use(express.static(path.join(__dirname, 'src')));
+
+var mongoose = require('mongoose');
+
+// Bootstrap db connection
+// Connect to mongodb
+
+//parse model
+var models_path = __dirname + '/models'
+fs.readdirSync(models_path).forEach(function (file) {
+  if (~file.indexOf('.js')) require(models_path + '/' + file)
+})
+
 
 // development only
 if ('development' == app.get('env')) {
@@ -56,3 +70,5 @@ require('./config/routes')(app)
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
 });
+
+exports = module.exports = app
