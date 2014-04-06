@@ -18,29 +18,28 @@ describe('test Type', function() {
 	})
 	var typeArray = ["运动", "聚会", "娱乐", "文艺", "其它"];
 	describe('#insert', function() {
-		it('should return null when the value is inserted', function() {
-			typeArray.forEach(function(elem) {
-				classifyModel.savetype(elem,function(err, result) {
-					ClassId.push(result._id.valueOf());
-					assert.equal(null, err);
-				});
+		var elemid;
+		it('should return null when the value is inserted', function(done) {
+			classifyModel.savetype("运动",function(err, result) {
+				elemid = result._id.valueOf();
+				assert.equal(null, err);
+				done();
+			});
+		})
+		it('should return one result by pass id',function(done){
+			classifyModel.getByid(elemid,function(err,res){
+				res.name.should.equal("运动");
+				done();
 			});
 		})
 	});
 	describe('#findAll', function() {
 		it('should delete all result when execute', function() {
 			classifyModel.findAll(function(err, docs) {
-				docs.length.should.equal(5);
+				docs.length.should.equal(1);
 			});
 		})
 	});
-	describe('#findbyid',function(){
-		it('should return one result by pass id',function(){
-			classifyModel.getByid(ClassId[0],function(err,res){
-				res.name.should.equal("运动");
-			});
-		})
-	})
 	after(function() {
 		classifyModel.remove(function() {
 			console.log("clear db");
@@ -52,7 +51,7 @@ describe('test sub_Type', function() {
 	var supid;
 	var sub_typeArray = ["篮球", "足球", "羽毛球", "兵乓球", "游泳","台球","瑜伽"];
 	describe('#insert', function() {
-		it('should return null when the value is inserted', function() {
+		it('should return null when the value is inserted', function(done) {
 			classifyModel.savetype("运动",function(err,res){
 				supid = res._id.valueOf();
 				sub_typeArray.forEach(function(elem){
@@ -63,13 +62,15 @@ describe('test sub_Type', function() {
 						assert.equal(err,null);
 					});
 				});
+				done();
 			});
 		})
 	});
 	describe('#find subtype by superid', function() {
-		it('should return all subtype in supertype', function() {
+		it('should return all subtype in supertype', function(done) {
 			sub_classifyModel.getByid(supid,function(err, docs) {
 				docs.length.should.equal(sub_typeArray.length);
+				done();
 			});
 		})
 	});
