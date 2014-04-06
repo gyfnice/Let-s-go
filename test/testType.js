@@ -17,23 +17,23 @@ describe('test Type', function() {
 			});
 		})
 	});
+	describe('#findAll', function() {
+		it('should delete all result when execute', function() {
+			classifyModel.findAll(function(err, docs) {
+				docs.length.should.equal(5);
+			});
+		})
+	});
+	after(function() {
+		classifyModel.remove(function() {
+			console.log("clear db");
+		});
+	})
 	/*describe('#find', function() {
 		it('should return one result by pass id', function() {
 			Classify.getByid(ClassId[0], function(err, res) {
 				assert.equal(res.name, "运动");
 			});
 		})
-	});
-	describe('#findAll', function() {
-		it('should delete all result when execute', function() {
-			Classify.findAll(function(err, docs) {
-				docs.length.should.equal(5);
-			});
-		})
-	});
-	after(function() {
-		Classify.remove(function() {
-			console.log("clear db");
-		});
-	})*/
+	});*/
 })
