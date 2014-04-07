@@ -73,6 +73,12 @@ describe('test sub_Type', function() {
 				done();
 			});
 		})
+		it('should return supertype child as Array',function (done) {
+		    classifyModel.getByid(supid,function(err,res){
+		    	res.child.length.should.equal(sub_typeArray.length);
+				done();
+			});
+		})
 	});
 	/*
 	describe('#findbyid',function(){

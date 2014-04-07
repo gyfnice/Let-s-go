@@ -347,7 +347,7 @@ var clickItemlist = function() {
         $typesel.find(".selectbox_input").text($(e.target).text());
         var typeid = $(e.target).prop("class");
         var childlist = QNR.Tools.filter(Catchtypelist, function(elem) {
-            return elem.id === parseInt(typeid, 10);
+            return elem.id === typeid
         })[0].child;
         $subtype.find(".selectbox_input").text(childlist[0].subName);
         $pselect.val(typeid);
@@ -357,7 +357,7 @@ var clickItemlist = function() {
 };
 var loadsubtypelist = function(id) {
     var childlist = QNR.Tools.filter(Catchtypelist, function(elem) {
-        return elem.id === parseInt(id, 10);
+        return elem.id === id
     })[0].child;
     var datalist = [];
     var optionlist = [];

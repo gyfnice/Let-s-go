@@ -14,6 +14,7 @@ var sub_classifySchema = new mongoose.Schema({
 }, {
 	collection: 'sub_classifys'
 });
+
 sub_classifySchema.statics = {
 	save: function(name, suptype, callback) {
 		var sub_classify = {
@@ -26,6 +27,7 @@ sub_classifySchema.statics = {
 			if (err) {
 				return callback(err);
 			}
+			suptype.addChild(res);
 			callback(null, res);
 		});
 	},

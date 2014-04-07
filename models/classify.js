@@ -1,12 +1,31 @@
 var mongoose = require('./db');
 var ObjectId = mongoose.Schema.ObjectId;
+var Schema = mongoose.Schema;
 var classifySchema = new mongoose.Schema({
-	name: String
+	name: String,
+	id: Schema.Types.ObjectId,
+	child:[{
+		subName:String,
+		id:String
+	}]
 }, {
 	collection: 'classifys'
 });
 
-
+classifySchema.methods = {
+	addChild:function(subtype){
+		this.child.push({
+			subName:subtype.name,
+			id:subtype._id
+		});
+		this.id = this._id;
+		this.save(function(err,res){
+			if(err){
+				return
+			}
+		});
+	}
+}
 
 classifySchema.statics = {
 	getByid: function(id, callback) {

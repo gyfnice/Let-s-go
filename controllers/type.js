@@ -9,16 +9,8 @@ exports.listAlltype = function(req, res) {
 		ret: true,
 		data: []
 	};
-	classifyModel.findAll(function(err, docs) {
-		console.log(docs);
-		docs.forEach(function(elem) {
-			var tempobj;
-			tempobj = {
-				id: elem._id.valueOf(),
-				name: elem.name,
-				child: []
-			}
-			response.data.push(tempobj);
-		})
+	classifyModel.findAll(function(err,docs){
+		response.data = docs;
+		res.send(response);
 	})
 }
