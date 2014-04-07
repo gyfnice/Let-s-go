@@ -4,17 +4,17 @@ var request = require('supertest');
 var app = require('../app');
 var classifyModel = mongoose.model('classifys');
 var sub_classifyModel = mongoose.model('sub_classifys');
-var ObjectID = require('mongodb').ObjectID;
+
 var ClassId = [];
 
 describe('test Type', function() {
 	before(function() {
 		classifyModel.remove(function() {
-			console.log("clear db");
+			console.log();
 		});
 		sub_classifyModel.remove(function(){
 			console.log();
-		})
+		});
 	})
 	var typeArray = ["运动", "聚会", "娱乐", "文艺", "其它"];
 	describe('#insert', function() {
@@ -42,7 +42,7 @@ describe('test Type', function() {
 	});
 	after(function() {
 		classifyModel.remove(function() {
-			console.log("clear db");
+			
 		});
 	})
 })
