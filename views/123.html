@@ -3,13 +3,170 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 	<title>Document</title>
+	<style>
+		*{
+	margin: 0;
+	padding: 0;
+}
+.clear{
+	overflow: hidden;
+	_overflow: visible;
+	zoom: 1;
+}
+.overlay{
+	background-color: #eaedec;
+	opacity: .9;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.9;
+	-khtml-opacity:0.9;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 99;
+}
+form.login{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 476px;
+	height: 350px;
+	margin-top: -175px;
+	margin-left: -238px;
+	background-color: #fff; 
+	z-index: 100;
+} 
+.login .login_legend{
+	background-color: rgb(63, 63, 63);
+	padding: 5px 20px;
+	margin: 0;
+	position: relative;
+
+}
+.login .login_legend strong{
+	font-size: 20px;
+   	color: #D7D7D7;
+}
+.login .login_legend a{
+	cursor: pointer;
+	display: inline-block;
+	position: absolute;
+	top: 0px;
+	right: 16px;
+	width: 50px;
+	text-align: center;
+	color: #fff;
+	font-weight: bold;
+	text-decoration: none;
+	font: 40px/60px "Comic Sans MS",sans-serif;
+}
+.login .login_legend a:hover{
+	color: rgb(255, 130, 0);
+}
+.login fieldset{
+	padding: 0px 60px;
+}
+.login p{
+	position: relative;
+	background-color: rgb(238,241,240);
+	margin-top: 40px;
+	height: 47px;
+	line-height: 47px;
+}
+.login .submit{
+	background-color: #fff;
+}
+.login label{
+	font-size: 20px;
+	display: inline-block;
+	width: 80px;
+	padding-left: 10px;
+	color: rgb(26, 25, 25);
+}
+.login input{
+	font-size: 20px;
+	background-color: rgb(238,241,240);
+	width: 200px;
+	height: 30px;
+	line-height: 30px;
+	border:none;
+	outline: none;
+	color: rgb(102,102,102);
+}
+.login .login_tips{
+	position: absolute;
+    color: rgb(240, 240, 240);
+    left: 65px;
+    top: -34px;
+    width: 235px;
+    height: 43px;
+    line-height: 43px;
+    padding-left: 53px; 
+    z-index: 1000;
+    background-color: rgb(255, 153, 49);
+}
+.login .login_submit{
+	cursor: pointer;
+	background-color: rgb(255, 130, 0);
+	color: #fff;
+	float: right;
+	width: 125px;
+	margin-top: 5px;
+	margin-right: 20px;
+	height: 43px;
+}
+	</style>
 </head>
 <body>
-	<form action="/loadpic" method="post" enctype="multipart/form-data">
-		<input type="file" name="displayImage" />
-		<input type="submit" value="提交" />
-	</form>
+	<a class="loginclick">LOGIN IN</a>
+	<div class="full_login" id="full_login">
+		<div class="overlay" id="overlay"></div>
+		<form class="login" action="#" method="post">
+			<p class="login_legend"> <strong>用户登陆</strong>
+				<a id="login_close" class="login_close">X</a>
+			</p>
+			<fieldset>
+				<p>
+					<label for="login_studentID">学号:</label>
+					<input type="text" id="login_studentID"/>
+					<span class="login_tips student_tips">学生学号</span>
+				</p>
+				<p>
+					<label for="login_password">密码:</label>
+					<input type="password" id="login_password"/>
+					<span class="login_tips password_tips">初始密码为学号</span>
+				</p>
+				<p class="clear submit">
+					<input type="submit" value="登 录" id="login_submit" class="login_submit" />
+				</p>
+			</fieldset>
+		</form>
+	</div>
 	<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
-	<script src="http://freshzz.corp.qunar.com/src/js/nice.js"></script>
+	<script>
+		$("#login_submit").click(function(e){
+			e.preventDefault();
+		     $.ajax({
+		          url:"userlogingyf.do",
+		          type:"post",
+		          data:{
+		             id:$("#login_studentID").val(),
+		             password:$("#login_password").val()
+		          },
+		          success:function(response){
+		          	   if(!response.ret){
+		          	   		alert(response.info);
+		          	   		return
+		          	   }
+		          	   alert("登陆成功");
+		          	   location.href = "http://baidu.com"
+		          },
+		          error:function(err){
+		          		debugger;
+		          }
+		     })
+		})
+	</script>
 </body>
 </html>

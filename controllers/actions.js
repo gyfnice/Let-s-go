@@ -12,7 +12,6 @@ exports.create = function(req, res) {
 }
 
 exports.uploadpic = function(req, res) {
-
 	var me = req;
 	cood = req.body;
 	var oldpath = req.files.picture.path;

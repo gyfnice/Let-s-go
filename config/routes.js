@@ -18,4 +18,11 @@ module.exports = function(app) {
      		 title: '主页'
     	});
   });
+  app.get("/index.html",function(req,res){
+      res.render('index', {
+         title: '主页'
+      });
+  });
+  app.post("/userlogingyf.do",users.userlogin);
+  app.get("/user/isLogin.do",users.islogin);
 }

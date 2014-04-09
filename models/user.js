@@ -1,22 +1,31 @@
 var mongoose = require('./db');
 var ObjectId = mongoose.Schema.ObjectId;
 var usersSchema = new mongoose.Schema({
-	userName:String,
-	studentId:String,
-	role:{type:String,default:"custom"},
-	headimg:String,
-	email:String,
-	totalScore:{
-		type:Number,
-		default:0
+	userName: String,
+	password:String,
+	studentId: String,
+	role: {
+		type: String,
+		default: "custom"
+	},
+	headimg: String,
+	email: String,
+	tofirst:{
+		type:Boolean,
+		default:false
+	},
+	totalScore: {
+		type: Number,
+		default: 0
 	}
-},{
+}, {
 	collection: 'users'
 });
 
 usersSchema.statics = {
-	save: function(users,callback) {
+	save: function(users, callback) {
 		var newuser = new usersModel(users);
+		newuser.password = users.studentId;
 		newuser.save(function(err, res) {
 			if (err) {
 				return callback(err);
@@ -26,7 +35,7 @@ usersSchema.statics = {
 	},
 	getByid: function(studentId, callback) {
 		var query = {
-			studentId:studentId
+			studentId: studentId
 		}
 		this.find(query, function(err, userinfo) {
 			if (err) {
@@ -41,4 +50,3 @@ usersSchema.statics = {
 	}
 }
 var usersModel = mongoose.model('users', usersSchema);
-

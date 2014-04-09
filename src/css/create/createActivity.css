@@ -1,10 +1,11 @@
 @import url('../reset.css');
-  @import url('../style.css');
+ 
   @import url('../plugin/datepicker/qdatepicker.css');
   @import url('../plugin/datepicker/classic.css');
   @import url('../plugin/datepicker/classic.time.css');
   @import url('../plugin/picload/prepiccss.css');
   @import url('../plugin/picload/jquery.Jcrop.css');
+   @import url('../style.css');
 textarea {
   resize:none;
 }
@@ -593,24 +594,6 @@ textarea {
   *zoom:1;
   zoom:1;
   vertical-align:top;
-}
-.overlay {
-  filter:alpha(Opacity=50);
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  -moz-opacity:0.5;
-  -khtml-opacity:0.5;
-  height:140%;
-  width:100%;
-  _width:100%;
-  _height:140%;
-  position:absolute;
-  left:0;
-  top:0;
-  right:0;
-  bottom:0;
-  background:#000;
-  opacity:0.618;
-  display:none;
 }
 .uploadpic {
   position:absolute;

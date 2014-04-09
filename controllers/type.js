@@ -7,6 +7,7 @@ var classifyModel = mongoose.model('classifys');
 exports.listAlltype = function(req, res) {
 	var response = {
 		ret: true,
+		nice:1,
 		data: []
 	};
 	classifyModel.findAll(function(err,docs){

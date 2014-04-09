@@ -42,7 +42,6 @@ EventControl.bind = function() {
     $(action).bind("loadAllaction", function(e, data) {
         action.updateSource(data);
         action.render();
-        userinfo.loadData();
     });
     $(action).bind("loadtypelist", function(e, data) {
         action.loadData(data.data);
@@ -130,6 +129,7 @@ var loadboardtype = function() {
 
 var loadEvent = function() {
     hotimg.loadPicData(1);
+    userinfo.loadData();
     loadboardtype();
     rankuser.loadData("user/rankuser/list");
 };

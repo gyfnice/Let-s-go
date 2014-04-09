@@ -41,6 +41,7 @@ window.eDomain={
             actionuser: {
                 list: '/userActivity/enrolledUser.do'
             },
+            add:"/userlogin.do",
             list: '/user/isLogin.do',
             exit: '/user/logout.do',
             updatehead:'/user/updateHeadImg.do',
