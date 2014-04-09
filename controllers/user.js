@@ -1,41 +1,27 @@
 var mongoose = require('../models/db');
 var usersModel = mongoose.model('users');
-
+var response = {
+	ret: true,
+	islogin: true,
+	data: {
+			
+	}
+};
 exports.islogin = function(req, res) {
-	var response = {
-		ret: true,
-		data: {
-			data: {
-				islogin: true
-			}
-		}
-	};
 	if (!req.session.user) {
-		response.data.data.islogin = false;
+		response.islogin = false;
 	} else {
-		response.data.data = req.session.user;
+		response.data = req.session.user;
+		response.islogin = true;
 	}
 	res.send(response);
 
 }
 exports.logout = function(req, res) {
 	req.session.user = null;
-	res.send({
-		ret: true,
-		data: {
-			data: {
-				islogin: false
-			}
-		}
-	})
+	res.send({ret:true})
 }
 exports.userlogin = function(req, res) {
-	var response = {
-		ret: true,
-		nice:45,
-		info: 7,
-		data: []
-	};
 	usersModel.getByid(req.body.id, function(err, docs) {
 		if (docs.length === 0) {
 			response.ret = false;
@@ -50,7 +36,7 @@ exports.userlogin = function(req, res) {
 			return
 		}
 		req.session.user = docs[0];
-		response.data = docs;
+		response.data = docs[0];
 		res.send(response);
 	})
 }

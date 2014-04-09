@@ -23,6 +23,7 @@ module.exports = function(app) {
          title: '主页'
       });
   });
-  app.post("/userlogingyf.do",users.userlogin);
+  app.post("/userlogin.do",users.userlogin);
   app.get("/user/isLogin.do",users.islogin);
+  app.get("/user/logout.do",users.logout);
 }
