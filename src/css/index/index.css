@@ -10,7 +10,7 @@
     margin-top: 32px;
 }
 .content-bar li {
-    background:url(http://sources.corp.qunar.com/QNR-play/bg-l.png) no-repeat 0px 0px;
+    background:url(http://sources.corp.qunar.com/QNR-play/resources/bg-l.png) no-repeat 0px 0px;
     line-height:22px;
     float:left;
 }
@@ -167,7 +167,7 @@
     position:relative;
 }
 .content-bars li {
-    background:url(http://sources.corp.qunar.com/QNR-play/largebar.png) no-repeat 0px 0px;
+    background:url(http://sources.corp.qunar.com/QNR-play/resources/largebar.png) no-repeat 0px 0px;
     line-height:22px;
     float:left;
 }

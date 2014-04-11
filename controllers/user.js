@@ -35,6 +35,7 @@ exports.userlogin = function(req, res) {
 			res.send(response);
 			return
 		}
+		response.ret = true;
 		req.session.user = docs[0];
 		response.data = docs[0];
 		res.send(response);

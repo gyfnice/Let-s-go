@@ -34,6 +34,7 @@ EventControl.bind = function() {
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
+        debugger;
         followtype.loadData(userid);
     });
 

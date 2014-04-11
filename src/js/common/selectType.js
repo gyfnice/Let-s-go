@@ -2,6 +2,7 @@ var $mask = $("#mask");
 var $type = $(".select-type");
 
 var closeHandle = function(me) {
+    debugger;
     me.hide();
 };
 var successHandle = function(me,userid,followtype) {

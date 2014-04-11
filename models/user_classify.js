@@ -35,6 +35,7 @@ user_classifySchema.statics = {
 		var query = {
 			user_id:userid
 		}
+		console.log(userid);
 		this.find(query, function(err, classify) {
 			if (err) {
 				return callback(err);

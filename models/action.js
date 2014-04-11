@@ -1,5 +1,5 @@
 var mongoose = require('./db');
-var ObjectId = mongoose.Schema.ObjectId;
+var Schema = mongoose.Schema;
 var actionSchema = new mongoose.Schema({
 	subClaId: String,
 	title: String,
@@ -8,54 +8,73 @@ var actionSchema = new mongoose.Schema({
 	endDay: String,
 	startHHMM: String,
 	endHHMM: String,
+	createTime: {
+		type: Date,
+		default: Date.now
+	},
 	place: String,
 	avgFee: String,
 	description: String,
-	better:Number,
-	good:Number,
-	bad:Number,
-	sumscore:Number,
-	peopleNum:Number,
-	state:String,
-	userid:ObjectId,
-	username:String
+	better: {
+		type: Number,
+		default: 0
+	},
+	good: {
+		type: Number,
+		default: 0
+	},
+	bad: {
+		type: Number,
+		default: 0
+	},
+	sumscore: {
+		type: Number,
+		default: 0
+	},
+	peopleNum: {
+		type: Number,
+		default: 0
+	},
+	state: {
+		type: Boolean,
+		default: false
+	},
+	create_userid: String,
+	username: String
 }, {
 	collection: 'actions'
 });
 
+actionSchema.statics = {
+	getByid: function(id, callback) {
+		this.findById(id.toString(), function(err, action) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, action);
+		});
+	},
+	findAll: function(callback) {
+		this.find({}, function(err, docs) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, docs);
+		});
+	},
+	removeAll: function(callback) {
+		this.find({}).remove().exec();
+		callback();
+	},
+	save: function(action, callback) {
+		var newaction = new actionModel(action);
+		newaction.save(function(err, res) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, res);
+		});
+	}
+}
+
 var actionModel = mongoose.model('action', actionSchema);
-
-function Action(actionObj) {
-	this.subClaId = actionObj.subClaId;
-	this.title = actionObj.title;
-	this.startDay = actionObj.startDay;
-	this.endDay = actionObj.endDay;
-	this.startHHMM = actionObj.startHHMM;
-	this.endHHMM = actionObj.endHHMM;
-	this.place = actionObj.place;
-	this.avgFee = actionObj.avgFee;
-	this.description = actionObj.description;
-	this.poster = actionObj.poster;
-};
-
-Action.prototype.save = function(callback) {
-	var action = {
-		subClaId: this.subClaId,
-		title: this.title,
-		startDay: this.startDay,
-		endDay: this.endDay,
-		startHHMM: this.startHHMM,
-		endHHMM: this.endHHMM,
-		place: this.place,
-		avgFee: this.avgFee,
-		description: this.description,
-		poster: this.poster
-	};
-	var newAction = new actionModel(action);
-	newAction.save(function(err) {
-		if (err) {
-			return callback(err);
-		}
-		callback(null);
-	});
-};

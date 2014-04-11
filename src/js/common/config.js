@@ -49,7 +49,7 @@ window.eDomain={
             exam:'/activity/notExamine/count.do'
         },
         usercenter: {
-            baseinfo: '/user/showUser.do',
+            baseinfo: '/user/isLogin.do',
             publishaction: '/activity/published.do',
             joinaction: '/userActivity/participated.do',
             proceedaction: '/userActivity/enrolled.do',
@@ -64,8 +64,8 @@ window.eDomain={
         img:{
             /*headimg:'/resources/headimgs/',
             posterimg:'/resources/posterimgs/'*/
-            headimg:'http://sources.corp.qunar.com/QNR-play/headimgs/',
-            posterimg:'http://sources.corp.qunar.com/QNR-play/posterimgs/'
+            headimg:'http://localhost:3000/img/uploads/uploadedFileName/headimgs/',
+            posterimg:'http://localhost:3000/img/uploads/uploadedFileName/posters/'
         }
     }
 };

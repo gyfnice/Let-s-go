@@ -35,7 +35,7 @@ StepNextTab.prototype.insertContent = function(data) {
     this.text('<div class="create__activity">');
     this.text('     <div class="activity__upphoto">');
     this.text('         <div class="photo-position">');
-    this.text('             <img src="',eDomain.getURL("img/posterimg")+data.classifyId,'.jpg" alt="" width="200" height="300">');
+    this.text('             <img src="',eDomain.getURL("img/posterimg")+data.poster,'" alt="" width="200" height="300">');
     this.text('         </div>');
     this.text('         <div class="photo-introduction">');
     this.text('             <b>从电脑中选择你喜欢的照片</b>');

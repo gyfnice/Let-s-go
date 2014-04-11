@@ -15,3 +15,16 @@ exports.listAlltype = function(req, res) {
 		res.send(response);
 	})
 }
+
+exports.getusertype = function(req,res){
+	var response = {
+		ret: true,
+		nice:1,
+		data: []
+	};
+	console.log(req.body)
+	user_classifyModel.getByid(req.body.user_id,function(err,docs){
+		response.data = docs;
+		res.send(response);
+	})
+}

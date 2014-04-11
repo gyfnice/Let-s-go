@@ -1,5 +1,4 @@
 var mongoose = require('./db');
-var ObjectId = mongoose.Schema.ObjectId;
 var Schema = mongoose.Schema;
 var classifySchema = new mongoose.Schema({
 	name: String,

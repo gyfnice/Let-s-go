@@ -58,10 +58,11 @@ EventControl.bind = function() {
         userinfo.render();
     });
     $(userinfo).bind("userlogin", function(e, data) {
-        if (data.first) {
+        debugger;
+        if (data.tofirst) {
             selecttype.show();
             selecttype.loadData();
-            selecttype.bindclick(data.user.id);
+            selecttype.bindclick(data.studentId);
         }
     });
 
@@ -143,7 +144,6 @@ var bindEvent = function() {
 };
 var prevhotclickHandler = function(){
     $(".btn-prev").click(function(e){
-         ;
         var curnum = parseInt($(".active").text(),10) - 1;
         if(curnum === 0){
             return false;

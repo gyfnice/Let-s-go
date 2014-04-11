@@ -4,6 +4,7 @@ function Followtype() {
 
 $jex.extendClass(Followtype, XControl);
 Followtype.prototype.update = function(data) {
+    debugger;
     for(var i = 0,max = data.length;i < max;i++){
             this.getfollowlist(data[i]); 
     }
@@ -13,21 +14,22 @@ Followtype.prototype.update = function(data) {
 }
 Followtype.prototype.getfollowlist = function(data){
         this.text('<li>');
-        this.text('<span>',data.subName,'</span>');
-        this.text('<div class="closetype hidden" ><a href="#" id="',data.id,'">x</a></div>');
+        this.text('<span>',data.type_name,'</span>');
+        this.text('<div class="closetype hidden" ><a href="#" id="',data._id,'">x</a></div>');
         this.text('</li>');
 }
 Followtype.prototype.loadData = function(uid) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "post",
         url: eDomain.getURL("usercenter/followtype"),
         dataType: "json",
-        cache:false,
+        cache: false,
         data:{
-            userId:uid
+            user_id:uid
         },
         success: function(data) {
+            debugger;
             if(!data.ret){
                 alert(data.errmsg);
                 return false;

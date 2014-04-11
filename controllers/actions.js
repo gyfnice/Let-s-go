@@ -1,6 +1,5 @@
 var mongoose = require('../models/db');
-var classifyModel = mongoose.model('classifys');
-var sub_classifyModel = mongoose.model('sub_classifys');
+var action = mongoose.model('action');
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
@@ -8,7 +7,15 @@ var gm = require('gm').subClass({
 	imageMagick: true
 });
 exports.create = function(req, res) {
-	debugger;
+	console.log(req.body);
+	action.save(req.body, function(err, docs) {
+		console.log(err)
+		console.log(docs)
+		res.send({
+			info: "活动添加成功",
+			ret: true
+		})
+	});
 }
 
 exports.uploadpic = function(req, res) {
@@ -19,10 +26,12 @@ exports.uploadpic = function(req, res) {
 	var filename = path.basename(oldpath);
 	gm(newPath + '/' + filename)
 		.crop(cood.picw * (cood.flagPic), cood.pich * (cood.flagPic), cood.picx * (cood.flagPic), cood.picy * (cood.flagPic))
-		.write(newPath + '/' + 'crop-' + filename, function() {
-			res.redirect("back");
-			var imgPath = "http://localhost:3000" + "/img/uploads/uploadedFileName/" + 'crop-' + filename;
-			console.log(imgPath);
+		.write(newPath + '/posters/' + 'crop-' + filename, function() {
+			var imgPath = 'crop-' + filename;
+			res.send({
+				res: true,
+				data: imgPath
+			})
 		});
 
 }

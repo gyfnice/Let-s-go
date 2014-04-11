@@ -12,7 +12,7 @@ var usersSchema = new mongoose.Schema({
 	email: String,
 	tofirst:{
 		type:Boolean,
-		default:false
+		default:true
 	},
 	totalScore: {
 		type: Number,

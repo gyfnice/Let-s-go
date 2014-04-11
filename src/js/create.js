@@ -125,12 +125,11 @@ EventControl.bind = function() {
 }
 
 var postaction = function(){
+    debugger;
      $.ajax({
         type: "POST",
         url: eDomain.getURL("actiontype/addaction"),
-        dataType: "json",
         data: CatchactionInfo,
-        contentType: "application/json",
         success: function(data) {
             if(!data.ret){
                 alert(data.errmsg);
@@ -218,6 +217,7 @@ var ajaxpicload = function(){
             picType:"poster"
         },
         success: function(data) {
+            debugger;
             imgName = JSON.parse($(data.getElementsByTagName("pre")[0]).text()).data;
             CatchactionInfo.poster = imgName;
             postaction();
@@ -428,7 +428,6 @@ var timechecked = function() {
         sucessflag = 0;
     }
 
-    
 };
 var convertContent = function(str) {
     return $textarea.val().replace(/\n|&lt;br&gt;/g, function(pos) {
@@ -448,6 +447,8 @@ var getactionData = function() {
     actionObj.place = $addresstext.val(),
     actionObj.avgFee = $free.prop("checked") ? 0 : $inprice.val(),
     actionObj.description = convertContent($textarea.val()).replace(/(^\s*)|(\s*$)/g, "");
+    actionObj.create_userid = $(".userid").text();
+    actionObj.username = $(".u-name").text();
     return actionObj;
 };
 var Nextclick = function() {
@@ -485,7 +486,8 @@ var Nextclick = function() {
         $success.fadeOut("slow", function(e) {
             goTop();
             $("#mainwrap").hide();
-            CatchactionInfo.poster = CatchactionInfo.classifyId + ".jpg";
+            CatchactionInfo.poster = $(".typesel .selectbox_input").text() + ".jpg";
+            debugger;
             if(backeditflag === 0){
                 cutimgtab.clear();
                 cutimgtab.updateSource(CatchactionInfo);

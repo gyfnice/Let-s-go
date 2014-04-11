@@ -23,9 +23,10 @@ UserInfo.prototype.update = function(data) {
     superflag = 0;
     debugger;
     if (data.islogin) {
-        this.text('<a href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
+        this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
         this.text('<a href="#" class="backinfo">登出</a>');
         this.text('<a href="#" style="display:none">登录</a>');
+        this.text('<span class = "userid" style="display:none">',data.data.studentId,'</span>');
         this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
         if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
             superflag = 1;
@@ -48,7 +49,6 @@ UserInfo.prototype.update = function(data) {
             me.show();
         })
         searchHandler();
-        
     });
 }
 UserInfo.prototype.loadData = function(examnum) {
@@ -59,11 +59,6 @@ UserInfo.prototype.loadData = function(examnum) {
         dataType: "json",
         cache: false,
         success: function(data) {
-            if (!data.ret) {
-                alert("系统出错了~~");
-                return false;
-            }
-            debugger;
             data.examnum = examnum;
             $(me).trigger("loaduser", [data]);
         },
@@ -113,11 +108,17 @@ UserInfo.prototype.bindEvent = function(data) {
     });
     $("#btn-submit").click(function(e){
         e.preventDefault();
+        if($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === ""){
+            alert("请输入具体信息")
+            return
+        }
         $.post("userlogin.do",$(".dlglogin-form").serialize(),function(res){
             if(res.ret){
                 me.loadData()
                 $dlglogin.remove()
                 $(".overlay").hide()
+            }else{
+                alert(res.info);
             }
         })
     })

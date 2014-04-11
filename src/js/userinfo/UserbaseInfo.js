@@ -6,7 +6,8 @@ function UserbaseInfo() {
 
 $jex.extendClass(UserbaseInfo, XControl);
 UserbaseInfo.prototype.update = function(data) {
-    var userinfo = data.data.user;
+    debugger;
+    var userinfo = data.data;
     var ftype = data.followtype;
     this.text('<a href="userinfo.html?userid=',userinfo.id,'" class="info-img">');
     this.text('     <img src="',eDomain.getURL("img/headimg")+userinfo.headImg,'" alt="',userinfo.userName,'">');
