@@ -122,6 +122,8 @@
 }
 .user-type {
     margin-left:10px;
+    overflow: hidden;
+    zoom: 1;
 }
 .user-type li {
     display:inline-block;
@@ -159,6 +161,9 @@
     float:left;
     margin-top:5px;
     margin-left: 10px;
+    position: absolute;
+    bottom: 0px;
+    right: 50px;
 }
 .btn-add a {
     color:rgb(12,92,201);

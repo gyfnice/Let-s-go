@@ -2,12 +2,19 @@ var mongoose = require('./db');
 var Schema = mongoose.Schema;
 var actionSchema = new mongoose.Schema({
 	subClaId: String,
+	classifyid:String,
+	subname:String,
+	classifyname:String,
 	title: String,
 	poster: String,
 	startDay: String,
 	endDay: String,
+	endTime:String,
+	startTime:String,
 	startHHMM: String,
 	endHHMM: String,
+	time:Number,
+	evaluateStatus:Array,
 	createTime: {
 		type: Date,
 		default: Date.now
@@ -44,7 +51,17 @@ var actionSchema = new mongoose.Schema({
 }, {
 	collection: 'actions'
 });
-
+actionSchema.methods = {
+	addState:function(req){
+		this.evaluateStatus.push(req.session.user.studentId);
+		this.peopleNum = this.peopleNum + 1;
+		this.save(function(err,res){
+			if(err){
+				return
+			}
+		});
+	}
+}
 actionSchema.statics = {
 	getByid: function(id, callback) {
 		this.findById(id.toString(), function(err, action) {

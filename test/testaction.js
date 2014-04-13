@@ -3,6 +3,8 @@ var mongoose = require('../models/db');
 var request = require('supertest');
 var app = require('../app');
 var actionModel = mongoose.model('action');
+var user_actionModel = mongoose.model('user_actions');
+var commentModel = mongoose.model('comments');
 
 
 var action = {
@@ -43,4 +45,15 @@ describe('relate action', function() {
 			})
 		})
 	});
+	after(function(){
+		user_actionModel.remove(function(){
+
+		})
+		actionModel.remove(function () {
+
+		})
+		commentModel.remove(function () {
+
+		})
+	})
 })

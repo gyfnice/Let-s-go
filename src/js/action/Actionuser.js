@@ -7,7 +7,7 @@ $jex.extendClass(Actionuser, Rankuser);
 Actionuser.prototype.loadData = function(actionid,page){
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("user/actionuser/list"),
         dataType: "json",
         cache:false,

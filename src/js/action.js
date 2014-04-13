@@ -1,7 +1,6 @@
 require("com/config");
 require('com/jquery');
 require('com/lib');
-require('plugin/jquery.json-2.4.min');
 var MessagePage = require('com/Page.js');
 var Userpage = require('com/Page.js');
 var UserInfo = require('com/UserInfo');
@@ -33,10 +32,11 @@ var EventControl = {};
 
 EventControl.bind = function() {
     $(userinfo).bind("loaduser", function(e, data) {
-        Catchuser = data.data.user;
+        Catchuser = data.data;
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
+        actioninfo.loadData(actionid);
         judgelogin();
     });
     $(actionuser).bind("loadActionuser", function(e,data,page,currentpage) {
@@ -143,7 +143,6 @@ var init = function() {
 var loadEvent = function() {
     actionuser.loadData(actionid,1);
     userinfo.loadData();
-    actioninfo.loadData(actionid);
     messagelist.loadData(actionid, parseInt(initpage, 10));
 };
 
@@ -159,7 +158,6 @@ var clickcreatebtn = function() {
     $(".btn-text").click(function(e) {
         if ($(".backinfo").length === 0) {
             alert("请先登录");
-            $("#qsso-login").trigger("click");
             e.preventDefault();
         }
     });
@@ -202,6 +200,10 @@ var judgelogin = function(){
         $textarea.prop("disabled", true);
         $btnmessage.hide();
         $(".write-comment").append('<div class="loginwarn">登录后，可留言</div>');
+    }else{
+        $textarea.prop("disabled", false);
+        $btnmessage.show();
+        $(".loginwarn").remove();
     }
 }
 var messageclickHandler = function() {
@@ -212,7 +214,7 @@ var messageclickHandler = function() {
             alert("请输入具体内容");
             return false;
         }
-        messagelist.postData(actionid, Catchuser.id, content);
+        messagelist.postData(actionid, Catchuser.studentId, content);
         $textarea.val("");
         e.preventDefault();
     });
@@ -230,7 +232,7 @@ var isoverAction = function() {
 
 
 var judgeisjoin = function(data,dateflag) {
-    if (data.evaluateStatus !== undefined) {
+    if (data.data.evaluateStatus.indexOf(Catchuser.studentId) !== -1) {
         if (dateflag !== 1) { //报名了且活动没有过期
             changebtnstate();
         }
@@ -245,15 +247,14 @@ var judgeisjoin = function(data,dateflag) {
     } else if (dateflag === 0) { //没报名，活动没有过期
         $joinaction.click(function(e) {
             if ($(".backinfo").length === 0) {
-                alert("请先登录");6
-                +
+                alert("请先登录");
                 e.preventDefault();
                 return false;
             }
             if($joinaction.hasClass("suc-action")){
                 return false;
             }
-            actioninfo.postData(actionid, Catchuser.id);
+            actioninfo.postData(actionid, Catchuser.studentId);
             changebtnstate();
             e.preventDefault();
         });

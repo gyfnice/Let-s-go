@@ -9,12 +9,12 @@ UserbaseInfo.prototype.update = function(data) {
     debugger;
     var userinfo = data.data;
     var ftype = data.followtype;
-    this.text('<a href="userinfo.html?userid=',userinfo.id,'" class="info-img">');
+    this.text('<a href="userinfo.html?userid=',userinfo.studentId,'" class="info-img">');
     this.text('     <img src="',eDomain.getURL("img/headimg")+userinfo.headImg,'" alt="',userinfo.userName,'">');
     this.text('</a>');
     this.text('<div class="info-info bd">');
     this.text('     <h3 class="info-name">');
-    this.text('         <a href="userinfo.html?userid=',userinfo.id,'">',userinfo.userName,'</a><span class="fa fa-heart"><span class="info-score">',userinfo.totalScore,'</span></span>');
+    this.text('         <a href="userinfo.html?userid=',userinfo.studentId,'">',userinfo.userName,'</a><span class="fa fa-heart"><span class="info-score">',userinfo.totalScore,'</span></span>');
     this.text('     </h3>');
     this.text('     <p class="info-score">');
     this.text('         <span>积分: </span><span class="date">',userinfo.totalScore,'</span>');
@@ -31,13 +31,13 @@ UserbaseInfo.prototype.update = function(data) {
     this.text('     </p>');
     this.text('</div>');
     this.onInit(function(){
-        $(this).trigger("completeinfo",[userinfo.id]);
+        $(this).trigger("completeinfo",[userinfo.studentId]);
     });
 };
 UserbaseInfo.prototype.loadData = function(uid,followlist) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("usercenter/baseinfo"),
         dataType: "json",
         cache:false,

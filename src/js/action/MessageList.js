@@ -8,7 +8,7 @@ var goTop = function() {
 }
 $jex.extendClass(MessageList, XControl);
 MessageList.prototype.update = function(data) {
-
+    debugger;
     for (var i = 0, max = data.data.length; i < max; i++) {
         this.insertmessage(data.data[i]);
     }
@@ -34,7 +34,7 @@ MessageList.prototype.insertmessage = function(data) {
 MessageList.prototype.loadData = function(actionid, page) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("message/list"),
         dataType: "json",
         cache : false,
@@ -65,15 +65,14 @@ MessageList.prototype.successsay = function() {
 MessageList.prototype.postData = function(actionid, userid, content) {
     var me = this;
     var datas = {
-        "actId": actionid,
-        "userId": userid,
+        "actionid": actionid,
+        "userid": userid,
         "content": content
     };
     $.ajax({
         type: "POST",
         url: eDomain.getURL("message/add"),
-        data: $.toJSON(datas),
-        contentType: "application/json",
+        data: datas,
         success: function(data) {
             me.successsay();
             me.loadData(actionid, 1);

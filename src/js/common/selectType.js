@@ -10,7 +10,7 @@ var successHandle = function(me,userid,followtype) {
     $(".select-type input:checked").each(function(index, value) {
         datalist.push(value.id);
     });
-    me.addtype(datalist.join(','),userid,followtype);
+    me.addtype(datalist,userid,followtype);
     me.hide();
 };
 var cancelHandle = function(me) {
@@ -43,7 +43,6 @@ selectType.prototype.update = function(data) {
     });
 }
 selectType.prototype.insertBody = function(data,flist) {
-     
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('<li class="select-item1">');
         this.text('    <h4>', data[i].name, '类</h4>');
@@ -58,10 +57,11 @@ selectType.prototype.insertBody = function(data,flist) {
     }
 }
 selectType.prototype.insertlist = function(data,flist) {
+    debugger;
     for (var i = 0, max = data.length; i < max; i++) {
         var flag = 0;
         for(var j = 0,maxs = flist.length;j < maxs;j++){
-            if(data[i].id === flist[j].id){
+            if(data[i].id === flist[j].type_id){
                 flag = 1;
             }
         }
@@ -75,8 +75,9 @@ selectType.prototype.insertlist = function(data,flist) {
 }
 selectType.prototype.addtype = function(datalist,uid,followtype) {
     var me = this;
+    debugger;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("usercenter/addtype"),
         dataType: "json",
         data: {
@@ -84,6 +85,7 @@ selectType.prototype.addtype = function(datalist,uid,followtype) {
             userId:uid
         },
         success: function(data) {
+            debugger;
             if(followtype){
                 followtype.loadData(uid);
             }

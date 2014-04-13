@@ -6,7 +6,6 @@ $jex.extendClass(VoteScore, XControl);
 var $uservote = $("#uservote");
 var bindEvent = function(me,actionid){
     $uservote.delegate("a", "click", function(e) {
-         ;
         if($uservote.find(".lightvote").length !== 0){
             e.preventDefault();
             return false;

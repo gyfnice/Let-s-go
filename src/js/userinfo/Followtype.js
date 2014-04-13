@@ -15,7 +15,7 @@ Followtype.prototype.update = function(data) {
 Followtype.prototype.getfollowlist = function(data){
         this.text('<li>');
         this.text('<span>',data.type_name,'</span>');
-        this.text('<div class="closetype hidden" ><a href="#" id="',data._id,'">x</a></div>');
+        this.text('<div class="closetype hidden" ><a href="#" id="',data.type_id,'">x</a></div>');
         this.text('</li>');
 }
 Followtype.prototype.loadData = function(uid) {
@@ -44,7 +44,7 @@ Followtype.prototype.loadData = function(uid) {
 Followtype.prototype.deletetype = function(userid,subid,event){
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("usercenter/deletetype"),
         dataType: "json",
         cache:false,
@@ -53,6 +53,7 @@ Followtype.prototype.deletetype = function(userid,subid,event){
             subClaId:subid
         },
         success: function(data) {
+            debugger;
             $(me).trigger("deletefollowlist",[data,event]);
         },
         error: function(data) {

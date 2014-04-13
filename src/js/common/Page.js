@@ -60,7 +60,6 @@ Page.prototype.startPageStyle = function(page) {
         this.fillCorrectPage(page, i);
     }
     this.insertDot();
-     
     this.insertfinalPage(page.totalpage);
 }
 Page.prototype.fillCorrectPage = function(page, i) {

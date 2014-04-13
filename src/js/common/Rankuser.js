@@ -14,11 +14,11 @@ Rankuser.prototype.insertBody = function(data) {
     }
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('<li class="user-items bd">');
-        this.text('   <a href="userinfo.html?user=',data[i].id, '" class="user-img">');
+        this.text('   <a href="userinfo.html?userid=',data[i].studentId, '" class="user-img">');
         this.text('      <img src="', eDomain.getURL("img/headimg")+data[i].headImg, '" alt="', data[i].userName, '">');
         this.text('   </a>');
         this.text('   <div class="single-info bd">');
-        this.text('     <h3 class="rankuser-name"><a href=userinfo.html?user=',data[i].id,'>', data[i].userName, '</a></h3>');
+        this.text('     <h3 class="rankuser-name"><a href=userinfo.html?userid=',data[i].studentId,'>', data[i].userName, '</a></h3>');
         this.text('     <p class="user-score"><span>积分:</span><span class="uscore">', data[i].totalScore, '</span></p>');
         this.text('   </div>');
         this.text('</li>');

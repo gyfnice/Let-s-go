@@ -30,7 +30,7 @@ var EventControl = {};
 
 EventControl.bind = function() {
     $(userinfo).bind("loaduser", function(e, data) {
-        Catchuser = data.data;
+        Catchuser = data;
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
@@ -52,8 +52,10 @@ EventControl.bind = function() {
         baseinfo.render();
     });
     $(baseinfo).bind("completeinfo", function(e, uid) {
-        if (Catchuser.isLogin) {
-            if (Catchuser.user.id === uid) {
+        var UrlKeyArray = QNR.Tools.getUrlValue();
+        tuserid = UrlKeyArray[0].value;
+        if (Catchuser.islogin) {
+            if (Catchuser.data.studentId === tuserid) {
                 getauthorityExec();
             }
         }
@@ -188,12 +190,11 @@ var savepic = function() {
     }
     ajaxpicload();
     cancelpic();
-    
     $uploadpic.remove();
 };
 var ajaxpicload = function(){
     $.ajaxFileUpload({
-        url: eDomain.getURL('actiontype/loadpic'),
+        url: eDomain.getURL('user/updatehead'),
         fileElementId: 'picturefile',
         data: {
             picx: $("#picx").val(),

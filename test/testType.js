@@ -41,20 +41,32 @@ describe('test Type', function() {
 		})
 	});
 	after(function() {
-		classifyModel.remove(function() {
-			
-		});
+		classifyModel.remove(function(){})
 	})
 })
 
 describe('test sub_Type', function() {
 	var supid;
 	var sub_typeArray = ["篮球", "足球", "羽毛球", "兵乓球", "游泳","台球","瑜伽"];
+	var h_array = ["聚餐","ktv","交友","踏青"]
 	describe('#insert', function() {
 		it('should return null when the value is inserted', function(done) {
 			classifyModel.savetype("运动",function(err,res){
 				supid = res._id.valueOf();
 				sub_typeArray.forEach(function(elem){
+					sub_classifyModel.save(elem,res,function(err,docs){
+						if(err){
+							return
+						}
+						assert.equal(err,null);
+					});
+				});
+				done();
+			});
+		})
+		it('should return null when the value is inserted', function(done) {
+			classifyModel.savetype("聚会",function(err,res){
+				h_array.forEach(function(elem){
 					sub_classifyModel.save(elem,res,function(err,docs){
 						if(err){
 							return

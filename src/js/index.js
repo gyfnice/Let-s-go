@@ -58,7 +58,6 @@ EventControl.bind = function() {
         userinfo.render();
     });
     $(userinfo).bind("userlogin", function(e, data) {
-        debugger;
         if (data.tofirst) {
             selecttype.show();
             selecttype.loadData();
@@ -67,6 +66,7 @@ EventControl.bind = function() {
     });
 
     $(selecttype).bind("loadselectlist", function(e, data) {
+        selecttype.clear();
         selecttype.updateSource(data);
         selecttype.render();
     });

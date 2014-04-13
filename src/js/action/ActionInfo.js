@@ -8,7 +8,6 @@ $jex.extendClass(ActionInfo, XControl);
 var judgeactiondate = function(data,self){
      var curdate = new Date();
      var dateflag = 0;
-      ;
      if(curdate.getTime() > new Date(data.data.startTime.replace(/-/g,"/")).getTime()){
         $(joinaction).html("<a href='#'>截止报名</div>");
         $(joinaction).find("a").click(function(e){
@@ -39,12 +38,12 @@ ActionInfo.prototype.update = function(data) {
 }
 
 ActionInfo.prototype.actionbar = function(data) {
-    this.text('<a href="action-list.html?id=',data.classifyId,'" class="action-type">', data.classifyName, '</a>');
+    this.text('<a href="action-list.html?id=',data.classifyid,'" class="action-type">', data.classifyname, '</a>');
     this.text('     <span>></span>');
-    this.text('<a href="action-list.html?id=',data.classifyId,'&sid=',data.subClaId,'" class="type-sec">', data.classifyName, '-', data.subClassifyName, '</a>');
+    this.text('<a href="action-list.html?id=',data.classifyid,'&sid=',data.subClaId,'" class="type-sec">', data.classifyname, '-', data.subname, '</a>');
 }
 ActionInfo.prototype.actionlist = function(data) {
-    this.text('<a href="action-info.html?action=',data.id,'" class="action-img">');
+    this.text('<a href="action-info.html?action=',data._id,'" class="action-img">');
     this.text('     <img src="',eDomain.getURL("img/posterimg")+data.poster,'" alt="',data.title,'">');
     this.text('</a>');
     this.text('<div class="action-info bd">');
@@ -57,16 +56,16 @@ ActionInfo.prototype.actionlist = function(data) {
     }else{
         this.text('<p class="action-time">时间:<span data-endtime="',data.endTime,'" class="date">',data.startDay,'</span><span class="actiom-time"> ',data.startHHMM,'</span>到<span>',data.endDay,'</-span><span class="actiom-time"> ',data.endHHMM,'</span>');    
     }
-    
+
     this.text('</p>');
     this.text('<address class="action-place">');
     this.text('     <div class="pl">地点:</div>');
     this.text('     <span class="aplace bd">',data.place,'</span>');
     this.text('</address>');
     this.text('<p class="action-fee">费用:<span>',data.avgFee,'</span>元</p>');
-    this.text('<p class="action-author">发起人:<a href="userinfo.html?userid=',data.userId,'">',data.sponor,'</a></p>');
+    this.text('<p class="action-author">发起人:<a href="userinfo.html?userid=',data.create_userid,'">',data.username,'</a></p>');
     this.text('<p class="action-people" data-pnum ="',data.peopleNum,'"><span>',data.peopleNum,'</span>人已经参加</p>');
-    if(data.state === "CHECK_SUCCESS"){
+    if(data.state !== "CHECK_SUCCESS"){
         this.text('<div class="btn-action" id="btnaction" style="display:none">');
         this.text('     <a href="#">我要参加</a>');
         this.text('</div>');
@@ -87,9 +86,10 @@ ActionInfo.prototype.relateinfo = function(data) {
 }
 
 ActionInfo.prototype.loadData = function(aid) {
+    debugger;
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("actiontype/info"),
         dataType: "json",
         cache:false,
@@ -97,7 +97,8 @@ ActionInfo.prototype.loadData = function(aid) {
             id:aid
         },
         success: function(data) {
-            if(!data.ret){
+            debugger;
+            if(!data.data){
                 $(".site-main").html("<div class='no-action'>没有活动信息</div>");
                 return false;
             }
@@ -112,12 +113,12 @@ ActionInfo.prototype.loadData = function(aid) {
 ActionInfo.prototype.postData = function(aid,uid) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("actiontype/addactuser"),
         dataType: "json",
         data: {
-            activityId:aid,
-            userId:uid
+            action_id:aid,
+            user_id:uid
         },
         success: function(data) {
             if(!data.ret){

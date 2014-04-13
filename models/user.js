@@ -8,7 +8,10 @@ var usersSchema = new mongoose.Schema({
 		type: String,
 		default: "custom"
 	},
-	headimg: String,
+	headImg: {
+		type:String,
+		default:"defaulthead.jpg"
+	},
 	email: String,
 	tofirst:{
 		type:Boolean,

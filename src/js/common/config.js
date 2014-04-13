@@ -49,7 +49,7 @@ window.eDomain={
             exam:'/activity/notExamine/count.do'
         },
         usercenter: {
-            baseinfo: '/user/isLogin.do',
+            baseinfo: '/user/userinfo.do',
             publishaction: '/activity/published.do',
             joinaction: '/userActivity/participated.do',
             proceedaction: '/userActivity/enrolled.do',

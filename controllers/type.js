@@ -7,24 +7,56 @@ var classifyModel = mongoose.model('classifys');
 exports.listAlltype = function(req, res) {
 	var response = {
 		ret: true,
-		nice:1,
 		data: []
 	};
-	classifyModel.findAll(function(err,docs){
+	classifyModel.findAll(function(err, docs) {
 		response.data = docs;
 		res.send(response);
 	})
 }
 
-exports.getusertype = function(req,res){
+exports.getusertype = function(req, res) {
 	var response = {
 		ret: true,
-		nice:1,
 		data: []
 	};
-	console.log(req.body)
-	user_classifyModel.getByid(req.body.user_id,function(err,docs){
+	console.log(req.body.user_id)
+	user_classifyModel.getByid(req.body.user_id, function(err, docs) {
 		response.data = docs;
 		res.send(response);
 	})
+}
+
+exports.addtype = function(req, res) {
+	console.log(req.body.classifies);
+	req.body.classifies.forEach(function(elem) {
+		sub_classifyModel.getid(elem, function(err, subtype) {
+			user_classifyModel.save(req.body.userId, subtype, function(err, docs) {
+				console.log(docs);
+			})
+		})
+	});
+	req.session.user.tofirst = false;
+	usersModel.update({
+		studentId: req.session.user.studentId
+	}, {
+		$set: {
+			tofirst: false
+		}
+	}, function(err, docs) {
+		console.log(docs);
+	});
+	res.send({
+		ret: true,
+		info: "success"
+	});
+}
+
+exports.deltype = function(req, res) {
+	user_classifyModel.removebyid(req.body.userId, req.body.subClaId, function(err, docs) {
+		res.send({
+			ret: true,
+			info: "删除成功"
+		})
+	});
 }

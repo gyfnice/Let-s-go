@@ -16,7 +16,12 @@ describe('relate users', function() {
 			studentId: "2010083305",
 			userName: "gyfnice",
 			role: "custom",
-			headimg: "http://gyfnice.jpg",
+			email: "gyfnice@qq.com"
+		}
+		var gyfvane = {
+			studentId: "123",
+			userName: "gyfvane",
+			role: "custom",
 			email: "gyfnice@qq.com"
 		}
 		before(function() {
@@ -34,6 +39,9 @@ describe('relate users', function() {
 				assert.equal(null, err);
 				done();
 			})
+			usersModel.save(gyfvane, function(err, docs) {
+				assert.equal(null, err);
+			})
 		})
 		it("find user info by pass userid", function(done) {
 			usersModel.getByid(user.studentId, function(err, docs) {
@@ -46,13 +54,13 @@ describe('relate users', function() {
 	describe('#user_classifys', function() {
 		var classtype;
 		var sub_length;
-		it("should insert one doc when exec", function(done) {
+		/*it("should insert one doc when exec", function(done) {
 			classifyModel.findAll(function(err, docs) {
 				classtype = docs[0];
 				sub_classifyModel.getByid(classtype._id.valueOf(), function(err, docs) {
 					sub_length = docs.length;
 					docs.forEach(function(elem) {
-						user_classifyModel.save(user, classtype, function(err, res) {
+						user_classifyModel.save(user.studentId, elem, function(err, res) {
 							assert.equal(err, null);
 						})
 					})
@@ -67,6 +75,6 @@ describe('relate users', function() {
 		        docs.length.should.equal(sub_length);
 		        done();
 		    })
-		})
+		})*/
 	})
 })

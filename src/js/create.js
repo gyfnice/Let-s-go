@@ -437,7 +437,9 @@ var convertContent = function(str) {
 var getactionData = function() {
     var price = $inprice.val() === "" ? 0 : $inprice.val();
     var actionObj = {};
-    actionObj.classifyId = $pselect.val(),
+    actionObj.classifyid = $pselect.val(),
+    actionObj.classifyname = $(".selectbox_input").eq(0).text(),
+    actionObj.subname = $(".selectbox_input").eq(1).text(),
     actionObj.subClaId = $subselect.val(),
     actionObj.title = $titletext.val(),
     actionObj.startDay = $mydate.val(),
@@ -583,7 +585,7 @@ var initplugin = function() {
     mintime.push(minsec);
     $timestart.pickatime({
         min: mintime,
-        max: [23,30],
+        max: [24, 00],
         format: "HH:i",
         clear: ''
     });
@@ -596,7 +598,7 @@ var initplugin = function() {
         if (startime !== endtime) {
             $('#time-end').pickatime({
                 min: startmin,
-                max: [23, 30],
+                max: [24, 00],
                 format: "HH:i",
                 clear: ''
             });
@@ -606,7 +608,7 @@ var initplugin = function() {
                     startmin
                 ],
                 min: startmin,
-                max: [23, 30],
+                max: [24, 00],
                 format: "HH:i",
                 clear: ''
             });

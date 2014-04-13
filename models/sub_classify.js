@@ -42,6 +42,14 @@ sub_classifySchema.statics = {
 			callback(null, classify);
 		});
 	},
+	getid:function(id,callback) {
+		this.findById(id.toString(), function(err, classify) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, classify);
+		});
+	},
 	removeAll: function(callback) {
 		this.find({}).remove().exec();
 		callback();

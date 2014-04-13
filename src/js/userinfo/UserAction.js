@@ -9,7 +9,7 @@ UserAction.prototype.update = function(data) {
 UserAction.prototype.loadData = function(url,uid,page) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL(url),
         dataType: "json",
         cache:false,
@@ -26,7 +26,7 @@ UserAction.prototype.loadData = function(url,uid,page) {
             $(me).trigger("loaduseraction", [data,totalpage,page]);
         },
         error: function(data) {
-            
+
         }
     });
 };
@@ -34,10 +34,10 @@ UserAction.prototype.insertaction = function(data) {
     this.text('     <ul class="action-type">');
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('         <li class="action-list bd">');
-        this.text('             <a href="action-info.html?actionid=', data[i].id, '" class="action-img">');
+        this.text('             <a href="action-info.html?actionid=', data[i]._id, '" class="action-img">');
         this.text('                 <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
         this.text('             <div class="action-info bd">');
-        this.text('                 <h3 class="action-name"><a href="action-info.html?actionid=', data[i].id, '">', data[i].title, '</a></h3>');
+        this.text('                 <h3 class="action-name"><a href="action-info.html?actionid=', data[i]._id, '">', data[i].title, '</a></h3>');
         this.text('                 <p class="action-time">');
         this.text('                     <span class="date">', data[i].startDay, '</span>');
         this.text('                 </p>');

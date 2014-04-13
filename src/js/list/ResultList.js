@@ -16,24 +16,24 @@ ResultList.prototype.update = function(data) {
 ResultList.prototype.insertContent = function(data) {
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('<li class="bd">');
-        this.text('     <a href="action-info.html?actionid=',data[i].id,'" class="action-img">');
+        this.text('     <a href="action-info.html?actionid=',data[i]._id,'" class="action-img">');
         this.text('         <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '">');
         this.text('     </a>');
         this.text('     <div class="action-info bd">');
         this.text('         <h3 class="action-name">');
-        this.text('         <a href="action-info.html?actionid=',data[i].id,'">', data[i].title, '</a>');
+        this.text('         <a href="action-info.html?actionid=',data[i]._id,'">', data[i].title, '</a>');
         this.text('             <p class="action-people">(<span>', data[i].peopleNum, '</span>人已经参加)</p>');
         this.text('         </h3>');
-        this.text('         <p class="action-desc">',data[i].summary,'</p>');
+        this.text('         <p class="action-desc">',data[i].description,'</p>');
         this.text('         <p class="action-time">时间:<span class="date">', data[i].startDay, '</span>');
-        this.text('             <span class="actiom-time">', data[i].time, '</span>');
+        this.text('             <span class="actiom-time">', data[i].startHHMM, '</span>');
         this.text('         </p>');
         this.text('         <address class="action-place">');
         this.text('             <div class="pl">地点:</div>');
         this.text('             <div class="aplace bd">', data[i].place, '</div>');
         this.text('         </address>');
         this.text('         <p class="action-fee">费用:<span>', data[i].avgFee, '</span>元</p>');
-        this.text('         <p class="action-author">发起人:', data[i].sponsor, '</p>');
+        this.text('         <p class="action-author">发起人:', data[i].username, '</p>');
         this.text('     </div>');
         this.text('</li>');
     }
@@ -62,11 +62,11 @@ ResultList.prototype.loadActionListbyid = function(settings,key,page,time){
         }
     };
     if(time === "all"){
-        delete typeElum['id'].dayStr;
-        delete typeElum['sid'].dayStr;
+       typeElum['id'].dayStr = "2000-01-12,2020-02-20";
+       typeElum['sid'].dayStr = "2000-01-12,2020-02-20";
     }
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("type/search"),
         dataType: "json",
         data:typeElum[key],
@@ -87,7 +87,7 @@ ResultList.prototype.loadActionListbyid = function(settings,key,page,time){
 ResultList.prototype.loadActionListbyword = function(searchword,page) { 
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("actiontype/search"),
         dataType: "json",
         data: {
