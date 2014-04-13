@@ -77,7 +77,6 @@ exports.signup = function(req, res) {
 		docs.addState(req);
 	});
 	user_actionModel.save(actionuser, function(err, docs) {
-		console.log(docs)
 		res.send({
 			ret: true
 		})
@@ -97,8 +96,15 @@ exports.listuser = function(req, res) {
 		}
 	});
 }
-exports.listrankuser = function (req,res) {
-    
+exports.listrankuser = function(req, res) {
+	usersModel.paginate({}, 1, 7, function(err, count, docs) {
+		response.data = docs
+		res.send(response);
+	}, {
+		sortBy: {
+			totalScore: -1
+		}
+	});
 }
 exports.uploadpic = function(req, res) {
 	var me = req;
@@ -119,14 +125,17 @@ exports.uploadpic = function(req, res) {
 			}, function(err, docs) {
 
 			})
+			console.log(imgPath);
 			commentModel.update({
 				userid: req.session.user.studentId
 			}, {
 				$set: {
 					headImg: imgPath
 				}
+			},{
+				multi: true
 			}, function(err, docs) {
-
+				console.log(docs)
 			})
 			user_actionModel.update({
 				studentId: req.session.user.studentId
@@ -134,11 +143,13 @@ exports.uploadpic = function(req, res) {
 				$set: {
 					headImg: imgPath
 				}
+			},{
+				multi: true
 			}, function(err, docs) {
 
 			})
 			res.send({
-				res: true,
+				ret: true,
 				data: imgPath
 			})
 		});

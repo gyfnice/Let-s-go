@@ -5,5 +5,5 @@
 module.exports = new Db(settings.db, new Server(settings.host, Connection.DEFAULT_PORT), {safe: true});
 var fs = require('fs');*/
 var mongoose=require('mongoose');
-mongoose.connect('mongodb://localhost/blog?poolSize=4');
+mongoose.connect('mongodb://localhost/blog?poolSize=10');
 module.exports = mongoose;

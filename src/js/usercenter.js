@@ -21,6 +21,7 @@ var cutpicflag = 0;
 var preheadimg = eDomain.getURL("img/headimg");
 var $joinpage = $('#joinpagelist');
 var $pubpage = $('#pubpagelist');
+var $proceedpage = $('#proceedpagelist');
 var $uploadpic;
 var $addbtntype;
 var $closetype;
@@ -83,9 +84,11 @@ EventControl.bind = function() {
         joinpagelist.updateSource(data);
         joinpagelist.render();
     });
-    $(proceedaction).bind("loadproceedaction", function(e, data) {
+    $(proceedaction).bind("loadproceedaction", function(e, data,page, currentpage) {
+        proceedaction.clear();
         proceedaction.updateSource(data.data);
         proceedaction.render();
+        $(proccedpagelist).trigger("loadpolistpage", [page, currentpage]);
     });
     $(pubpagelist).bind("loadlistpage", function(e, page, currentpage) {
         var data = {
@@ -96,7 +99,15 @@ EventControl.bind = function() {
         pubpagelist.updateSource(data);
         pubpagelist.render();
     });
-
+    $(proccedpagelist).bind("loadpolistpage",function(e,page,currentpage) {
+        var data = {
+            totalpage: page,
+            currentpage: currentpage
+        };
+        proccedpagelist.clear();
+        proccedpagelist.updateSource(data);
+        proccedpagelist.render();
+    })
     $(selecttype).bind("loadselectlist", function(e, data) {
         data.selectflist = Catchfollowlist;
         selecttype.clear();
@@ -121,6 +132,9 @@ var pubuseraction = new UserAction({
 });
 var pubpagelist = new UserCenterPage({
     elemId: "pubpagelist"
+});
+var proccedpagelist = new UserCenterPage({
+    elemId:"proceedpagelist"
 });
 var joinuseraction = new UserAction({
     elemId: "joinaction"
@@ -311,6 +325,12 @@ var pubpageclickHandler = function() {
         pubuseraction.loadData("usercenter/publishaction", userid, page);
     });
 };
+var proceedpageclickHandler = function() {
+    $proceedpage.delegate("a", "click", function(e) {
+        var page = parseInt($(e.target).text(), 10);
+        proceedaction.loadData(userid,page);
+    });
+};
 var joinpageclickHandler = function() {
     $joinpage.delegate("a", "click", function(e) {
         var page = parseInt($(e.target).text(), 10);
@@ -328,6 +348,7 @@ var clickaddtype = function() {
 var clickEventHandler = function() {
     pubpageclickHandler();
     joinpageclickHandler();
+    proceedpageclickHandler();
     inputfile();
     clickcreatebtn();
 };
@@ -374,7 +395,7 @@ var loadEvent = function() {
     var initpage = 1;
     pubuseraction.loadData("usercenter/publishaction", userid, initpage);
     joinuseraction.loadData("usercenter/joinaction", userid, initpage);
-    proceedaction.loadData(userid);
+    proceedaction.loadData(userid,initpage);
 };
 
 init();

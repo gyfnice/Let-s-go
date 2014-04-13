@@ -11,6 +11,8 @@ var actionSchema = new mongoose.Schema({
 	endDay: String,
 	endTime:String,
 	startTime:String,
+	endtime:Number,
+	starttime:Number,
 	startHHMM: String,
 	endHHMM: String,
 	time:Number,

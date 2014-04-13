@@ -5,10 +5,10 @@ $jex.extendClass(ProceedAction, XControl);
 ProceedAction.prototype.update = function(data) {
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('<li class="bd">');
-        this.text('    <a href="action-info.html?actionid=', data[i].id, '" class="user-img">');
+        this.text('    <a href="action-info.html?actionid=', data[i]._id, '" class="user-img">');
         this.text('        <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
         this.text('    <div class="single-info bd">');
-        this.text('        <h3 class="action-name"><a href="action-info.html?actionid=', data[i].id, '">', data[i].title, '</a></h3>');
+        this.text('        <h3 class="action-name"><a href="action-info.html?actionid=', data[i]._id, '">', data[i].title, '</a></h3>');
         this.text('        <p class="action-time">');
         this.text('            <span class="date">', data[i].startDay, '</span>');
         this.text('            <span class="actiom-time">', data[i].startHHMM, '-',data[i].endHHMM,'</span>');
@@ -22,25 +22,28 @@ ProceedAction.prototype.update = function(data) {
         this.text('<div class="noaction">还没有信息</div>');
     }
 }
-ProceedAction.prototype.loadData = function(userid){
+ProceedAction.prototype.loadData = function(userid,page){
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("usercenter/proceedaction"),
         dataType: "json",
         cache:false,
         data:{
-            id:userid
+            id:userid,
+            page:page
         },
         success: function(data) {
+            debugger;
             if(!data.ret){
                 alert(data.errmsg);
                 return false;
             }
-            $(me).trigger("loadproceedaction",[data]);
+            var totalpage = parseInt(data.pageNum,10);
+            $(me).trigger("loadproceedaction",[data,totalpage,page]);
         },
         error: function(data) {
-            
+
         }
     });
 }

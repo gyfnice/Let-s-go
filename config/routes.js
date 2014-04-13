@@ -41,13 +41,16 @@ module.exports = function(app) {
   app.post("/user/updateHeadImg.do",users.uploadpic);
   app.post("/activity/signUp.do",users.signup);
   app.post("/userActivity/enrolledUser.do",users.listuser)
+  app.get("/user/showStarUser.do",users.listrankuser)
 
   //活动
   app.post("/activity/add.do",auth.requiresLogin,actions.create);
   app.post("/fileupload/uploadImg.do",actions.uploadpic);
   app.post("/activity/add.do",actions.create);
   app.post("/activity/published.do",actions.lookpublish);
+  app.post("/userActivity/enrolled.do",actions.enrolleduser)
   app.post("/activity/detail.do",actions.list);
+  app.post("/userActivity/participated.do",actions.joinedaction)
 
   //用户中心
   app.post("/userClassify/list.do",types.getusertype);
@@ -58,6 +61,7 @@ module.exports = function(app) {
   //评论
   app.post("/comment/list.do",comments.listmessage);
   app.post("/comment/add.do",comments.addmessage);
+
 
 
   //搜索活动

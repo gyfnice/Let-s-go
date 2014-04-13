@@ -20,7 +20,6 @@ exports.getusertype = function(req, res) {
 		ret: true,
 		data: []
 	};
-	console.log(req.body.user_id)
 	user_classifyModel.getByid(req.body.user_id, function(err, docs) {
 		response.data = docs;
 		res.send(response);
@@ -28,11 +27,9 @@ exports.getusertype = function(req, res) {
 }
 
 exports.addtype = function(req, res) {
-	console.log(req.body.classifies);
 	req.body.classifies.forEach(function(elem) {
 		sub_classifyModel.getid(elem, function(err, subtype) {
 			user_classifyModel.save(req.body.userId, subtype, function(err, docs) {
-				console.log(docs);
 			})
 		})
 	});
@@ -44,7 +41,6 @@ exports.addtype = function(req, res) {
 			tofirst: false
 		}
 	}, function(err, docs) {
-		console.log(docs);
 	});
 	res.send({
 		ret: true,

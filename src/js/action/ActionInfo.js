@@ -48,7 +48,7 @@ ActionInfo.prototype.actionlist = function(data) {
     this.text('</a>');
     this.text('<div class="action-info bd">');
     this.text('     <h3 class="action-name">');
-    this.text('         <a href="action-info.html?action=',data.id,'">',data.title,'</a>');
+    this.text('         <a href="action-info.html?action=',data._id,'">',data.title,'</a>');
     this.text('     </h3>');
     if(data.startDay === data.endDay){
         this.text('<p class="action-time">时间:<span data-endtime="',data.endTime,'" class="date">',data.startDay,'</span>');

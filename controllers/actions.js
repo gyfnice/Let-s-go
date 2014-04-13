@@ -16,9 +16,9 @@ exports.create = function(req, res) {
 	req.body.time = new Date().getTime();
 	req.body.endTime = req.body.endDay + " " + req.body.endHHMM;
 	req.body.startTime = req.body.startDay + " " + req.body.startHHMM;
+	req.body.starttime = new Date(req.body.startTime).getTime();
+	req.body.endtime = new Date(req.body.endTime).getTime();
 	action.save(req.body, function(err, docs) {
-		console.log(err)
-		console.log(docs)
 		res.send({
 			info: "活动添加成功",
 			ret: true
@@ -49,7 +49,6 @@ exports.uploadpic = function(req, res) {
 
 }
 exports.searchbykey = function(req, res) {
-	console.log(req.body.keywords)
 	var query = {
 		$or: [{
 			title: new RegExp(decodeURIComponent(req.body.keywords), "i")
@@ -69,25 +68,19 @@ exports.searchbykey = function(req, res) {
 		sortBy: {
 			title: 1,
 			description: 1,
-			time: -1,
+			peopleNum:-1,
 			place: 1
 		}
 	});
 }
 exports.searchbyid = function(req, res) {
-	console.log(req.body)
 	var timearray = req.body.dayStr.split(",");
-	console.log(new Date(timearray[0]).getTime())
-	console.log(timearray[timearray.length - 1]);
-	console.log(new Date(timearray[timearray.length - 1]).getTime())
 	if (timearray.length === 1) {
-		console.log(122229);
 		var query = {
 			startDay: timearray[0].replace(/\//g, "-")
 		}
 
 	} else {
-		console.log(8);
 		var query = {
 			time: {
 				"$gte": new Date(timearray[0]).getTime(),
@@ -108,6 +101,41 @@ exports.searchbyid = function(req, res) {
 	}, {
 		sortBy: {
 			time: -1
+		}
+	});
+}
+
+exports.enrolleduser = function (req,res) {
+    var query = {
+    	evaluateStatus:req.body.id,
+    	endtime:{
+    		$gt:Date.now()
+    	}
+    }
+    action.paginate(query, req.body.page, 4, function(err, count, docs) {
+		response.data = docs
+		response.pageNum = count;
+		res.send(response);
+	}, {
+		sortBy: {
+			starttime: 1
+		}
+	});
+}
+exports.joinedaction = function(req,res){
+	var query = {
+		evaluateStatus:req.body.id,
+		endtime:{
+    		$lt:Date.now()
+    	}
+	}
+	action.paginate(query, req.body.page, 4, function(err, count, docs) {
+		response.data = docs
+		response.pageNum = count;
+		res.send(response);
+	}, {
+		sortBy: {
+			endtime: 1
 		}
 	});
 }
