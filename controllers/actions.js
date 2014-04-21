@@ -24,13 +24,12 @@ exports.create = function(req, res) {
 			info: "活动添加成功",
 			ret: true
 		})
+		classifyModel.findAll(function(err, docs) {
+			docs.forEach(function(elem) {
+				elem.addActiveties();
+			});
+		})
 	});
-
-	classifyModel.findAll(function(err, docs) {
-		docs.forEach(function (elem) {
-		    elem.addActiveties();
-		});
-	})
 }
 exports.list = function(req, res) {
 	action.getByid(req.body.id, function(err, docs) {
@@ -63,7 +62,7 @@ exports.searchbykey = function(req, res) {
 			place: new RegExp(decodeURIComponent(req.body.keywords), "i")
 		}, {
 			description: new RegExp(decodeURIComponent(req.body.keywords), "i")
-		},{
+		}, {
 			username: new RegExp(decodeURIComponent(req.body.keywords), "i")
 		}]
 	}
@@ -75,7 +74,7 @@ exports.searchbykey = function(req, res) {
 		sortBy: {
 			title: 1,
 			description: 1,
-			peopleNum:-1,
+			peopleNum: -1,
 			place: 1
 		}
 	});
@@ -112,14 +111,14 @@ exports.searchbyid = function(req, res) {
 	});
 }
 
-exports.enrolleduser = function (req,res) {
-    var query = {
-    	evaluateStatus:req.body.id,
-    	endtime:{
-    		$gt:Date.now()
-    	}
-    }
-    action.paginate(query, req.body.page, 4, function(err, count, docs) {
+exports.enrolleduser = function(req, res) {
+	var query = {
+		evaluateStatus: req.body.id,
+		endtime: {
+			$gt: Date.now()
+		}
+	}
+	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
 		response.pageNum = count;
 		res.send(response);
@@ -129,12 +128,12 @@ exports.enrolleduser = function (req,res) {
 		}
 	});
 }
-exports.joinedaction = function(req,res){
+exports.joinedaction = function(req, res) {
 	var query = {
-		evaluateStatus:req.body.id,
-		endtime:{
-    		$lt:Date.now()
-    	}
+		evaluateStatus: req.body.id,
+		endtime: {
+			$lt: Date.now()
+		}
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs

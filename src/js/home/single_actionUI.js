@@ -17,17 +17,16 @@ single_actionUI.prototype.loadSingleAction = function(id, sid) {
     var aurl,Pdata;
     if(sid === "hot"){
         Pdata = {
-           claId:id 
+           classifyid:id 
         }
-        aurl = eDomain.getURL("actiontype/list");
     }else{
         Pdata = {
             subClaId:sid
         }
-        aurl = eDomain.getURL("actiontype/slist");
     }
+    aurl = eDomain.getURL("actiontype/slist");
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: aurl,
         dataType: "json",
         cache:false,

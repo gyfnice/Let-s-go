@@ -24,12 +24,12 @@ HotimgInfo.prototype.insertbody = function(data) {
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('<li>');
         this.text('    <div class="action-pic">');
-        this.text('         <a href="action-info.html?actionid=', data[i].id, '">');
+        this.text('         <a href="action-info.html?actionid=', data[i]._id, '">');
         this.text('             <img alt="', data[i].poster, '" src="', eDomain.getURL("img/posterimg")+data[i].poster, '" height="260" width="190">');
         this.text('         </a>');
         this.text('    </div>');
         this.text('    <div class="action-title">');
-        this.text('         <a href="action-info.html?actionid=', data[i].id, '" title="', data[i].title, '">', minText(data[i].title,20), '</a>');
+        this.text('         <a href="action-info.html?actionid=', data[i]._id, '" title="', data[i].title, '">', minText(data[i].title,20), '</a>');
         this.text('    </div>');
         this.text('</li>');
     }
@@ -42,7 +42,7 @@ HotimgInfo.prototype.changestate = function(elem) {
 HotimgInfo.prototype.loadPicData = function(page) {
     var me = this;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: eDomain.getURL("hotimg/list"),
         dataType: "json",
         cache:false,

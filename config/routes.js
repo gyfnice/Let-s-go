@@ -18,6 +18,11 @@ module.exports = function(app) {
       title: '主页'
     })
   })
+  app.get("/", function(req, res) {
+    res.render('index', {
+      title: '主页'
+    })
+  })
   app.get("/index.html", function(req, res) {
     res.render('index', {
       title: '主页'
@@ -44,7 +49,9 @@ module.exports = function(app) {
   app.get("/user/showStarUser.do", users.listrankuser)
 
   //活动
-  app.get("/activity/classfiyHots.do",lookaction.listAllhot)
+  app.get("/activity/classfiyHots.do", lookaction.listAllhot)
+  app.post("/activity/subclassifyHots.do", lookaction.singlelist)
+  app.post("/activity/hots.do",lookaction.hotaction)
   app.post("/activity/add.do", auth.requiresLogin, actions.create);
   app.post("/fileupload/uploadImg.do", actions.uploadpic);
   app.post("/activity/add.do", actions.create);
@@ -64,52 +71,9 @@ module.exports = function(app) {
     res.send({
       "ret": true,
       "info": [{
-          "check_status": true,
-          "content": "1我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "2我已经@你<a href='http://baidu.com'>百度</a>了"
-        }, {
-          "check_status": true,
-          "content": "3我已经@你了"
-        }, {
-          "check_status": true,
-          "content": "4我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "5我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "6我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "7我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "8我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "9我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "10我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "11我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "12我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "13我已经@你了"
-        }, {
-          "check_status": false,
-          "content": "14我已经@你了"
-        }
-
-
-
-      ]
+        "check_status": true,
+        "content": "1我已经@你了"
+      }]
 
     });
   });

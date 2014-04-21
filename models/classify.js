@@ -9,7 +9,57 @@ var classifySchema = new mongoose.Schema({
 		subName: String,
 		id: String
 	}],
-	activities: []
+	activities: [{
+		subClaId: String,
+		classifyid: String,
+		subname: String,
+		classifyname: String,
+		title: String,
+		poster: String,
+		startDay: String,
+		endDay: String,
+		endTime: String,
+		startTime: String,
+		endtime: Number,
+		starttime: Number,
+		startHHMM: String,
+		endHHMM: String,
+		time: Number,
+		evaluateStatus: Array,
+		createTime: {
+			type: Date,
+			default: Date.now
+		},
+		place: String,
+		avgFee: String,
+		description: String,
+		better: {
+			type: Number,
+			default: 0
+		},
+		good: {
+			type: Number,
+			default: 0
+		},
+		bad: {
+			type: Number,
+			default: 0
+		},
+		sumscore: {
+			type: Number,
+			default: 0
+		},
+		peopleNum: {
+			type: Number,
+			default: 0
+		},
+		state: {
+			type: Boolean,
+			default: false
+		},
+		create_userid: String,
+		username: String
+	}]
 }, {
 	collection: 'classifys'
 });
@@ -29,13 +79,19 @@ classifySchema.methods = {
 	},
 	addActiveties: function() {
 		var id = this.id;
+		var me = this;
 		action.paginate({
-			classifyid:id
+			classifyid: id
 		}, 1, 4, function(err, count, docs) {
-			this.activities = docs;
+			me.activities = docs;
+			me.save(function(err, res) {
+				if (err) {
+					return
+				}
+			});
 		}, {
 			sortBy: {
-				time: -1
+				peopleNum: -1
 			}
 		});
 	}
