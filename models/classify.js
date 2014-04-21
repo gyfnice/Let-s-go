@@ -1,26 +1,41 @@
 var mongoose = require('./db');
 var Schema = mongoose.Schema;
+var action = mongoose.model('action');
+var paginate = require('mongoose-paginate');
 var classifySchema = new mongoose.Schema({
 	name: String,
 	id: Schema.Types.ObjectId,
-	child:[{
-		subName:String,
-		id:String
-	}]
+	child: [{
+		subName: String,
+		id: String
+	}],
+	activities: []
 }, {
 	collection: 'classifys'
 });
 
 classifySchema.methods = {
-	addChild:function(subtype){
+	addChild: function(subtype) {
 		this.child.push({
-			subName:subtype.name,
-			id:subtype._id
+			subName: subtype.name,
+			id: subtype._id
 		});
 		this.id = this._id;
-		this.save(function(err,res){
-			if(err){
+		this.save(function(err, res) {
+			if (err) {
 				return
+			}
+		});
+	},
+	addActiveties: function() {
+		var id = this.id;
+		action.paginate({
+			classifyid:id
+		}, 1, 4, function(err, count, docs) {
+			this.activities = docs;
+		}, {
+			sortBy: {
+				time: -1
 			}
 		});
 	}

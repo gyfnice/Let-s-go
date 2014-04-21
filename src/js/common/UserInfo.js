@@ -1,3 +1,4 @@
+require("noify.js");
 function UserInfo() {
     UserInfo.superclass.constructor.apply(this, arguments);
 }
@@ -26,8 +27,9 @@ UserInfo.prototype.update = function(data) {
         this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
         this.text('<a href="#" class="backinfo">登出</a>');
         this.text('<a href="#" style="display:none">登录</a>');
-        this.text('<span class = "userid" style="display:none">',data.data.studentId,'</span>');
+        this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
         this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
+        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', 3, '</span>条消息</a>');
         if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
             superflag = 1;
             this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../admin/index.do">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
@@ -45,9 +47,11 @@ UserInfo.prototype.update = function(data) {
         if (superflag === 1 && $(".check_num").text() === "") {
             this.getActionnum();
         }
-        $(".loginclick").click(function (e) {
+        $(".loginclick").click(function(e) {
             me.show();
         })
+        $("body").append('<div id="listcontent"></div>');
+        this.notify();
         searchHandler();
     });
 }
@@ -106,22 +110,38 @@ UserInfo.prototype.bindEvent = function(data) {
         $(".overlay").hide()
         e.preventDefault()
     });
-    $("#btn-submit").click(function(e){
+    $("#btn-submit").click(function(e) {
         e.preventDefault();
-        if($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === ""){
+        if ($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === "") {
             alert("请输入具体信息")
             return
         }
-        $.post("userlogin.do",$(".dlglogin-form").serialize(),function(res){
-            if(res.ret){
+        $.post("userlogin.do", $(".dlglogin-form").serialize(), function(res) {
+            if (res.ret) {
                 me.loadData()
                 $dlglogin.remove()
                 $(".overlay").hide()
-            }else{
+            } else {
                 alert(res.info);
             }
         })
     })
+}
+UserInfo.prototype.notify = function() {
+    flag = false;
+    var ci = $.contentInform({
+        width:'800'
+    });
+    var informbtn = $("#inform");
+    informbtn.click(function(){
+        debugger
+        if (flag===false) {
+            ci.open();
+        }else{
+            ci.close();
+        }
+
+    });
 }
 UserInfo.prototype.show = function() {
     var form =

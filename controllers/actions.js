@@ -1,5 +1,6 @@
 var mongoose = require('../models/db');
 var action = mongoose.model('action');
+var classifyModel = mongoose.model('classifys');
 var usersModel = mongoose.model('users');
 var paginate = require('mongoose-paginate');
 var path = require('path');
@@ -24,6 +25,12 @@ exports.create = function(req, res) {
 			ret: true
 		})
 	});
+
+	classifyModel.findAll(function(err, docs) {
+		docs.forEach(function (elem) {
+		    elem.addActiveties();
+		});
+	})
 }
 exports.list = function(req, res) {
 	action.getByid(req.body.id, function(err, docs) {
