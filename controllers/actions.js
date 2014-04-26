@@ -3,6 +3,8 @@ var action = mongoose.model('action');
 var classifyModel = mongoose.model('classifys');
 var usersModel = mongoose.model('users');
 var paginate = require('mongoose-paginate');
+var notifiedModel = mongoose.model('notifieds');
+var user_classifyModel = mongoose.model('user_classifys');
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
@@ -29,7 +31,22 @@ exports.create = function(req, res) {
 				elem.addActiveties();
 			});
 		})
+		user_classifyModel.gettypeid(docs.subClaId,function (err,udocs) {
+		    udocs.forEach(function (elem) {
+		        var str = '你关注的<a href="#">'+elem.type_name+'</a>有新的<a target="_blank" href="action-info.html?actionid='
+		        + docs._id + '" title="'+docs.title+'" target="_blank">活动</a>发布啦';
+				var note = {
+					type: "活动分类",
+					studentId: elem.user_id,
+					content: str
+				}
+				notifiedModel.savetype(note, function(err, docs) {
+					console.log(docs);
+				})
+		    })
+		})
 	});
+
 }
 exports.list = function(req, res) {
 	action.getByid(req.body.id, function(err, docs) {
@@ -160,3 +177,4 @@ exports.lookpublish = function(req, res) {
 	});
 
 }
+

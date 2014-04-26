@@ -584,7 +584,7 @@ var initplugin = function() {
     var minsec = curdate.getMinutes() < 30 ? "00":"30";
     mintime.push(minsec);
     $timestart.pickatime({
-        min: mintime,
+        min: [07,00],
         max: [24, 00],
         format: "HH:i",
         clear: ''

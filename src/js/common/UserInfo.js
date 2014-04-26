@@ -29,7 +29,7 @@ UserInfo.prototype.update = function(data) {
         this.text('<a href="#" style="display:none">登录</a>');
         this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
         this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
-        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', 3, '</span>条消息</a>');
+        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条消息</a>');
         if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
             superflag = 1;
             this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../admin/index.do">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
@@ -44,15 +44,18 @@ UserInfo.prototype.update = function(data) {
             me.exituser();
             e.preventDefault();
         });
-        if (superflag === 1 && $(".check_num").text() === "") {
-            this.getActionnum();
-        }
         $(".loginclick").click(function(e) {
             me.show();
         })
         $("body").append('<div id="listcontent"></div>');
         this.notify();
         searchHandler();
+        if (superflag === 1 && $(".check_num").text() === "") {
+            this.getActionnum();
+        }else if($(".check_num").text() === ""){
+            var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+            this.getmessage(id);
+        }
     });
 }
 UserInfo.prototype.loadData = function(examnum) {
@@ -86,7 +89,19 @@ UserInfo.prototype.getActionnum = function() {
         error: function(data) {}
     });
 }
-
+UserInfo.prototype.getmessage = function (uid) {
+    var me = this;
+    $.ajax({
+        type:"post",
+        url: "/allnote.do",
+        data:{
+            id:uid
+        },
+        success:function (res) {
+            me.loadData(res.length);
+        }
+    })
+}
 UserInfo.prototype.exituser = function() {
     var me = this;
     $.ajax({
@@ -94,7 +109,6 @@ UserInfo.prototype.exituser = function() {
         url: eDomain.getURL("user/exit"),
         dataType: "json",
         success: function(data) {
-            debugger;
             me.loadData();
         },
         error: function(data) {}
@@ -134,11 +148,10 @@ UserInfo.prototype.notify = function() {
     });
     var informbtn = $("#inform");
     informbtn.click(function(){
-        debugger
         if (flag===false) {
-            ci.open();
+            ci.open()
         }else{
-            ci.close();
+            ci.close()
         }
 
     });

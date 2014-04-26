@@ -40,7 +40,7 @@
 	],
 	"ternjs":
 	{
-		"exclude": ["wordpress/**", "node_modules/**"],
+		/*"exclude": ["wordpress/**", "node_modules/**"],
 		"libs":
 		[
 			"browser",
@@ -53,6 +53,6 @@
 			{
 				"baseURL": "./.."
 			}
-		}
+		}*/
 	}
 }

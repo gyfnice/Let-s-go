@@ -4,6 +4,7 @@ var user_actionModel = mongoose.model('user_actions');
 var actionModel = mongoose.model('action');
 var commentModel = mongoose.model('comments');
 var user_actionModel = mongoose.model('user_actions');
+var notifiedModel = mongoose.model('notifieds');
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
@@ -64,6 +65,43 @@ exports.userlogin = function(req, res) {
 		res.send(response);
 	})
 }
+exports.assess = function(req, res) {
+	actionModel.getByid(req.body.actId, function(err, docs) {
+		docs.addscore(req);
+		var nstr = '<a target="_blank" href="userinfo.html?userid=' + req.session.user.studentId + '">' + req.session.user.userName + '</a>' + '给你发布的<a target="_blank" href="action-info.html?actionid=' + docs._id + '">' + docs.title + '</a>活动'+
+		'打了'+req.body.state+'分';
+		var note = {
+			type: "活动评价",
+			studentId: docs.create_userid,
+			content: nstr
+		}
+		notifiedModel.savetype(note, function(err, docs) {
+			console.log(docs);
+		})
+		user_actionModel.update({
+			studentId: docs.create_userid
+		}, {
+			$inc: {
+				totalScore: req.body.state
+			}
+		}, function(err, docs) {
+			res.send({
+				ret: true
+			})
+		})
+		usersModel.update({
+			studentId: docs.create_userid
+		}, {
+			$inc: {
+				totalScore: req.body.state
+			}
+		}, function(err, docs) {
+			res.send({
+				ret: true
+			})
+		})
+	});
+}
 exports.signup = function(req, res) {
 	var actionuser = {
 		userName: req.session.user.userName,
@@ -75,6 +113,15 @@ exports.signup = function(req, res) {
 	}
 	actionModel.getByid(actionuser.action_id, function(err, docs) {
 		docs.addState(req);
+		var nstr = '<a target="_blank" href="userinfo.html?userid=' + req.session.user.studentId + '">' + req.session.user.userName + '</a>报名参加了' + '你发布的<a target="_blank" href="action-info.html?actionid=' + docs._id + '">' + docs.title + '</a>活动';
+		var note = {
+			type: "参加活动",
+			studentId: docs.create_userid,
+			content: nstr
+		}
+		notifiedModel.savetype(note, function(err, docs) {
+			console.log(docs);
+		})
 	});
 	user_actionModel.save(actionuser, function(err, docs) {
 		res.send({
@@ -89,6 +136,7 @@ exports.listuser = function(req, res) {
 	user_actionModel.paginate(query, req.body.page, 7, function(err, count, docs) {
 		response.data = docs
 		response.pageNum = count;
+		console.log(docs)
 		res.send(response);
 	}, {
 		sortBy: {
@@ -132,7 +180,7 @@ exports.uploadpic = function(req, res) {
 				$set: {
 					headImg: imgPath
 				}
-			},{
+			}, {
 				multi: true
 			}, function(err, docs) {
 				console.log(docs)
@@ -143,7 +191,7 @@ exports.uploadpic = function(req, res) {
 				$set: {
 					headImg: imgPath
 				}
-			},{
+			}, {
 				multi: true
 			}, function(err, docs) {
 

@@ -5,7 +5,7 @@ var app = require('../app');
 var actionModel = mongoose.model('action');
 var user_actionModel = mongoose.model('user_actions');
 var commentModel = mongoose.model('comments');
-
+var notifiedModel = mongoose.model('notifieds')
 
 var action = {
 	"classifyId": "5344fb7c8afc98c42184fc0a",
@@ -54,6 +54,9 @@ describe('relate action', function() {
 		})
 		commentModel.remove(function () {
 
+		})
+		notifiedModel.remove(function () {
+		    
 		})
 	})
 })

@@ -2,21 +2,25 @@ var mongoose = require('./db');
 var Schema = mongoose.Schema;
 var actionSchema = new mongoose.Schema({
 	subClaId: String,
-	classifyid:String,
-	subname:String,
-	classifyname:String,
+	classifyid: String,
+	subname: String,
+	classifyname: String,
 	title: String,
 	poster: String,
 	startDay: String,
 	endDay: String,
-	endTime:String,
-	startTime:String,
-	endtime:Number,
-	starttime:Number,
+	endTime: String,
+	startTime: String,
+	endtime: Number,
+	starttime: Number,
 	startHHMM: String,
 	endHHMM: String,
-	time:Number,
-	evaluateStatus:Array,
+	time: Number,
+	evaluateStatus: Array,
+	listscore: [{
+		scoreflag: Number,
+		userid: String
+	}],
 	createTime: {
 		type: Date,
 		default: Date.now
@@ -54,11 +58,33 @@ var actionSchema = new mongoose.Schema({
 	collection: 'actions'
 });
 actionSchema.methods = {
-	addState:function(req){
+	addState: function(req) {
 		this.evaluateStatus.push(req.session.user.studentId);
 		this.peopleNum = this.peopleNum + 1;
-		this.save(function(err,res){
-			if(err){
+		this.save(function(err, res) {
+			if (err) {
+				return
+			}
+		});
+	},
+	addscore: function(req) {
+		var obj = {
+			scoreflag: req.body.state,
+			userid: req.session.user.studentId
+		}
+		this.listscore.push(obj)
+		if (req.body.state == 3) {
+			this.better += 1
+			this.sumscore += 3
+		} else if (req.body.state == 2) {
+			this.good += 1
+			this.sumscore += 2
+		} else {
+			this.bad += 1
+			this.sumscore += -1
+		}
+		this.save(function(err, res) {
+			if (err) {
 				return
 			}
 		});

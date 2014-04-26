@@ -30,8 +30,8 @@ user_classifySchema.statics = {
 			callback(null, res);
 		});
 	},
-	getByid: function(userid, callback) {
-		var query = {
+	getByid:function (userid,callback) {
+	    var query = {
 			user_id:userid
 		}
 		this.find(query, function(err, classify) {
@@ -41,19 +41,29 @@ user_classifySchema.statics = {
 			callback(null, classify);
 		});
 	},
+	gettypeid: function(typeid, callback) {
+		var query = {
+			type_id:typeid
+		}
+		this.find(query, function(err, users) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, users);
+		});
+	},
 	removebyid:function (userid,subid,callback) {
 	    var query = {
 	    	user_id:userid,
 	    	type_id:subid
 	    }
-	    console.log(query);
 	    this.findOneAndRemove(query,function(err,docs){
 	    	console.log(docs);
 	    })
 	    callback();
 	},
 	removeAll: function(callback) {
-		this.find({}).remove().exec();
+		this.find({}).remove().exec()
 		callback();
 	}
 }

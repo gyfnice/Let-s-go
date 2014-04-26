@@ -12,6 +12,8 @@ var commentSchema = new mongoose.Schema({
 	},
 	content:String,
 	actionid:String,
+	actionname:String,
+	actionuserid:String,
 	userid:String
 }, {
 	collection: 'comments'

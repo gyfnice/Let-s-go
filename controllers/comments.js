@@ -3,13 +3,13 @@ var action = mongoose.model('action');
 var usersModel = mongoose.model('users');
 var commentModel = mongoose.model('comments');
 var paginate = require('mongoose-paginate');
+var notifiedModel = mongoose.model('notifieds');
 var path = require('path');
 var response = {
 	ret: true,
 	data: []
 }
 function getDateTime() {
-
 	var date = new Date();
 
 	var hour = date.getHours();
@@ -61,7 +61,15 @@ exports.addmessage = function(req, res) {
 	comment.userName = req.session.user.userName;
 	comment.time = ctime.timenum;
 	commentModel.savetype(comment, function(err,docs){
-		console.log(docs)
+		var nstr = '<a target="_blank" href="userinfo.html?userid=' + req.session.user.studentId + '">' + req.session.user.userName + '</a>评论了' + '你发布的<a target="_blank" href="action-info.html?actionid=' + docs.actionid + '">' + docs.actionname + '</a>活动';
+		var note = {
+			type: "评论活动",
+			studentId: docs.actionuserid,
+			content: nstr
+		}
+		notifiedModel.savetype(note, function(err, docs) {
+			console.log(docs);
+		})
 		res.send({ret:true,info:"success"});
 	})
 }

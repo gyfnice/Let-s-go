@@ -62,12 +62,14 @@ MessageList.prototype.successsay = function() {
         goTop();
     });
 }
-MessageList.prototype.postData = function(actionid, userid, content) {
+MessageList.prototype.postData = function(actionid, userid, content,name) {
     var me = this;
     var datas = {
         "actionid": actionid,
         "userid": userid,
-        "content": content
+        "content": content,
+        "actionname":name,
+        "actionuserid":$(".action-author").find("a").prop("href").match(/=\d+/)[0].slice(1)
     };
     $.ajax({
         type: "POST",

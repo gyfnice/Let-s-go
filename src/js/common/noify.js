@@ -1,4 +1,18 @@
 var hasPaint = false;
+var Userpage = require('com/Page.js');
+var messagepage = new Userpage({
+    elemId: "pagelist"
+});
+
+$(messagepage).bind("loadlistpage", function(e, page, currentpage) {
+    var data = {
+        totalpage: page,
+        currentpage: currentpage
+    };
+    messagepage.clear();
+    messagepage.updateSource(data);
+    messagepage.render();
+});
 var default_style = [
     "#remind {display: none;width: 350px;border: 1px solid #b9b9b9;height: auto;overflow: hidden;font-size: 12px;color: #333;background: #fff;clear: both;border-top: 0;border-radius: 0 0 5px 5px;box-shadow: 1px 1px 5px #ddd;}",
     "#remind h3 {height: 29px;line-height: 29px;color: #333;font-weight: bold;padding: 0 9px;border-bottom: 1px solid #e4e4e4;}",
@@ -17,7 +31,6 @@ function contentInform(opt) {
 
 
 contentInform.prototype.initStyles = function() {
-    debugger
     if (hasPaint) return;
     var s = document.createElement("style");
     s.type = "text/css";
@@ -38,32 +51,38 @@ contentInform.prototype.listRender = function(opt) {
     var str = "";
     for (var i = 0; i < lists.length; i++) {
         if (!lists[i].check_status) {
-            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
+            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a data-nid="' + lists[i]._id + '" href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
         };
 
     }
     return ['<div id="remind" data-type="listbox" style="width":', this.width, 'px;>',
         '<h3>提醒</h3>', str,
+        '<div class="page-list">',
+        '    <ul id="pagelist">',
+        '    </ul>',
+        '</div>',
         '<div id="more" class="more">',
-        '   <span><a href="" id="see_all">查看全部</a></span>',
         '<span><a href="" id="cancel_all">忽略全部</a></span>',
         '</div>',
         '</div>'].join('');
 };
 
-contentInform.prototype.getContent = function() {
+contentInform.prototype.getContent = function(id, page) {
     var that = this;
     $.ajax({
         url: '/data.json',
-        type: 'get',
-        datatype: 'json',
+        type: 'post',
+        data: {
+            id: id,
+            page: page
+        },
         success: function(res) {
             var $content = that.listRender(res);
             $("#listcontent").empty().append($content);
             $("#listcontent").show();
             $("[data-type='listbox']").show();
+            $(messagepage).trigger("loadlistpage", [res.pageNum, page]);
             that.eventBind();
-
         }
     });
 };
@@ -71,23 +90,52 @@ contentInform.prototype.getContent = function() {
 
 
 contentInform.prototype.eventBind = function() {
-    debugger
     var that = this;
     var listbox = $("[data-type='listbox']");
-
-    listbox.find("#cancel_all").bind("click", function(event) {
-        debugger
-        that.ignoreAll();
-        event.preventDefault();
+    $("#pagelist").delegate("a", "click", function(e) {
+        e.preventDefault();
+        var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        that.getContent(id, parseInt($(e.target).text()));
     });
-
-
     $("#remind").delegate("a", "click", function() {
-        debugger
-        // 
-        $(this).closest("p").remove();
+        var that = this;
+        $.ajax({
+            url: '/read.do',
+            type: 'POST',
+            data: {
+                id: $(this).data("nid")
+            },
+            success: function(res) {
+                debugger;
+                var num = $(".check_num").text();
+                $(".check_num").text(--num)
+                $(that).closest("p").remove();
+            }
+        });
     });
 
+    $("body").click(function(e) {
+        if (!$(e.target).closest("#listcontent").length) {
+            that.close()
+        }
+    });
+
+    $("#cancel_all").click(function(e) {
+        e.preventDefault();
+        var uid = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        var me = this;
+        $.ajax({
+            type: "post",
+            url: "/changenote.do",
+            data: {
+                id: uid
+            },
+            success: function(res) {
+                $(".check_num").text(0)
+                that.ignoreAll();
+            }
+        })
+    })
 };
 
 // 单击忽略全部
@@ -98,7 +146,8 @@ contentInform.prototype.ignoreAll = function() {
     //  data:'post',
     //  success:function(res){
     //      // 
-    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完,点此<a href=res.link target='_blank' title='查看历史提醒'>查看历史提醒</a></div></div>"
+    $("#remind").find(".none-content").remove();
+    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完</div></div>"
     $("#remind").find("p").remove();
     $("#remind").find("h3").after(str);
     //  }
@@ -108,11 +157,11 @@ contentInform.prototype.ignoreAll = function() {
 
 
 contentInform.prototype.open = function() {
-    this.getContent();
+    var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+    this.getContent(id, 1);
     flag = true;
 };
 contentInform.prototype.close = function() {
-    debugger;
     $("#listcontent").hide();
     flag = false;
 };

@@ -36,7 +36,7 @@ EventControl.bind = function() {
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
-        actioninfo.loadData(actionid);
+        actioninfo.loadData(actionid,Catchuser.studentId);
         judgelogin();
     });
     $(actionuser).bind("loadActionuser", function(e,data,page,currentpage) {
@@ -214,7 +214,7 @@ var messageclickHandler = function() {
             alert("请输入具体内容");
             return false;
         }
-        messagelist.postData(actionid, Catchuser.studentId, content);
+        messagelist.postData(actionid, Catchuser.studentId, content,$(".action-name").text().trim());
         $textarea.val("");
         e.preventDefault();
     });

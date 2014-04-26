@@ -1,6 +1,7 @@
 var actions = require('../controllers/actions')
 types = require('../controllers/type'),
   users = require('../controllers/user'),
+  notifieds = require('../controllers/notified'),
   lookaction = require("../controllers/lookaction"),
   comments = require('../controllers/comments'),
   auth = require('../middlewares/authorization');
@@ -45,6 +46,7 @@ module.exports = function(app) {
   app.get("/user/logout.do", users.logout);
   app.post("/user/updateHeadImg.do", users.uploadpic);
   app.post("/activity/signUp.do", users.signup);
+  app.post("/activity/assess.do",users.assess)
   app.post("/userActivity/enrolledUser.do", users.listuser)
   app.get("/user/showStarUser.do", users.listrankuser)
 
@@ -60,23 +62,18 @@ module.exports = function(app) {
   app.post("/activity/detail.do", actions.list);
   app.post("/userActivity/participated.do", actions.joinedaction)
 
+
   //用户中心
   app.post("/userClassify/list.do", types.getusertype);
   app.post("/userClassify/add.do", types.addtype);
   app.get("/classify/allClassifyData.do", types.listAlltype);
   app.post("/userClassify/del.do", types.deltype);
 
-
-  app.get("/data.json", function(req, res) {
-    res.send({
-      "ret": true,
-      "info": [{
-        "check_status": true,
-        "content": "1我已经@你了"
-      }]
-
-    });
-  });
+  //消息中心
+  app.post("/data.json",notifieds.notified);
+  app.post("/read.do",notifieds.read);
+  app.post("/allnote.do",notifieds.allnote);
+  app.post("/changenote.do",notifieds.changeAll)
   //评论
   app.post("/comment/list.do", comments.listmessage);
   app.post("/comment/add.do", comments.addmessage);

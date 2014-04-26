@@ -18,7 +18,6 @@ var judgeactiondate = function(data,self){
      $(self).trigger("loadjoinaction",[joinaction,dateflag,data]);
 }
 ActionInfo.prototype.update = function(data) {
-     ;
     this.text('<div class="action-bar">');
     this.actionbar(data.data);
     this.text('</div>');
@@ -85,7 +84,7 @@ ActionInfo.prototype.relateinfo = function(data) {
     this.text('</div>');
 }
 
-ActionInfo.prototype.loadData = function(aid) {
+ActionInfo.prototype.loadData = function(aid,userid) {
     debugger;
     var me = this;
     $.ajax({
@@ -103,6 +102,7 @@ ActionInfo.prototype.loadData = function(aid) {
                 return false;
             }
             $(".user-message").show();
+            data.data.curuserid = userid
             $(me).trigger("loadactioninfo", [data]);
         },
         error: function(data) {
