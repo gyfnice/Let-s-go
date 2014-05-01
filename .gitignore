@@ -2,8 +2,6 @@ node_modules
 dist
 .tmp
 img
-
-
 .sass-cache
 app/bower_components
 uploads
