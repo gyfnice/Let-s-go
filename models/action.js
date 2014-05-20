@@ -52,6 +52,10 @@ var actionSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false
 	},
+	passState:{
+		type: Boolean,
+		default:true
+	},
 	create_userid: String,
 	username: String
 }, {

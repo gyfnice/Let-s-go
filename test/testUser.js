@@ -24,6 +24,12 @@ describe('relate users', function() {
 			role: "custom",
 			email: "gyfnice@qq.com"
 		}
+		var admin = {
+			studentId: "0",
+			userName: "admin",
+			role: "MANAGER",
+			email: "gyfnice@qq.com"
+		}
 		before(function() {
 			usersModel.remove(function() {
 
@@ -40,6 +46,9 @@ describe('relate users', function() {
 				done();
 			})
 			usersModel.save(gyfvane, function(err, docs) {
+				assert.equal(null, err);
+			})
+			usersModel.save(admin,function (err,docs) {
 				assert.equal(null, err);
 			})
 		})

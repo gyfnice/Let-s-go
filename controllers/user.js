@@ -15,9 +15,52 @@ var response = {
 	ret: true,
 	islogin: true,
 	data: {
-
+		
 	}
 };
+exports.changepid = function (req,res) {
+    usersModel.find({
+    	studentId:req.session.user.studentId
+    },function (err,docs) {
+        docs[0].password = req.body.pid
+        docs[0].save()
+        res.send({ret:true})
+    })
+}
+exports.addpeople = function (req,res) {
+    var admin = {
+			studentId: "0",
+			userName: "admin",
+			role: "MANAGER",
+			email: "gyfnice@qq.com"
+    }
+    admin.studentId = req.body.name;
+    admin.userName = req.body.name;
+    admin.password = req.body.pid;
+    usersModel.saveadmin(admin,function (err,docs) {
+    	if(!err){
+    		res.send({info:"你添加的管理员已经存在"})
+    	}else{
+    		res.send({info:"添加成功"})	
+    	}
+		
+	})
+}
+exports.listpeople = function (req,res) {
+    usersModel.find({
+    	role:"MANAGER"
+    },function(err,docs){
+    	res.send(docs);
+    })
+}
+exports.delpeople = function (req,res) {
+    usersModel.findOne({
+    	studentId:req.body.id
+    },function(err,docs){
+    	docs.remove();
+    	res.send(docs);
+    })
+}
 exports.islogin = function(req, res) {
 	if (!req.session.user) {
 		response.islogin = false;

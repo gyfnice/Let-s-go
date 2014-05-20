@@ -22,17 +22,17 @@ var searchHandler = function() {
 
 UserInfo.prototype.update = function(data) {
     superflag = 0;
-    debugger;
     if (data.islogin) {
         this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
         this.text('<a href="#" class="backinfo">登出</a>');
         this.text('<a href="#" style="display:none">登录</a>');
         this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
         this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
-        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条消息</a>');
         if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
             superflag = 1;
-            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../admin/index.do">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
+            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../adminback.html">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
+        }else{
+            this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条消息</a>');
         }
         $(this).trigger("userlogin", [data.data]);
     } else {
@@ -46,6 +46,7 @@ UserInfo.prototype.update = function(data) {
         });
         $(".loginclick").click(function(e) {
             me.show();
+            $("#login_alias").focus();
         })
         $("body").append('<div id="listcontent"></div>');
         this.notify();
@@ -84,7 +85,7 @@ UserInfo.prototype.getActionnum = function() {
                 alert("系统出错了~~");
                 return false;
             }
-            me.loadData(data.data);
+            me.loadData(data.examnum);
         },
         error: function(data) {}
     });
@@ -156,7 +157,8 @@ UserInfo.prototype.notify = function() {
 
     });
 }
-UserInfo.prototype.show = function() {
+UserInfo.prototype.show = 
+function() {
     var form =
         '<div class="overlay" style="display: block;"></div>' +
         '    <div class="dlglogin">' +

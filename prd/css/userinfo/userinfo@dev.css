@@ -304,6 +304,40 @@
 		font-size: 80%;
 	}
 }
+/* CSS Document */
+.crop_preview {
+    border: 1px solid black;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+    margin-left: 20px;
+    margin-right: 60px;
+    margin-top: 20px;
+    display: inline-block;
+    *display: inline;
+   *zoom: 1;
+    zoom:1;
+    vertical-align: top;
+}
+.crop_image {
+    width: 620px;
+    overflow: hidden;
+    display: inline-block;
+    *display: inline;
+   *zoom: 1;
+    zoom:1;
+    vertical-align: top;
+    margin-top: 100px;
+}
+/* Fixes issue here http://code.google.com/p/jcrop/issues/detail?id=1 */
+.jcrop-holder{text-align:left;}
+.jcrop-vline, .jcrop-hline{font-size:0;	position:absolute; background:white url('Jcrop.gif') top left repeat;}
+.jcrop-vline{height:100%; width:1px !important;}
+.jcrop-hline{width:100%; height:1px !important;}
+.jcrop-handle{font-size:1px; width:7px !important; height:7px !important;	border:1px #eee solid; background-color:#333; *width:9px; *height:9px;}
+.jcrop-tracker{width:100%; height:100%;}
+.custom .jcrop-vline,.custom .jcrop-hline{background:yellow;}
+.custom .jcrop-handle{border-color:black; background-color:#C7BB00; -moz-border-radius:3px; -webkit-border-radius:3px;}
 html{color:#000;background:#FFF}
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}
 table{border-collapse:collapse;border-spacing:0}
@@ -694,7 +728,13 @@ body{
       display:none;
       z-index: 99;
 }
-
+#listcontent{
+    width: 400px;
+    position: absolute;
+    z-index: 9999;
+    top: 30px;
+    right: 0;
+}
 
 .join-logo {
     background:url(http://sources.corp.qunar.com/QNR-play/resources/buttonbg.png);
@@ -777,315 +817,366 @@ body{
     padding:15px 5px;
 }
 
-
-
-
-.content-bar {
+    
+    
+    
+    
+    
+    .content-bar {
     height:22px;
-    width:680px;
-    _width:650px;
+    width:650px;
     position:relative;
-    margin-top: 32px;
+}
+.noaction {
+    height:200px;
+    width:150px;
+    margin:0 auto;
+    line-height:160px;
+    color:red;
+}
+.notype {
+    width:115px;
+    margin-left:10px;
+    float:left;
+    margin-top:2px;
+    color:red;
+    border:1px solid black;
+    text-align:center;
+    padding:2px 0;
+}
+.crop_preview {
+    width:204px !important;
+    height:204px !important;
 }
 .content-bar li {
-    background:url(http://sources.corp.qunar.com/QNR-play/resources/bg-l.png) no-repeat 0px 0px;
     line-height:22px;
     float:left;
+    height:10px;
 }
 .content-bar .content-bar__one {
-    height:22px;
     width:18px;
-    padding:6px 0;
-    background-position:0px 6px;
+    height:10px;
+    margin-top:5px;
 }
 .content-bar .content-bar__title {
     padding:0 12px;
     font-size:16px;
+    color:black;
     font-weight:bold;
     background:white;
 }
 .content-bar .content-bar__two {
-    background-position:-105px 6px;
-    width: 400px;
-    height:22px;
-    padding:6px 0;
+    margin-top:5px;
+    width:540px;
+    height:10px;
+    _height:0;
 }
-.content-bar .btn-prev {
-    width:6px;
-    height:22px;
-    margin-left:11px;
-    padding:6px 0;
-    background-position:-518px 6px;
-    cursor: pointer;
+.content-bar .content-bar__twos {
+    margin-top:5px;
+    width:506px;
+    height:10px;
 }
-.content-bar .btn-next {
-    width: 6px;
-    height: 30px;
-    margin-left: 90px;
-    padding: 6px 0;
-    background-position: -614px 16px;
-    cursor: pointer;
-    margin-top: -10px;
-}
-.content-bar .content-bar__three {
-    margin-left:9px;
-    height:22px;
-    width:18px;
-    padding:6px 0;
-    background-position:0px 6px;
-}
-.ui-control {
-    width:100px;
-    height:15px;
-    position:absolute;
-    left:531px;
-    top:174px;
-    top:3px;
-}
-.ui-control a {
-    width:15px;
-    height:15px;
-    float:left;
-    font-size:10px;
-    color:rgb(153,153,153);
-    line-height:16px;
-    text-align:center;
-    background:white;
-    margin:0 3px;
-}
-.ui-control .active {
-    background:rgb(255,131,45);
-    cursor:pointer;
-    color:white;
-}
-.ui-control a:hover {
-    background:rgb(255,131,45);
-    cursor:pointer;
-    color:white;
-}
-.ui-control a {
-    text-decoration:none;
-}
-.mod {
-    margin-bottom:40px;
-    _margin-bottom:20px;
-}
-.ui-slide-screen {
-    width:650px;
-    height:320px;
-    margin-top:23px;
+.info-list {
+    margin-top:20px;
+    margin-bottom:25px;
     position:relative;
+}
+.info-img {
+    height:232px;
+    width:230px;
+    float:left;
+    background:rgb(250,250,250);
+    margin-right:14px;
     overflow:hidden;
 }
-.ui-slide-gallery {
-    position:absolute;
-    width:1200%;
+.info-info {
+    margin-top:30px;
 }
-.ui-slide-gallery li {
-    float:left;
-    width:196px;
-    height:310px;
-    border:1px solid rgb(198,198,198);
-    padding:2px;
-    text-align:center;
-    margin-right:22px;
+.info-name {
+    margin-bottom:20px;
+    margin-top:5px;
 }
-.board-list .categories {
-    width: 112px;
-    margin-right: 22px;
-    float:left;
-    line-height:1.95;
+.info-name a {
+    text-decoration:none;
+    font-size:18px;
+    color:rgb(102,102,102);
+    font-weight:bold;
 }
-.board-list .c-last{
-    margin-right: 0px;
+.info-img img {
+    width:204px;
+    height:204px;
+    margin:12px;
+    border:1px solid rgb(221,221,221);
 }
-.categories h5 {
-    margin-bottom:9px;
-}
-.board-list .categories h5 a {
+.info-list p {
     font-size:14px;
-    font-weight:bold;
-    color:black;
-    line-height:1.4em;
+    margin-bottom:10px;
+    color:rgb(153,153,153);
+    line-height:2em;
 }
-.board-list .categories a {
-    padding:0 3px;
-    _padding:0 4px;
-    display: inline-block;
-    vertical-align: top;
-    border-radius:1px;
-    text-decoration: none;
-    color: rgb(153,153,153);
-}
-.board-list .categories a:hover{
-    background-color: rgb(255,131,45);
-    color: white;
-}
-.categories li {
-    font-size:12px;
-   display: inline-block;
-   *display: inline;
-   *zoom: 1;
-    zoom:1;
-    vertical-align: top;
-}
-.type-list{
-    margin-bottom: 10px;
-}
-.content-bars .content-bar__nums{
-    padding-left: 12px;
-    font-size:11px;
-    color: rgb(102,102,102);
-    background:white;
-}
-.content-bars {
-    height:22px;
-    width:680px;
-    _width:650px;
-    position:relative;
-}
-.content-bars li {
-    background:url(http://sources.corp.qunar.com/QNR-play/resources/largebar.png) no-repeat 0px 0px;
-    line-height:22px;
-    float:left;
-}
-.content-bars .content-bar__ones {
-    height:22px;
-    width:18px;
-    padding:6px 0;
-    background-position:0px 6px;
-}
-.content-bars .content-bar__titles {
-    padding:0 12px;
-    font-size:16px;
-    font-weight:bold;
-    background:white;
-}
-.content-bars .content-bar__twos {
-    background-position: -74px 6px;
-    width: 497px;
-    height:22px;
-    padding:6px 0;
-}
-
-.content-bars .content-bar__threes {
-    margin-left:9px;
-    height:22px;
-    width:18px;
-    padding:6px 0;
-    background-position:0px 6px;
-}
-.list-head{
-    margin-top: 18px;
-    margin-left: 10px;
-    margin-bottom: 35px;
-}
-.list-tabs {
-    line-height: 30px;
-}
-.list-tabs a{
-    
-    padding: 5px 8px 5px 10px;
-    margin-right: 10px;
-    color: rgb(102,102,102);
-    text-decoration: none;
-    font-size: 11px;
-}
-.list-tabs a:hover{
-    background:rgb(255,131,45);
-    cursor:pointer;
-    color:white;
-}
-.type-many{
-     text-decoration:none;
-    font-size:11px;
+.info-list p span {
     color:rgb(102,102,102);
 }
-.list-tabs .on {
-    background:rgb(255,131,45);
-    cursor:pointer;
+.info-list address {
+    font-size:14px;
+    margin-bottom:10px;
+    color:rgb(153,153,153);
+    line-height:2em;
+}
+.info-list address span {
+    color:rgb(102,102,102);
+}
+.fa-heart {
+    margin-left:35px;
+    margin-top:0px;
+    color:rgb(243,119,100);
+}
+.info-score {
+    color:rgb(102,102,102);
+}
+.info-author span {
+    float:left;
+}
+.user-type {
+    margin-left:10px;
+    overflow: hidden;
+    zoom: 1;
+}
+.user-type li {
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    zoom:1;
+    padding:3px 2px;
+    position:relative;
+    margin-bottom:20px;
+}
+.user-type li span {
+    padding:9px 18px 8px 16px;
+    margin-right:10px;
+    color:rgb(102,102,102);
+    text-decoration:none;
+    font-size:11px;
+    background-color:rgb(255,131,45);
+    color:white;
+    position:relative;
+}
+.closetype {
+    position:absolute;
+    top:-8px;
+    font-size:14px;
+    width:20px;
+    height:20px;
+    padding:5px;
+    left:0;
+}
+.closetype a {
+    text-decoration:none;
     color:white;
 }
-.list-body{
+.btn-add {
+    float:left;
+    margin-top:5px;
     margin-left: 10px;
+    position: absolute;
+    bottom: 0px;
+    right: 50px;
 }
-.action-title{
-    width: 180px;
-    text-align: center;
-    margin: 0 auto;
-    margin-top: 10px;
+.btn-add a {
+    color:rgb(12,92,201);
+    text-decoration:none;
+}
+.info-people {
+    clear:left;
+}
+.list-body {
+    margin-left:10px;
+    margin-top:25px;
 }
 .action-title a {
     font-size:14px;
     color:rgb(153,153,153);
     text-decoration:none;
-    font-weight: bold;
 }
-.action-title a:hover{
-    background-color: #37a;
-    color: white;
+.action-list {
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    width:300px;
+    height:200px;
+    margin-right:5px;
+    margin-bottom:10px;
+    vertical-align:top;
 }
-.action-list{
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    width: 300px;
-    height: 200px;
-    margin-right: 5px;
-    margin-bottom: 10px;
-    vertical-align: top;
-}
-.action-img{
-    height: 195px;
-    width: 147px;
+.action-img {
+    height:195px;
+    width:147px;
     float:left;
-    background: rgb(250,250,250);
+    background:rgb(250,250,250);
     margin-right:14px;
-    
 }
-.action-name{
-    margin-bottom: 20px;
-    margin-top: 5px;
+
+.action-name {
+    margin-bottom:20px;
+    margin-top:5px;
 }
-.action-name a{
-    text-decoration: none;
-    font-size: 14px;
-    color: rgb(102,102,102);
-    font-weight: bold;
+.action-name a {
+    text-decoration:none;
+    font-size:14px;
+    color:rgb(102,102,102);
+    font-weight:bold;
 }
-.action-name a:hover{
-    background-color: #37a;
-    color: white;
+.action-name a:hover {
+    background-color:#37a;
+    color:white;
 }
-.action-img img{
-    width: 123px;
-    height: 173px;
-    margin: 12px;
+.action-img img {
+    width:123px;
+    height:173px;
+    margin:12px;
     border:1px solid rgb(221,221,221);
 }
-.action-list p{
-    font-size: 12px;
-    margin-bottom: 10px;
-     color: rgb(102,102,102);
+.action-list p {
+    font-size:12px;
+    margin-bottom:10px;
+    color:rgb(102,102,102);
 }
-.action-list address{
-    font-size: 12px;
-    margin-bottom: 10px;
-    color: rgb(102,102,102);
-    overflow: hidden;
-    width: 133px;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.action-list address {
+    font-size:12px;
+    margin-bottom:10px;
+    color:rgb(102,102,102);
+    overflow:hidden;
+    width:133px;
+    -o-text-overflow:ellipsis;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
-.noaction{
-    height: 200px;
-    width: 150px;
-    margin: 0 auto;
-    line-height: 160px;
-    color: red;
+.single-info p {
+    font-size:12px;
+    margin-bottom:10px;
+    color:rgb(102,102,102);
 }
-.no-hotact{
-    width: 630px !important;
-    line-height: 310px;
+.single-info address {
+    font-size:14px;
+    margin-bottom:10px;
+    color:rgb(102,102,102);
+    overflow:hidden;
+    width:170px;
+    -o-text-overflow:ellipsis;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.user-img {
+    width:83px;
+    height:115px;
+    float:left;
+    margin-right:14px;
+    border:1px solid rgb(221,221,221);
+}
+.user-img img {
+    display:block;
+    width:82px;
+    height:113px;
+}
+.users-info li {
+    padding:15px 5px;
+}
+
+.uploadpic {
+    padding:10px 68px;
+    background-color:black;
+    color:white;
+    text-decoration:none;
+    line-height:40px;
+    position:absolute;
+    top:155px;
+    left:15px;
+    filter:alpha(Opacity=50);
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    -moz-opacity:0.5;
+    -khtml-opacity:0.5;
+    opacity:0.5;
+}
+.uploadpic-overlay {
+    position:absolute;
+    width:1000px;
+    background:white;
+    padding:40px;
+    margin-top:-340px;
+    top:50%;
+    left:50%;
+    margin-left:-500px;
+    z-index:99999;
+    overflow:hidden;
+    display:none;
+}
+.actionposter {
+    width:200px;
+    height:30px;
+    top:300px;
+    position:relative;
+    left:30px;
+}
+.submit {
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:4px;
+    margin-left:600px;
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:30px;
+    cursor:pointer;
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    zoom:1;
+    vertical-align:top;
+}
+
+.submit {
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:4px;
+    margin-left:600px;
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:30px;
+    cursor:pointer;
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    zoom:1;
+    vertical-align:top;
+}
+.piccancel {
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:4px;
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background:orange;
+    text-align:center;
+    margin-top:30px;
+    cursor:pointer;
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    zoom:1;
+    vertical-align:top;
 }

@@ -15,6 +15,11 @@ Followtype.prototype.update = function(data) {
 Followtype.prototype.getfollowlist = function(data){
         this.text('<li>');
         this.text('<span>',data.type_name,'</span>');
+        this.text('</li>');
+}
+Followtype.prototype.getfollowlist = function(data){
+        this.text('<li>');
+        this.text('<span>',data.type_name,'</span>');
         this.text('<div class="closetype hidden" ><a href="#" id="',data.type_id,'">x</a></div>');
         this.text('</li>');
 }

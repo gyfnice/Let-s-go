@@ -9651,1139 +9651,6 @@ if (!Function.prototype.bind) {
 
 ;(function(__context){
     var module = {
-        id : "18489581f599d9c2525fc0b5b6d32a40" , 
-        filename : "qdatepicker.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    /**
-	Event:
-		q-datepicker-show
-		q-datepicker-hide
-		q-datepicker-dispose
-		q-datepicker-change
-		q-datepicker-select
-    	q-datepicker-error
-*/
-(function($){
-	$.qdatepicker = {};
-	var ROOT_KEY = $.qdatepicker.ROOT_KEY = 'q-datepicker';
-	var calcTime;
-	var gInd = 0;
-    var HolidayData ={"2010-12-25":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"圣诞节"},"2011-04-05":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"清明节"},"2011-10-01":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"国庆节"},"2011-06-06":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"端午节"},"2011-02-17":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"元宵节"},"2011-11-24":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"感恩节"},"2011-08-01":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"建军节"},"2011-06-19":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"父亲节"},"2011-03-08":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"妇女节"},"2011-05-08":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"母亲节"},"2011-09-12":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"中秋节"},"2011-01-11":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"腊八节"},"2011-06-01":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"儿童节"},"2011-01-01":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"元旦节"},"2011-05-01":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"劳动节"},"2011-08-06":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"七夕节"},"2011-02-03":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"春节"},"2011-02-14":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"情人节"},"2011-12-25":{"afterTime":3,"beforeTime":3,"dayindex":0,"holidayName":"圣诞节"}};
-    var TransDateEx = {
-		week : "周",
-		day : "天",
-		before : "前",
-		after : "后"
-	};	
-	var defArgs = {
-		LANG : {
-            prev: '',
-            next: '',
-            day_names: ['日', '一', '二', '三', '四', '五', '六'],
-            OUT_OF_RANGE: '超出范围',
-            ERR_FORMAT: '格式错误'
-		},
-		CLASS : {
-			group : 'g',
-			header : 'h',
-			calendar : 'c',
-			next : 'n',
-			prev : 'p',
-			title : 't',
-			week : 'w',
-			month : 'cm_',
-			day_default : 'st',
-			day_selected : 'st-a',
-			day_othermonth : 'st-s',
-			day_today : 'st-t',
-			day_hover : 'st-h',
-			day_disabled : 'st-d',
-			day_round: 'st-a-r'
-		},
-		WEEKDAYS : 7,
-        STARTDAY: 1,
-        showOtherMonths: false,
-        defaultDay: '',
-        customClass: '',
-        customActiveClass: '',
-        multi: 2,
-        showTip: true,
-        linkTo: null,
-        // defaultspan , mindate , maxdate 
-        linkRules: '',
-		refObj : null,	//add for round select @kangjia
-        forceCorrect: true,
-        formatTitle: function(date){
-            return date.getFullYear() + '年' + (date.getMonth() + 1) + '月'
-        },		
-		showOnInit : false , 
-		showOnFocus : false,
-		container : null ,
-		minDate : null,
-		maxDate : null,
-		ui : null,
-		disableDays : [] , 
-		parseDate : function( str ){ var x = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); return x ? new Date(x[1],x[2] * 1 -1 , x[3]) : null; },
-		formatDate : function( date ) { return date.getFullYear() + "-" + _formatNum( date.getMonth() + 1 , 2 ) + "-" + _formatNum( date.getDate() , 2 );}
-	};
-	var implement = function(){
-		var self = this;
-		for(var i = 0 , len = arguments.length ; i < len ; i++)
-			$.each( arguments[i] , function ( k ,v ) {
-				var old;
-				if(self.prototype[k] && jQuery.isFunction(self.prototype[k]))
-					old = self.prototype[k];
-				self.prototype[k] = v;
-				if(old)
-					self.prototype[k]['_PARENT_'] = old;
-			});
-		if(!self.prototype['parent'])
-			self.prototype['parent'] = function(){
-				return arguments.callee.caller['_PARENT_'].apply( this , arguments );
-			};
-	};
-	function _formatNum ( n , length ){
-		n = n == null ? "" : n + "";
-		for( var i = 0 , len = length - n.length ; i < len ; i++)
-			n = "0" + n;
-		return n;
-	}
-	var holidayDate = parseSpeciaDate(HolidayData);
-	function parseStrToDate (dateStr){
-		var datas = dateStr.split("-");
-		return new Date(datas[0], datas[1]-1, datas[2]);
-	}
-    // validate the input value
-	function parseSpeciaDate (HolidayData){
-		var speciaDateTable = {};
-		for(var key in HolidayData) {
-			var _speciaDay = key;
-			var _speciaDayEx = HolidayData[key];
-			speciaDateTable[key] = _speciaDayEx;
-			var _sDay = "";
-			var _sName = "";
-			if(_speciaDayEx.beforeTime > 0){
-				for(var i = 1; i <= _speciaDayEx.beforeTime;i++){
-					var _dex = {};
-					var _beforDay = new Date(parseStrToDate(_speciaDay).getTime() - i*24*3600*1000);
-					var _beforDayStr = format(_beforDay);
-					_dex.holidayName = _speciaDayEx.holidayName + TransDateEx.before + i + TransDateEx.day;
-					_dex.dayindex = _speciaDayEx.dayindex;
-					if(!speciaDateTable[_beforDayStr]){
-						speciaDateTable[_beforDayStr] = _dex;
-					}else{
-						if((_speciaDayEx.dayindex > speciaDateTable[_beforDayStr].dayindex) && speciaDateTable[_beforDayStr].beforeTime == null){
-							speciaDateTable[_beforDayStr] = _dex;
-						}
-					}
-				}
-			}
-			if(_speciaDayEx.afterTime > 0){
-				for(var i = 1; i <= _speciaDayEx.afterTime;i++){
-					var _dex = {};
-					var _afterDay = new Date(parseStrToDate(_speciaDay).getTime() + i*24*3600*1000);
-					var _afterDayStr = format(_afterDay);
-					_dex.holidayName = _speciaDayEx.holidayName + TransDateEx.after + i + TransDateEx.day;
-					_dex.dayindex = _speciaDayEx.dayindex;
-					if(!speciaDateTable[_afterDayStr]){
-						speciaDateTable[_afterDayStr] = _dex;
-					}else{
-						if((_speciaDayEx.dayindex > speciaDateTable[_afterDayStr].dayindex ) && speciaDateTable[format(new Date(_beforDay))].afterTime == null){
-							speciaDateTable[_afterDayStr] = _dex;
-						}
-					}
-				}
-			}
-		}
-		return speciaDateTable;
-	}
-	function format (date) {
-	    if ( typeof date == "number" ) {
-	        date = new Date( date );
-	    }
-		return date.getFullYear()+"-"+convert2digit(date.getMonth()+1)+"-"+convert2digit(date.getDate());
-	}
-	function convert2digit (str){
-		return str <10 ? "0"+str : str;
-	}	
-	function _clearDate( date ){
-		date.setHours(0);
-		date.setMinutes(0);
-		date.setSeconds(0);
-		date.setMilliseconds(0);
-		return date;
-	}
-	function _calcPos( el ){
-			var of = el.offset();
-			of['top'] += el.outerHeight();
-			return of;
-	}
-	function _getQDP(obj){
-		var root;
-		if(obj && !obj.nodeType)
-			root = jQuery.event.fix(obj || window.event).target;
-		else
-			root = obj;
-		
-		if(!root)
-			return null;
-		
-		var p = $(root).parents('.' + ROOT_KEY);
-		return p.size() > 0 ? p.eq(0).data(ROOT_KEY) : null ;
-	}
-	function DefaultQDatePickerUI(){};
-	DefaultQDatePickerUI.implement = implement;
-	$.extend(DefaultQDatePickerUI.prototype,{
-		isUI : 1,
-		init : function( ){
-			var self = this , picker = this.picker , ns = picker.ns;
-			self.attachedEl = self.attachedEl || new $;
-			$( document ).bind( 'mouseup.' + ns , function( evt ){
-				var a;
-				if( ( picker.activeEl[0] === evt.target && ( a = 1) )|| ( self.attachedEl.index( evt.target ) != -1 && ( a = 2 ) )){
-					if (!picker.visible()) {
-						picker.show(self.getDate());
-					}else {
-						picker.hide();
-					}	
-					if( a == 2 )
-						picker.activeEl.focus();
-					return;
-				}
-				var qdp;
-				if ( ( qdp = _getQDP(evt) ) &&  qdp.key === picker.key )
-					return;
-				else
-					picker.hide();
-			});
-			var resetPosition = function(){
-				if( !picker.get('container') )
-					picker.getContainer().css( _calcPos( picker.activeEl ) );
-			}
-			resetPosition();
-			$( window ).bind('load.' + ns + ' resize.' + ns , resetPosition );
-			
-			picker.activeEl.bind( 'focus.'  + ns , function( evt ){
-				if( picker.get('showOnFocus'))
-					picker.show( self.getDate() );
-			});
-			picker.activeEl.bind( 'keydown.' +  ns ,  function( evt ){
-				switch( evt.keyCode ){
-					case 9:
-					case 27:
-						picker.hide();
-						break;
-					default:
-						self.onKeyDown( evt );
-				}
-			});
-		},
-		_init : function( picker ){
-			this.picker = picker;
-		},
-		select : function( date ){
-			this.picker.activeEl.val( this.picker.args.formatDate( date ) );
-		},
-		change : function( sdate , tdate , desc ){
-			this.draw( tdate );
-		},
-		draw : function( date , args ){
-			this.drawDate = date;
-			
-			_clearDate( date );
-			var picker = this.picker , args = $.extend( {} , picker.args , args || {} ) , multi = args.multi , CLASS = args['CLASS'];
-			args.activeDate = args.activeDate || args.parseDate( picker.activeEl.val() );
-			var x = [];
-			args['count'] = multi;
-			var time = new Date( date.getTime() );
-			time.setDate(1);
-			x.push( '<div class="' + CLASS['group'] + ' ' + CLASS['group'] + multi +'">' );
-			for( var i = 0 ; i < multi ; i++ ){
-				x.push( '<div class="' + CLASS['calendar'] + ' ', CLASS['month'] , time.getMonth() + 1 , '">' );
-				args['index'] = i;
-				x.push( this._drawTitle( time ,  args ) );
-				x.push( this._drawBody( time , args ) );
-				x.push( '</div>' );
-				time.setMonth( time.getMonth() + 1 );
-			}
-			x.push( '</div>' );
-			$( x.join('') ).appendTo( picker.getContainer().empty() );
-		},
-		dispose : function(){
-			var ns = '.' + this.picker.ns;
-			$( document ).unbind( ns );
-			$( window ).unbind( ns );
-		},
-		getDate : function(){
-			var date = this.picker.get('parseDate')( this.picker.activeEl.val() );
-			return date != date ? null : date;
-		},
-		setDate : function( date ){
-			this.picker.activeEl.val( this.picker.get('formatDate')( date ) );
-		},
-        onBeforeDraw: function(date){
-            var _compareMonth = function(d1, d2){
-                if (d1.getFullYear() > d2.getFullYear()) 
-                    return 1;
-                else 
-                    if (d1.getFullYear() === d2.getFullYear()) 
-                        return (d1.getMonth() - d2.getMonth()) / (Math.abs(d1.getMonth() - d2.getMonth()) || 1);
-                    else 
-                        return -1;
-            }
-            if (this.selectedDate && this.drawDate) 
-                date.setTime(this.drawDate.getTime());
-            else {
-                var picker = this.picker, minDate = picker.get('minDate'), maxDate = picker.get('maxDate'), multi = picker.get('multi');
-                var nD = new Date(date.getFullYear(), date.getMonth() + multi - 1, 1);
-                if (maxDate && _compareMonth(nD, maxDate) > 0) 
-                    for (var i = 1; maxDate && multi && multi > 1 && multi - i > 0; i++) {
-                        nD = new Date(date.getFullYear(), date.getMonth() + multi - i - 1, 1);
-                        if (_compareMonth(nD, maxDate) <= 0) {
-                            nD.setMonth(nD.getMonth() - multi + 1);
-                            break;
-                        }
-                    }
-                else 
-                    nD = null;
-                
-                if (nD && (!minDate || nD.getTime() >= minDate.getTime())) 
-                    date.setTime(nD.getTime());
-            }
-        },
-		onKeyDown : function( date ){
-		},
-        onSet: function(){
-            this.selectedDate = null;
-        },	
-		_drawTitle : function( date , args ){
-			var LANG = args['LANG'] , CLASS = args['CLASS'];
-			var x = [];
-			var minDate = args.minDate , maxDate = args.maxDate;
-			var right = args['index'] === 0;
-			var left = args['count'] === args['index'] + 1;
-			x.push(	'<div class="' + CLASS['header'] + '">');
-			x.push('<span href="#" class="' + CLASS['next'] + '"' ,
-				( !maxDate || maxDate.getFullYear() > date.getFullYear() || ( maxDate.getFullYear() === date.getFullYear() && maxDate.getMonth() > date.getMonth() ) ) && left ? '' : ' style="display:none;"'
-			, ' onclick="QDP.change( event , \'+1M\' );return false;">', LANG['next'] , '</span>');				
-			
-			x.push('<span href="#" class="' + CLASS['prev'] + '"' ,
-				( !minDate || minDate.getFullYear() < date.getFullYear() || ( minDate.getFullYear() === date.getFullYear() && minDate.getMonth() < date.getMonth() ) ) && right ? '' : ' style="display:none;"'
-			, ' onclick="QDP.change( event , \'-1M\' );return false;">', LANG['prev'] , '</span>');
-				
-			x.push('<div class="' + CLASS['title'] + '">' , args.formatTitle(date) , '</div>');
-			x.push('</div>');
-			return x.join('');
-		},
-		_drawBody : function( date , args ){
-			var STARTDAY = args['STARTDAY'] , WEEKDAYS = args['WEEKDAYS'];
-			var LANG = args['LANG'] , CLASS = args['CLASS'];
-
-			var activeDate = args.activeDate;
-			var minDate = args.minDate , maxDate = args.maxDate;
-			if (activeDate && activeDate != activeDate)
-				activeDate = null;
-			
-			var now = new Date();
-			var x = ['<table>' , '<thead>' , '<tr>'];
-			for(var i = 0 ; i < WEEKDAYS ; i++){
-				var k = ( STARTDAY + i ) % WEEKDAYS;
-				x.push('<th class="' + CLASS['week'] + k +'">' , LANG['day_names'][ k ] || '' , '</th>' );
-			}
-			x.push('</tr>' , '</thead>' );
-			x.push('<tbody>');
-			// draw tbody
-			var xx = [];
-			var year = date.getFullYear() , month = date.getMonth() + 1;
-			var start = new Date(year , month - 1 , 1);
-			var ds = 1 , de = new Date(year , month  , 0).getDate();
-			var _h = start.getDay() - STARTDAY;
-			while(_h < 0) _h += WEEKDAYS;
-			var rds = ds - _h;
-			var rde = ( WEEKDAYS - ( ( (1 - rds + de) % WEEKDAYS ) || WEEKDAYS) ) + de;
-			for(var i = rds , j = 0 ; i <= rde ; i++ , j++){
-				var time = new Date( year , month - 1 , i);
-				if( j % WEEKDAYS == 0 )
-					xx.push('</tr>','<tr>');
-				var k = ( STARTDAY + j ) % WEEKDAYS;
-				xx.push('<td class="' + CLASS['week'] + k + ' ' + CLASS['day_default'] );
-				
-				var disabled = false;
-				if($.grep(['getFullYear','getMonth','getDate'] , function(k){ return time[k]() == now[k]()}).length == 3)
-					xx.push( ' ' + CLASS['day_today'] );
-				if (activeDate != null && activeDate.getTime() == time.getTime())//delete [else] for today @kangjia
-					xx.push(' ' + CLASS['day_selected']);
-
-				var isOtherMonth = false;
-				if( i < 1 || i > de ){
-					xx.push( ' ' + CLASS['day_othermonth'] );
-					isOtherMonth = true;
-				}
-
-				if( minDate && time.getTime() < minDate.getTime() || maxDate && time.getTime() > maxDate.getTime() || 
-					~$.inArray( format(time) , args.disableDays )
-					){
-					if (!isOtherMonth) {//for otherMonther style @kangjia
-						xx.push(' ' + CLASS['day_disabled']);
-					}
-					disabled = true;
-				}
-				
-				var appendClass = this._getDateClass( time );
-				if( appendClass && !isOtherMonth)
-					xx.push(' ' + appendClass);
-					
-				xx.push('"');
-				if( !disabled ){
-					xx.push(' onmouseover="jQuery(this).addClass(\'' , CLASS['day_hover'] , '\');" onmouseout="jQuery(this).removeClass(\' ' , CLASS['day_hover'] , ' \');"');
-					xx.push(' onclick="QDP.select(event,new Date(' + time.getFullYear() + ',' + time.getMonth() + ',' + time.getDate() + '));' , 'return false;"');
-				}
-				xx.push('>');
-				if( !isOtherMonth || args.showOtherMonths){
-					xx.push( '<span>' );
-					xx.push( time.getDate() );
-					xx.push( '</span>' );
-				}else{
-					xx.push( '&nbsp;' );
-				}
-					
-				xx.push('</td>');
-			}
-			x.push( xx.length > 0 ? xx.slice( 1,-1 ).join('') : '' );
-			x.push('</tbody>' , '</table>');
-			return x.join('');
-		},
-		_getDateClass : function( date ){
-            var getDate = this.picker.args.formatDate(date);
-            var backInfo = '';
-			if (this.picker.get('linkTo')) {
-				if (linkedQDP = this.picker.get('linkTo').data($.qdatepicker.ROOT_KEY)) {
-					if (typeof(linkedQDP.activeEl.val()) != 'undefined' && getDate == linkedQDP.activeEl.val()) {
-						backInfo = this.addRoundClass('BACK');
-					}
-             	}
-			}else if(this.picker.get('refObj')){
- 				if (typeof(this.picker.activeEl.val()) != 'undefined' && getDate == this.picker.activeEl.val()) {
-						backInfo = this.addRoundClass('BACK');
-				}
-				if (refQDP = this.picker.get('refObj').data($.qdatepicker.ROOT_KEY)) {
-					if (typeof(refQDP.activeEl.val()) != 'undefined' && getDate == refQDP.activeEl.val()) {
-						backInfo = this.addRoundClass('FROM');
-					}
-             	}				
-			}
-			if( HolidayData[ getDate ] )
-				backInfo += ' ' + 'holi';
-
-            return $.trim( backInfo );
-		}
-	});
-	
-	function QDatePicker( el , args ){
-		if( !this.init )
-			return new QDatePicker( el , args );
-		else
-			return this.init( el , args );
-	}
-	window.QDP = {};
-	$.each( ['select','change','_trigger'] , function( ind , v){
-		window.QDP[ v ] = function( ){
-			if( !arguments[0] )
-				return;
-			var oQDP = _getQDP ( arguments[0] );
-			if( oQDP && oQDP[ v ] )
-				return oQDP[ v ].apply( oQDP , Array.prototype.slice.call( arguments , 1 ) );
-		};
-	} );
-	
-	$.extend(QDatePicker.prototype,{
-		init : function ( aEl , args ){
-			args = args || {};
-			if( args['ui'] ){
-				if( args['ui']['isUI'] )
-					this.ui = args['ui'];
-				else if( typeof args['ui'] == 'string' && $.qdatepicker.uis[args['ui']])
-					this.ui = new $.qdatepicker.uis[args['ui']];
-			}
-			QDP.ins = this;
-			if( !this.ui )
-				this.ui = new DefaultQDatePickerUI();
-			this.ui._init( this );
-			
-			args = this.args = $.extend( true , {} , defArgs   ,args || {} );
-			this.key = ++gInd;
-			var ns = this.ns = ROOT_KEY + this.key;
-			var activeEl = this.activeEl = $(aEl);
-			this.el = $('<div class="' + ROOT_KEY + ( args.customClass ? ' ' + args.customClass : '') + '"></div>').appendTo( this.args['container'] || document.body ).hide();
-			$(this.el).data( ROOT_KEY , this );
-			
-			this.ui.init();
-			this.lastShowedDate = null;
-			this.showedDate = null;
-			if(args['showOnInit'])
-				this.show();
-			
-			$.each( args['on'] || {} , function ( k , v ){
-				activeEl.bind( k + '.' + ns , v );
-			});
-			return this;
-		},
-		_trigger : function(){
-			this.activeEl.triggerHandler.apply( this.activeEl , arguments );
-		},
-		select : function( date ){
-			this.ui.select( date );
-			this.hide();
-			this._trigger('q-datepicker-select' , [ date ]);
-		},
-		set : function( key , value , refresh ){
-			if( !this.ui.onSet || this.ui.onSet( key , value , refresh ) === false )
-				return;
-				
-			if( typeof key === 'string' ){
-				var handled = false;
-				switch( key ){
-					case 'container' :
-						this.el.appendTo( value || document.body );
-						this.el.css( { top : '' , left : '' } );
-					break;
-				}
-				for( var i = 0 , w = key.split( '.' ) , len = w.length , z = this.args; i < len && ( i !== len - 1 && ( z[ w[i] ] || ( z[ w[i] ] = {} ) ) || ( z[ w[i] ] =  value ) ); z = z[ w[i] ] , i++ ){}
-			}
-			if( refresh && this.visible() ){
-				this._show( this.showedDate );
-			}
-		},
-		get : function( key ){
-			for( var i = 0 , z = this.args , w = key.split(".") , len = w.length ; i < len && ( z = z[ w[i] ] ); i++ ){}
-			return z;
-		},
-		change : function( desc ){
-			var tdate = typeof desc === 'string' ? calcTime( desc , this.showedDate ) : desc;
-			var sdate = this.showedDate;
-			this.lastShowedDate = this.showedDate;
-			this.showedDate = tdate;
-			this.ui.change( sdate , tdate , desc );
-			this._trigger('q-datepicker-change' , [ sdate , tdate , desc ]);
-		},
-		show : function( date ){
-			var time , minDate = this.get('minDate') , maxDate = this.get('maxDate');
-			if( !date )
-				time = new Date();
-			else
-				time = date;
-			
-			if( minDate && time.getTime() < minDate.getTime() )
-				time.setTime( minDate.getTime() );
-			else if( maxDate && time.getTime() > maxDate.getTime() )
-				time.setTime( maxDate.getTime() );
-			this.ui.onBeforeDraw( time );
-			this._show.call( this , time );
-			this._trigger('q-datepicker-show' , [ date ]);
-		},
-		_show : function( date ){
-			this.lastShowedDate = this.showedDate;
-			this.showedDate = date;
-				
-			if( this.ui.draw( date ) !== false );
-				this.el.show();
-		},
-		hide : function(){
-			if( this.visible() ){
-				this.el.hide();
-				this._trigger( 'q-datepicker-hide' );
-				$(QDP).trigger('datehide');
-			}
-		},
-		dispose : function(){
-			this.ui.dispose();
-			this.el.remove();
-			this.activeEl.unbind( '.' + this.ns );
-			this._trigger( 'q-datepicker-dispose' );
-		},
-		visible : function(){
-			return this.el.is(":visible");
-		},
-		getContainer : function(){
-			return this.el;
-		}
-	});
-	var _c = { 	'+M' : function( time , n ) { var _d = time.getDate();time.setMonth( time.getMonth() + n );if( time.getDate() !== _d )time.setDate(0); }, 
-				'-M' : function( time , n ) { var _d = time.getDate();time.setMonth( time.getMonth() - n );if( time.getDate() !== _d ){time.setDate(0)}; },
-				'+D' : function( time , n ) { time.setDate( time.getDate() + n ) },
-				'-D' : function( time , n ) { time.setDate( time.getDate() - n ) },
-				'+Y' : function( time , n ) { time.setFullYear( time.getFullYear() + n ) },
-				'-Y' : function( time , n ) { time.setFullYear( time.getFullYear() - n ) }
-	};
-
-	$.extend( $.qdatepicker , {
-		uis : [],
-		createUI : function( name , basename ){
-			var base = basename && $.qdatepicker.uis[ basename ] ? $.qdatepicker.uis[ basename ] : DefaultQDatePickerUI;
-			var x = function(){};
-			$.extend( x , base );
-			$.extend( x.prototype = {} , base.prototype );			
-			if( name ){
-				$.qdatepicker.uis[name] = x;
-				x.prototype.name = name;
-			}
-			return x;
-		},
-		calcTime : function( desc , date ){
-			desc = ( desc || "" ).toString();
-			var time;
-			if( date )
-				time = new Date( date.getTime() );
-			else{
-				time = new Date();
-				var d = desc.match(/^\d+/);
-				if( d )
-					time.setTime( d[0] * 1 );
-			}
-			var re = /([+-])(\d+)([MDY])/g , arr;
-			while( arr = re.exec( desc ) ){
-				var key = arr[1] + arr[3];
-				if( _c[key] )
-					_c[key]( time , arr[2] * 1);
-			}
-			return time;
-		}
-	});
-    $.qdatepicker.createUI('qunar').implement({
-        init: function(){
-            this.parent.apply(this, arguments);
-            var self = this, picker = this.picker;
-            var customClass = picker.get("customActiveClass");
-            var triggerEl = this.triggerEl = picker.activeEl.wrap('<div class="qunar-dp' + (customClass ? ' ' + customClass : '') + '"></div>').before('<div class="dp-info"><b/><span class="dp-text"></span></div>').parent();
-            picker.set('container', triggerEl[0]);
-            this.attachedEl = this.attachedEl.add( triggerEl.find('.dp-info > b , .dp-info') ).add( triggerEl.find('.dp-info > b , .dp-info > .dp-text ') );
-            picker.activeEl.attr('maxlength', 10);
-            picker.activeEl.addClass('textbox');
-            picker.activeEl.bind('keyup.' + picker.ns, function(evt){
-                self.updateTip(self.validate.call(self));
-            }).bind('blur.' + picker.ns, function(evt){
-                self.autoCheck.call(self);
-            });
-            
-            if ( picker.get('defaultDay') != null )
-                this.setDate(this.getDefaultDate());
-            
-			this.updateTip(this.validate());
-            this.selectedDate = null;
-            this.checkLinked();
-			this.forIframe(picker);
-        },
-		forIframe : function(picker){
-			$(window).bind('blur.'+picker.ns,function(){
-				picker.hide();
-			});
-		},	
-        getDefaultDate: function(){
-            var picker = this.picker;
-            var date = calcTime(picker.get('defaultDay'));
-            var minDate = picker.get('minDate'), maxDate = picker.get('maxDate');
-            if (minDate && minDate.getTime() > date.getTime() || maxDate && maxDate.getTime() < date.getTime()) 
-                date = minDate || maxDate;
-            return date;
-        },
-   // check linked item and correct it
-        checkLinked: function(){
-            var picker = this.picker, linkedQDP;
-            if (!picker.get('linkTo') || !(linkedQDP = picker.get('linkTo').data($.qdatepicker.ROOT_KEY)) || linkedQDP.ui.name.indexOf('qunar') !== 0) 
-                return;
-            var linkRules = (picker.get('linkRules') || "").split(",");
-            var date = this.getDate();
-            if (date == null) 
-                return;
-            
-            var df = {};
-            $.each(['ds', 'mind', 'maxd'], function(ind, v){
-                if (linkRules[ind]) 
-                    df[v] = calcTime(linkRules[ind], date)
-            });
-            var minDate = linkedQDP.get('strictMinDate'), maxDate = linkedQDP.get('strictMaxDate');
-
-            if ( df['mind'] || minDate ){
-				var _t = ( df['mind'] ? df['mind'].getTime() : -1 ) > ( minDate ? minDate.getTime() : -1 ) ? df['mind'] : minDate;
-                linkedQDP.set('minDate', _t , false);
-			}
-            if ( df['maxd'] || maxDate ) {
-				var _t = ( df['maxd'] ? df['maxd'].getTime() : Number.MAX_VALUE ) > ( maxDate ? maxDate.getTime() : Number.MAX_VALUE ) ? maxDate : df['maxd'];
-                linkedQDP.set('maxDate', _t , false);
-			}
-            linkedQDP.set(null, null, true);
-            var rlt = linkedQDP.ui.validate();
-            
-            if (!rlt['success'] && picker.get('forceCorrect')) {
-                linkedQDP.select(df['ds']);
-				linkedQDP.ui.drawDate = null;
-                rlt = linkedQDP.ui.validate();
-            }
-            linkedQDP.ui.updateTip(rlt);
-            var linkedFlag = 'Y';
-            return linkedFlag;
-        },
-        select: function(date, nocheck){
-            var picker = this.picker;
-            this.parent.apply(this, arguments);
-            this.selectedDate = date;
-            if (!nocheck) 
-                this.autoCheck();
-        },
-        // show tip in the trigger box
-        showText: function(text){
-            var tip = this.triggerEl.find('.dp-text');
-            tip.removeClass('errtext').html( text );
-        },
-        // show error tip in the trigger box
-        showErrText: function(text){
-            var tip = this.triggerEl.find('.dp-text');
-            tip.addClass('errtext').html( text );
-        },
-        // fire it automatically to check its value
-        autoCheck: function(){
-            var picker = this.picker;
-            var rlt = this.validate();
-            if (!rlt['success'] && picker.get('forceCorrect')) {
-                this.setDate(this.getDefaultDate());
-                this.updateTip(this.validate());
-            }
-            else {
-                if (rlt['formatted']) 
-                    picker.activeEl.val(rlt['formatted']);
-                this.updateTip(rlt);
-            }
-            this.checkLinked();
-        },
-        // show the tip , the argument comes from this.validate()
-        updateTip: function(rlt){
-            if (!this.picker.get('showTip')) 
-                return;
-            
-            if (!rlt.success) 
-                this.showErrText(rlt.errmsg);
-            else 
-                this.showText(rlt.daytip);
-        },
-        validate: function(){
-            var picker = this.picker;
-            var val = this.picker.activeEl.val();
-            var date = this.getDate();
-			var self = this;
-            //remove last selected date if user type the date .
-            if (this.selectedDate && this.selectedDate.getTime() != date.getTime()) 
-                this.selectedDate = null;
-            
-            var errmsg = '';
-            if (date == null) {
-                errmsg = picker.get('LANG.ERR_FORMAT');
-                picker._trigger('q-datepicker-error', ['FORMAT', val]);
-            }
-            else {
-                var minDate = picker.get('minDate'), maxDate = picker.get('maxDate');
-                if (minDate && minDate.getTime() > date.getTime() || maxDate && maxDate.getTime() < date.getTime()) {
-                    errmsg = picker.get('LANG.OUT_OF_RANGE');
-                    picker._trigger('q-datepicker-error', ['RANGE', val]);
-                }
-            }
-            var rlt = {
-                success: !errmsg,
-                errmsg: errmsg,
-                formatted: null,
-                daytip: null
-            };
-            if (rlt['success']) {
-                var ds = picker.get('formatDate')(date);
-                rlt['daytip'] = holidayDate[ds] ? holidayDate[ds]['holidayName'] : '周' + picker.get('LANG.day_names')[date.getDay()];
-                rlt['formatted'] = ds;
-            }
-            
-            return rlt;
-        },
- 		addRoundClass: function(type){
-            if (type == 'FROM') 
-                return this.picker.get('CLASS')['day_selected'];
-            else 
-                if (type == 'BACK') 
-                    return this.picker.get('CLASS')['day_round'];
-        }  
-    });	
-	$.fn.qdatepicker = function( ){
-		if(this[0]){
-			//set or get option
-			if( arguments.length > 1 && this.data( ROOT_KEY )){
-				var qdp = this.data( ROOT_KEY );
-				if( arguments[0] === 'option' || arguments[0] === 'setting' )
-					return arguments.length > 2 ? qdp.set(arguments[1] , arguments[2]) : qdp.get(arguments[1]);
-			//init a datepicker
-			}else if( arguments.length <= 1) {
-				if(this.data(ROOT_KEY)){
-					this.data(ROOT_KEY).dispose();
-					this.removeData(ROOT_KEY);
-				}
-				var qdk = new QDatePicker( this[0] , arguments[0] );
-				this.data( ROOT_KEY , qdk );
-			}
-		}
-		return this;
-	};
-	calcTime = $.qdatepicker.calcTime;
-})(jQuery);
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "18489581f599d9c2525fc0b5b6d32a40" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "e5b5a21667488477a43c41e979b24d80" , 
-        filename : "noify.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    var hasPaint = false;
-var default_style = [
-    "#remind {display: none;width: 350px;border: 1px solid #b9b9b9;height: auto;overflow: hidden;font-size: 12px;color: #333;background: #fff;clear: both;border-top: 0;border-radius: 0 0 5px 5px;box-shadow: 1px 1px 5px #ddd;}",
-    "#remind h3 {height: 29px;line-height: 29px;color: #333;font-weight: bold;padding: 0 9px;border-bottom: 1px solid #e4e4e4;}",
-    "#remind p {padding: 4px 5px 5px 8px;margin: 0 1px;line-height: 16px;position: relative;border-bottom: 2px solid #e4e4e4;}",
-    "#remind .more {position: relative;text-align: center;height: 31px;line-height: 31px;clear: both;background: #f7f7f7;margin-top: 2px;box-shadow: 0 -1px 5px #ececec;z-index: 1;}",
-    "#remind a {color: #369;text-decoration: none;}",
-    ".remove{float:right;}",
-    "#remind .more a {margin: 0 8px;display: inline;}"
-].join('');
-
-function contentInform(opt) {
-    this.width = opt.width;
-    this.initStyles();
-
-};
-
-
-contentInform.prototype.initStyles = function() {
-    debugger
-    if (hasPaint) return;
-    var s = document.createElement("style");
-    s.type = "text/css";
-    var styles = default_style;
-    if (s.styleSheet) {
-        s.styleSheet.cssText = styles;
-    } else {
-        s.appendChild(document.createTextNode(styles));
-    }
-    document.getElementsByTagName("head")[0].appendChild(s);
-    hasPaint = true;
-
-};
-
-contentInform.prototype.listRender = function(opt) {
-    debugger
-    var lists = opt.info;
-    var str = "";
-    for (var i = 0; i < lists.length; i++) {
-        if (!lists[i].check_status) {
-            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
-        };
-
-    }
-    return ['<div id="remind" data-type="listbox" style="width":', this.width, 'px;>',
-        '<h3>提醒</h3>', str,
-        '<div id="more" class="more">',
-        '   <span><a href="" id="see_all">查看全部</a></span>',
-        '<span><a href="" id="cancel_all">忽略全部</a></span>',
-        '</div>',
-        '</div>'].join('');
-};
-
-contentInform.prototype.getContent = function() {
-    var that = this;
-    $.ajax({
-        url: '/data.json',
-        type: 'get',
-        datatype: 'json',
-        success: function(res) {
-            debugger
-            var $content = that.listRender(res);
-            $("#listcontent").empty().append($content);
-            $("[data-type='listbox']").show();
-            that.eventBind();
-
-        }
-    });
-};
-
-
-
-contentInform.prototype.eventBind = function() {
-    debugger
-    var that = this;
-    var listbox = $("[data-type='listbox']");
-
-    listbox.find("#cancel_all").bind("click", function(event) {
-        debugger
-        that.ignoreAll();
-        event.preventDefault();
-    });
-
-
-    $("#remind").delegate("a", "click", function() {
-        debugger
-        // 
-        $(this).closest("p").remove();
-    });
-
-};
-
-// 单击忽略全部
-contentInform.prototype.ignoreAll = function() {
-    // $.ajax({
-    //  url:'', 
-    //  datatype:'json', 
-    //  data:'post',
-    //  success:function(res){
-    //      // 
-    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完,点此<a href=res.link target='_blank' title='查看历史提醒'>查看历史提醒</a></div></div>"
-    $("#remind").find("p").remove();
-    $("#remind").find("h3").after(str);
-    //  }
-    // });
-
-};
-
-
-contentInform.prototype.open = function() {
-    this.getContent();
-    flag = true;
-};
-contentInform.prototype.close = function() {
-    $("[data-type='listbox']").hide();
-    flag = false;
-};
-
-
-
-$.contentInform = function(opts) {
-    return new contentInform(opts);
-};
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "e5b5a21667488477a43c41e979b24d80" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "448c5823fc7a4af727d50a1c7a378874" , 
-        filename : "UserInfo.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    __context.____MODULES['e5b5a21667488477a43c41e979b24d80'];
-function UserInfo() {
-    UserInfo.superclass.constructor.apply(this, arguments);
-}
-
-
-$jex.extendClass(UserInfo, XControl);
-var superflag = 0;
-
-var searchHandler = function() {
-    var $search = $(".hsearch");
-    $search.find(".tsearch-submit").off("click").on("click", function(e) {
-        var $searchinput = $search.find("input");
-        if ($.trim($searchinput.val()) === "") {
-            alert("请输入搜索的关键字");
-            $searchinput.focus();
-            e.preventDefault();
-        }
-        $searchinput.val($.trim($searchinput.val()));
-    });
-}
-
-UserInfo.prototype.update = function(data) {
-    superflag = 0;
-    debugger;
-    if (data.islogin) {
-        this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
-        this.text('<a href="#" class="backinfo">登出</a>');
-        this.text('<a href="#" style="display:none">登录</a>');
-        this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
-        this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
-        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', 3, '</span>条消息</a>');
-        if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
-            superflag = 1;
-            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../admin/index.do">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
-        }
-        $(this).trigger("userlogin", [data.data]);
-    } else {
-        this.text('<a href="#" class= "loginclick" >登录</a>');
-    }
-    this.onInit(function() {
-        var me = this;
-        $(".backinfo").click(function(e) {
-            me.exituser();
-            e.preventDefault();
-        });
-        if (superflag === 1 && $(".check_num").text() === "") {
-            this.getActionnum();
-        }
-        $(".loginclick").click(function(e) {
-            me.show();
-        })
-        $("body").append('<div id="listcontent"></div>');
-        this.notify();
-        searchHandler();
-    });
-}
-UserInfo.prototype.loadData = function(examnum) {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/list"),
-        dataType: "json",
-        cache: false,
-        success: function(data) {
-            data.examnum = examnum;
-            $(me).trigger("loaduser", [data]);
-        },
-        error: function(data) {}
-    });
-}
-UserInfo.prototype.getActionnum = function() {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/exam"),
-        dataType: "json",
-        cache: false,
-        success: function(data) {
-            if (!data.ret) {
-                alert("系统出错了~~");
-                return false;
-            }
-            me.loadData(data.data);
-        },
-        error: function(data) {}
-    });
-}
-
-UserInfo.prototype.exituser = function() {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/exit"),
-        dataType: "json",
-        success: function(data) {
-            debugger;
-            me.loadData();
-        },
-        error: function(data) {}
-    });
-}
-
-UserInfo.prototype.bindEvent = function(data) {
-    var $dlglogin = $(".dlglogin")
-    var $overlay = $(".overlay")
-    var me = this;
-    $(".dlglogin-close").click(function(e) {
-        $dlglogin.remove()
-        $(".overlay").hide()
-        e.preventDefault()
-    });
-    $("#btn-submit").click(function(e) {
-        e.preventDefault();
-        if ($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === "") {
-            alert("请输入具体信息")
-            return
-        }
-        $.post("userlogin.do", $(".dlglogin-form").serialize(), function(res) {
-            if (res.ret) {
-                me.loadData()
-                $dlglogin.remove()
-                $(".overlay").hide()
-            } else {
-                alert(res.info);
-            }
-        })
-    })
-}
-UserInfo.prototype.notify = function() {
-    var flag = false;
-    var ci = $.contentInform({
-        width:'800'
-    });
-    var informbtn = $("#inform");
-    informbtn.click(function(){
-        debugger
-        if (flag===false) {
-            ci.open();
-        }else{
-            ci.close();
-        }
-
-    });
-}
-UserInfo.prototype.show = function() {
-    var form =
-        '<div class="overlay" style="display: block;"></div>' +
-        '    <div class="dlglogin">' +
-        '        <a href="#" class="dlglogin-close">X</a>' +
-        '        <form class="dlglogin-form" action="userlogin.do" method = "post">' +
-        '            <p id="legend">登录</p>' +
-        '            <fieldset>' +
-        '                <div class="item spec" id="alias">' +
-        '                    <label for="login_alias">学号</label>' +
-        '                    <input type="text" id="login_alias" name="id" class="text pop_email" tabindex="1">' +
-        '                </div>' +
-        '                <div class="item spec">' +
-        '                    <label for="login_password">密码</label>' +
-        '                    <input type="password" id="login_password" name="password" class="text" tabindex="2">' +
-        '                </div>' +
-        '                <div class="item recsubmit">' +
-        '                    <span class="loading"></span>' +
-        '                    <input id="btn-submit" value="登 录" tabindex="5">' +
-        '                </div>' +
-        '            </fieldset>' +
-        '        </form>' +
-        '        <div class="dlglogin-aside">' +
-        '            <div class="dlg-notify">' +
-        '                <p>注:</p>' +
-        '                <ul>' +
-        '                    <li>' +
-        '                        <span>初始密码与自己的学号相同,登陆后可自行修改密码</span>' +
-        '                    </li>' +
-        '                    <li>' +
-        '                       <span>Lets go提供真实的校园社交平台,只能用学号登陆，无注册功能</span>' +
-        '                    </li>' +
-        '                    <li>' +
-        '                        <span>在登陆、使用中遇到任何问题，可与管理员联系，邮箱地址为：751143842@qq.com</span>' +
-        '                    </li>' +
-        '                </ul>' +
-        '            </div>' +
-        '        </div>' +
-        '    </div>'
-    $("body").append(form);
-    this.bindEvent();
-
-}
-
-module.exports = UserInfo;
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "448c5823fc7a4af727d50a1c7a378874" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
         id : "70483182195633c7fef777a7f71584ab" , 
         filename : "Rankuser.js" ,
         exports : {}
@@ -10851,317 +9718,500 @@ module.exports = Rankuser;
 
 ;(function(__context){
     var module = {
-        id : "bbcc6836d3ce1303f10672a0ca662665" , 
-        filename : "ListType.js" ,
+        id : "44594d2db9ab86a8d9d98be16647342e" , 
+        filename : "selectType.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    function convertdate(date) {
-    var year = date.getFullYear();
-    var month = (1 + date.getMonth()).toString();
-    month = month.length > 1 ? month : '0' + month;
-    var day = date.getDate().toString();
-    day = day.length > 1 ? day : '0' + day;
-    return year + '/' + month + '/' + day;
-}
+    var $mask = $("#mask");
+var $type = $(".select-type");
 
-function sectionconvert(date) {
-    var year = date.getFullYear();
-    var month = (1 + date.getMonth()).toString();
-    month = month.length > 1 ? month : '0' + month;
-    var day = date.getDate().toString();
-    day = day.length > 1 ? day : '0' + day;
-    return year + '/' + month + '/' + day + " " + "23:59:59"
-}
-var today = function() {
-    var d = new Date;
-    return [convertdate(d)]
+var closeHandle = function(me) {
+    debugger;
+    me.hide();
 };
-var tomorrow = function(data) {
-    var d = new Date(data + 24 * 60 * 60 * 1000);
-    return d;
-};
-var weekend = function() {
-    var weekday = [];
-    d = new Date();
-    var day = d.getDay(),
-        satdiff = d.getDate() - day + (day == 0 ? -1 : 6),
-        sundiff = d.getDate() - day + (day == 0 ? 0 : 7);
-    weekday.push(sectionconvert(new Date(d.setDate(satdiff))));
-    weekday.push(sectionconvert(new Date(d.setDate(sundiff))));
-    return weekday
-}
-var lastweekend = function() {
-    var lastweek = [];
-    var nextDay;
-    var curr = new Date;
-    var first = curr.getDate() - curr.getDay();
-    var last = first + 6;
-    var firstday = new Date(curr.setDate(first));
-    var lastday = new Date(curr.setDate(last));
-    lastweek.push(convertdate(firstday));
-    lastweek.push(sectionconvert(lastday));
-    for (var i = 0, max = 5; i < max; i++) {
-        firstday = tomorrow(firstday.getTime());
-        lastweek.push(sectionconvert(firstday));
-    }
-    return lastweek;
-}
-var Timetype = {
-    type: [{
-        desc: "今天",
-        id: "today",
-        data: today()
-    }, {
-        desc: "明天",
-        id: "tomorrow",
-        data: [convertdate(tomorrow(new Date().getTime()))]
-    }, {
-        desc: "周末",
-        id: "weekend",
-        data: weekend()
-    }, {
-        desc: "最近一周",
-        id: "lastweek",
-        data: lastweekend()
-    }, {
-        desc: "选择日期",
-        id: "selectdate",
-        data: []
-    }]
-};
-
-function ListType() {
-    ListType.superclass.constructor.apply(this, arguments);
-}
-
-$jex.extendClass(ListType, XControl);
-ListType.prototype.update = function(data) {
-    this.insertBody(data);
-    this.onInit(function(e) {
-        $(this).trigger("rendercompletelist");
+var successHandle = function(me,userid,followtype) {
+    var datalist = [];
+    $(".select-type input:checked").each(function(index, value) {
+        datalist.push(value.id);
     });
+    me.addtype(datalist,userid,followtype);
+    me.hide();
 };
-ListType.prototype.insertBody = function(data) {
-    this.insertItem(data.data, data.itemid, data.itemsid);
-    for (var i = 0, max = data.data.length; i < max; i++) {
-        if (data.data[i].id == data.itemid) {
-            this.insertItemlist(data.data[i].child, data.itemid, data.itemsid);
-        }
-    }
-    this.insertTime(Timetype.type);
+var cancelHandle = function(me) {
+    me.hide();
 };
-ListType.prototype.insertItem = function(data, id, sid) {
-    this.text('<div class="type-nav__item clearfix">');
-    this.text('     <label class="type-nav__title">类型</label>');
-    this.text('     <ul class="type-nav__name">');
-    for (var i = 0, max = data.length; i < max; i++) {
+var EventMap = {
+    "select-close": closeHandle,
+    "btn-ok": successHandle,
+    "btn-cancel": cancelHandle
+};
 
-        if (data[i].id === id) {
-            this.text('  <li class="on">');
-            this.text('      <a href="action-list.html?id=', data[i].id, '">', data[i].name, '</a>');
-            this.text('  </li>');
-        } else {
-            this.text('  <li>');
-            this.text('      <a href="action-list.html?id=', data[i].id, '">', data[i].name, '</a>');
-            this.text('  </li>');
-        }
-    }
-    this.text('     </ul>');
-    this.text('</div>');
-};
-ListType.prototype.insertTime = function(data) {
-    this.text('<div class="type-nav__item clearfix">');
-    this.text('     <label class="type-nav__title">时间</label>');
-    this.text('         <ul class="type-nav__time clearfix">');
-    this.text('             <li class="on">');
-    this.text('                 <a data-val="all" href="#">全部</a>');
-    this.text('             </li>');
-    for (var i = 0, max = data.length; i < max; i++) {
-        this.text('         <li>');
-        this.text('              <a class="', data[i].id, '" data-val="', data[i].data.join(","), '" href="#">', data[i].desc, '</a>');
-        this.text('         </li>');
-    }
-    this.text('         </ul>');
-    this.text('</div>');
-};
-ListType.prototype.insertItemlist = function(data, id, sid) {
-    this.text('<div class="type-nav__item">');
-    this.text('<ul id="type-nav__sec" class="type-nav__subsec clearfix">');
-    if (sid === "none") {
-        this.text('     <li class="on">');
-        this.text('         <a href="action-list.html?id=', id, '">全部</a>');
-        this.text('     </li>');
-    } else {
-        this.text('     <li>');
-        this.text('         <a href="action-list.html?id=', id, '">全部</a>');
-        this.text('     </li>');
-    }
+function selectType() {
+    selectType.superclass.constructor.apply(this, arguments);
+}
 
+$jex.extendClass(selectType, XControl);
+selectType.prototype.update = function(data) {
+    var followlist = data.selectflist || [];
+    this.insertBody(data.data,followlist);
+    this.onInit(function() {
+        var head = document.getElementsByTagName('body')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://freshzz.corp.qunar.com/QNR-play/src/js/modernizr.custom.js';
+        head.appendChild(script);
+        var bscript = document.createElement('script');
+        bscript.type = 'text/javascript';
+        bscript.src = 'http://freshzz.corp.qunar.com/QNR-play/src/js/svgcheckbx.js';
+        head.appendChild(bscript);
+    });
+}
+selectType.prototype.insertBody = function(data,flist) {
     for (var i = 0, max = data.length; i < max; i++) {
-        if (data[i].id === sid) {
-            this.text('     <li class="on">');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
-        } else {
-            this.text('     <li>');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
+        this.text('<li class="select-item1">');
+        this.text('    <h4>', data[i].name, '类</h4>');
+        this.text('    <div>');
+        this.text('        <form class="ac-custom ac-checkbox ac-checkmark" autocomplete="off">');
+        this.text('            <ul>');
+        this.insertlist(data[i].child,flist);
+        this.text('            </ul>');
+        this.text('        </form>');
+        this.text('    </div>');
+        this.text('</li>');
+    }
+}
+selectType.prototype.insertlist = function(data,flist) {
+    for (var i = 0, max = data.length; i < max; i++) {
+        var flag = 0;
+        for(var j = 0,maxs = flist.length;j < maxs;j++){
+            if(data[i].id === flist[j].type_id){
+                flag = 1;
+            }
+        }
+        if(flag === 0){
+            if(data[i].state){
+                this.text('<li>');
+                this.text('    <input id="', data[i].id, '" name="', data[i].subName, '" type="checkbox">');
+                this.text('    <label for="', data[i].id, '">', data[i].subName, '</label>');
+                this.text('</li>');
+            }
         }
     }
-    this.text('</ul>');
-    this.text('</div>');
-};
-ListType.prototype.loadData = function(id, sid) {
+}
+selectType.prototype.addtype = function(datalist,uid,followtype) {
+    var me = this;
+    debugger;
+    $.ajax({
+        type: "POST",
+        url: eDomain.getURL("usercenter/addtype"),
+        dataType: "json",
+        data: {
+            classifies: datalist,
+            userId:uid
+        },
+        success: function(data) {
+            debugger;
+            if(followtype){
+                followtype.loadData(uid);
+            }
+        },
+        error: function(data) {
+
+        }
+    });
+}
+selectType.prototype.show = function() {
+    $(this).trigger("getlist");
+    $mask.height($("body").height());
+    $mask.show();
+    $type.show();
+}
+selectType.prototype.hide = function() {
+    $mask.hide();
+    $type.hide();
+}
+selectType.prototype.bindclick = function(userid,follow) {
+    var me = this;
+    $type.delegate(".select-close, .btn-cancel", "click", function(e) {
+        EventMap[e.target.className](me,userid,follow);
+    });
+    $type.find(".btn-ok").unbind("click").bind("click",function(e){
+        successHandle(me,userid,follow);
+    });
+}
+selectType.prototype.loadData = function() {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("type/list"),
+        dataType: "json",
+        cache:false,
+        success: function(data) {
+            $(me).trigger("loadselectlist", data);
+        },
+        error: function(data) {
+            
+        }
+    });
+}
+module.exports = selectType;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "44594d2db9ab86a8d9d98be16647342e" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "00a14c130e9fd32d062134f4cb08d4a2" , 
+        filename : "boardtype.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    function boardtype() {
+    boardtype.superclass.constructor.apply(this, arguments);
+}
+
+$jex.extendClass(boardtype, XControl);
+boardtype.prototype.update = function(data) {
+    this.insertBody(data);
+    this.onInit(function () {
+        var me = this;
+        $(".typesubmit").click(function (e) {
+            debugger;
+            e.preventDefault();
+            $.ajax({
+                url:"addstype.do",
+                type:"post",
+                data:{
+                    id:$(this).parent().parent().parent().find("h5 a").data("uid"),
+                    sid:$(this).parent().parent().parent().find("input").val()
+                },
+                success:function (res) {
+                    if(!res.ret){
+                        alert("添加的分组已经存在")
+                    }
+                    me.loadboardtype();
+                }
+            })
+        })
+        $(".deltype").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url:"delstype.do",
+                type:"post",
+                data:{
+                    id:$(this).parent().parent().parent().find("h5 a").data("uid"),
+                    sid:$(this).parent().parent().parent().find("input").val()
+                },
+                success:function (res) {
+                    if(!res.ret){
+                        alert("你所删除的分组不存在")
+                    }
+                    me.loadboardtype();
+                }
+            })  
+        })
+    })
+}
+boardtype.prototype.insertBody = function(data) {
+    for (var i = 0, max = data.length; i < max; i++) {
+        if(i === max - 1){
+            this.text('<li class="categories c-last">');
+        }else{
+            this.text('<li class="categories">');
+        }
+        this.text('   <h5>');
+        this.text('       <a data-uid="',data[i]._id,'" href="action-list.html?id=',data[i]._id,'">',data[i].name, '»</a>');
+        this.text('   </h5>');
+        this.text('   <ul>');
+        this.insertlist(data[i].child,data[i],data);
+        this.text('   </ul>');
+        this.text('</li>');
+    }
+}
+boardtype.prototype.insertlist = function(data,parent,node) {
+    for (var i = 0, max = data.length; i < max; i++) {
+        if(data[i].state){    
+            this.text('       <li>');
+            this.text('<div class="closetype hidden" ><a href="#" id="',data.type_id,'">x</a></div>');
+            this.text('           <a data-usid="',data[i]._id,'" href="action-list.html?id=', parent.id, '&sid=',data[i]._id,'">', data[i].subName, '</a>');
+            this.text('       </li>');
+        }
+    }
+    if(node.admin)
+        this.text('<li><input class="typevalue" type="text" /><button class="typesubmit">提交</button><button class="deltype">删除</button></li>')
+}
+
+boardtype.prototype.loadboardtype = function() {
     var me = this;
     $.ajax({
         type: "GET",
         url: eDomain.getURL("type/list"),
         dataType: "json",
         success: function(data) {
-            if (!data.ret) {
-                alert(data.errmsg);
-                return false;
-            }
-            $(me).trigger("loadtypelist", [data, id, sid]);
+            $(me).trigger("loadboard",[data.data]);
         },
         error: function(data) {
 
         }
     });
 };
-module.exports = ListType;
+boardtype.prototype.loadData = function(data){
+    $(this).trigger("loadboard",[data]);
+}
+module.exports = boardtype;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "bbcc6836d3ce1303f10672a0ca662665" ] = module.exports;
+    __context.____MODULES[ "00a14c130e9fd32d062134f4cb08d4a2" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "7302570208bfa2a3b0f7573958d30db7" , 
-        filename : "ResultList.js" ,
+        id : "464c4793ab41a89c13db95e7d548b4be" , 
+        filename : "ActionUI.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    function ResultList() {
-    ResultList.superclass.constructor.apply(this, arguments);
+    function ActionUI() {
+    ActionUI.superclass.constructor.apply(this, arguments);
 }
-$jex.extendClass(ResultList, XControl);
-ResultList.prototype.update = function(data) {
-    if(typeof data.data !== "string"){
-        this.insertContent(data.data);
-    }else{
-        this.text('<div class="no-result">没有找到相关的活动信息</div>');
-        if(data.recommend.length !== 0){
-            this.text('<div class="action-rec">你可能对以下活动感兴趣</div>');
-            this.insertContent(data.recommend);
-        }
+$jex.extendClass(ActionUI, XControl);
+
+ActionUI.prototype.update = function(data) {
+    for (var i = 0, max = data.data.length; i < max; i++) {
+        this.text('<div class="type-list" id="single_action">');
+        this.insertHead(data.data[i]);
+        this.inserttypelist(data, data.data[i]);
+        this.text('<div class="list-body" id="actionlist',data.data[i].id,'">');
+        this.singleAction(data.data[i].activities);
+        this.text("</div>");
+        this.text('</div>');
     }
-};
-ResultList.prototype.insertContent = function(data) {
+    this.onInit(function() {
+        $(this).trigger("overrender");
+    });
+}
+
+ActionUI.prototype.insertHead = function(data) {
+    this.text('<ul class="content-bars">');
+    this.text('    <li class="content-bar__ones"></li>');
+    this.text('    <li class="content-bar__titles">', data.name, '</li>');
+    this.text('    <li class="content-bar__twos"></li>');
+    this.text('    <li class="content-bar__nums"><a href="action-list.html?id=', data.id, '" class="type-many">更多>></a></li>');
+    this.text('    <li class="content-bar__threes"></li>');
+    this.text('</ul>');
+}
+ActionUI.prototype.inserttypelist = function(data, currentdata) {
+    var singlelist = QNR.Tools.filter(data.typelist, function(elem) {
+        return elem.id === currentdata.id
+    })[0].child;
+
+    this.text('<div class="list-head">');
+    this.text('    <div class="list-tabs" id="',currentdata.id,'">');
+    this.text('        <a class="on" href="#" id="hot">最热</a>');
+    for (var i = 0, max = singlelist.length; i < max; i++) {
+        this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
+    }
+    this.text('    </div>');
+    this.text('</div>');
+}
+ActionUI.prototype.singleAction = function(data) {
+    this.text('     <ul class="action-type">');
     for (var i = 0, max = data.length; i < max; i++) {
-        this.text('<li class="bd">');
-        this.text('     <a href="action-info.html?actionid=',data[i]._id,'" class="action-img">');
-        this.text('         <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '">');
-        this.text('     </a>');
-        this.text('     <div class="action-info bd">');
-        this.text('         <h3 class="action-name">');
-        this.text('         <a href="action-info.html?actionid=',data[i]._id,'">', data[i].title, '</a>');
-        this.text('             <p class="action-people">(<span>', data[i].peopleNum, '</span>人已经参加)</p>');
-        this.text('         </h3>');
-        this.text('         <p class="action-desc">',data[i].description,'</p>');
-        this.text('         <p class="action-time">时间:<span class="date">', data[i].startDay, '</span>');
-        this.text('             <span class="actiom-time">', data[i].startHHMM, '</span>');
-        this.text('         </p>');
-        this.text('         <address class="action-place">');
-        this.text('             <div class="pl">地点:</div>');
-        this.text('             <div class="aplace bd">', data[i].place, '</div>');
-        this.text('         </address>');
-        this.text('         <p class="action-fee">费用:<span>', data[i].avgFee, '</span>元</p>');
-        this.text('         <p class="action-author">发起人:', data[i].username, '</p>');
-        this.text('     </div>');
-        this.text('</li>');
+        this.text('         <li class="action-list bd">');
+        this.text('             <a href="action-info.html?actionid=', data[i]._id, '" class="action-img">');
+        this.text('                 <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
+        this.text('             <div class="action-info bd">');
+        this.text('                 <h3 class="action-name"><a href="action-info.html?actionid=', data[i]._id, '">', data[i].title, '</a></h3>');
+        this.text('                 <p class="action-time">');
+        this.text('                     <span class="date">', data[i].startDay, '</span>');
+        this.text('                     <span class="actiom-time">', data[i].startHHMM, '</span>');
+        this.text('                 </p>');
+        this.text('                 <address class="action-place" title = "', data[i].place, '">', data[i].place, '</address>');
+        this.text('                 <p class="action-people">', data[i].peopleNum, '人参加</p>');
+        this.text('             </div>');
+        this.text('           </li>');
     }
     if(data.length === 0){
-        this.text('<div class="no-result">该类下还没有活动信息</div>');
+        this.text('<div class="noaction">还没有活动信息</div>');
     }
+    this.text('      </ul>');
+
 }
-ResultList.prototype.loadActionListbyid = function(settings,key,page,time){
+ActionUI.prototype.loadData = function(typelist) {
     var me = this;
-    var defaults = {
-        id: false,
-        sid: false,
-        page: false
-    };
-    var data = $.extend(defaults, settings);
-    var typeElum = {
-        id: {
-            id: data.id,
-            page:page,
-            dayStr:time
-        },
-        sid: {
-            sid: data.sid,
-            page:page,
-            dayStr:time
-        }
-    };
-    if(time === "all"){
-       typeElum['id'].dayStr = "2000-01-12,2020-02-20";
-       typeElum['sid'].dayStr = "2000-01-12,2020-02-20";
-    }
     $.ajax({
-        type: "POST",
-        url: eDomain.getURL("type/search"),
+        type: "GET",
+        url: eDomain.getURL("actiontype/list"),
         dataType: "json",
-        data:typeElum[key],
         cache:false,
         success: function(data) {
             if(!data.ret){
-                $("#actionlist").html('<div class="no-result">请求有错误</div>')
+                alert(data.errmsg);
                 return false;
             }
-            var totalpage = data.totalPage;
-            $(me).trigger("loadresultlist", [data,totalpage,page]);
+            data.typelist = typelist;
+            $(me).trigger("loadAllaction", data);
         },
         error: function(data) {
-            
+
         }
     });
 }
-ResultList.prototype.loadActionListbyword = function(searchword,page) { 
-    var me = this;
-    $.ajax({
-        type: "POST",
-        url: eDomain.getURL("actiontype/search"),
-        dataType: "json",
-        data: {
-            keywords:encodeURI(searchword),
-            page:page
-        },
-        cache:false,
-        success: function(data) {
-            if(!data.ret){
-                $("#actionlist").html('<div class="no-result">请求有错误</div>')
-                return false;
-            }
-            var totalpage = data.totalPage||1;
-            $(me).trigger("loadresultlist", [data,totalpage,page]);
-        },
-        error: function(data) {
-            
-        }
-    });
-}
-module.exports = ResultList;
+
+module.exports = ActionUI;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "7302570208bfa2a3b0f7573958d30db7" ] = module.exports;
+    __context.____MODULES[ "464c4793ab41a89c13db95e7d548b4be" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "87c87b4b98b3a4913df98de285fba2aa" , 
+        filename : "HotimgInfo.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    function HotimgInfo() {
+   
+    HotimgInfo.superclass.constructor.apply(this, arguments);
+}
+
+$jex.extendClass(HotimgInfo, XControl);
+
+var $atitle = $(".action-title");
+
+function minText(text, len) {
+    if(text.length > len){
+        return text.substr(0, len) + "...";
+    }
+    return text;
+}
+
+HotimgInfo.prototype.update = function(data) {
+    this.insertbody(data.data);
+};
+HotimgInfo.prototype.insertbody = function(data) {
+    if(data.length === 0){
+        this.text('<li class="no-hotact">没有更多热门活动了哦</li>')
+    }
+    for (var i = 0, max = data.length; i < max; i++) {
+        this.text('<li>');
+        this.text('    <div class="action-pic">');
+        this.text('         <a href="action-info.html?actionid=', data[i]._id, '">');
+        this.text('             <img alt="', data[i].poster, '" src="', eDomain.getURL("img/posterimg")+data[i].poster, '" height="260" width="190">');
+        this.text('         </a>');
+        this.text('    </div>');
+        this.text('    <div class="action-title">');
+        this.text('         <a href="action-info.html?actionid=', data[i]._id, '" title="', data[i].title, '">', minText(data[i].title,20), '</a>');
+        this.text('    </div>');
+        this.text('</li>');
+    }
+};
+
+HotimgInfo.prototype.changestate = function(elem) {
+    $(elem).addClass("active");
+    $(elem).siblings().removeClass("active");
+};
+HotimgInfo.prototype.loadPicData = function(page) {
+    var me = this;
+    $.ajax({
+        type: "POST",
+        url: eDomain.getURL("hotimg/list"),
+        dataType: "json",
+        cache:false,
+        data:{
+            pageNum:page
+        },
+        success: function(data) {
+            if(!data.ret){
+                alert(data.errmsg);
+                return false;
+            }
+            $(me).trigger("renderpic", [data]);
+        },
+        error: function(data) {
+
+        }
+    });
+};
+module.exports = HotimgInfo;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "87c87b4b98b3a4913df98de285fba2aa" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "6e0e343d1f0491ad33645edc80b05e7d" , 
+        filename : "single_actionUI.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    var ActionUI =__context.____MODULES['464c4793ab41a89c13db95e7d548b4be'];
+
+function single_actionUI() {
+    single_actionUI.superclass.constructor.apply(this, arguments);
+}
+$jex.extendClass(single_actionUI, ActionUI);
+single_actionUI.prototype.update = function(data) {
+    
+    this.singleAction(data);
+};
+single_actionUI.prototype.changestate = function(elem) {
+    $(elem).addClass("on");
+    $(elem).siblings().removeClass("on");
+}
+single_actionUI.prototype.loadSingleAction = function(id, sid) {
+    var me = this;
+    var aurl,Pdata;
+    if(sid === "hot"){
+        Pdata = {
+           classifyid:id 
+        }
+    }else{
+        Pdata = {
+            subClaId:sid
+        }
+    }
+    aurl = eDomain.getURL("actiontype/slist");
+    $.ajax({
+        type: "POST",
+        url: aurl,
+        dataType: "json",
+        cache:false,
+        data:Pdata,
+        success: function(data) {
+            if(!data.ret){
+                alert(data.errmsg);
+                return false;
+            }
+            $(me).trigger("changeaction", [data, id]);
+        },
+        error: function(data) {
+            
+        }
+    });
+}
+module.exports = single_actionUI;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "6e0e343d1f0491ad33645edc80b05e7d" ] = module.exports;
 })(this);
 
 
@@ -11280,31 +10330,416 @@ module.exports = Page;
 
 ;(function(__context){
     var module = {
-        id : "cb9a367a93bb3bf84379fe5de2420cea" , 
-        filename : "listPage.js" ,
+        id : "d51c28027d301e4202df7e9069f15f46" , 
+        filename : "noify.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    var Page =__context.____MODULES['515aed1a6d4d4606e44543b3aca12538'];
-function listPage() {
-    listPage.superclass.constructor.apply(this, arguments);
-}
+    var hasPaint = false;
+var Userpage =__context.____MODULES['515aed1a6d4d4606e44543b3aca12538'];
+var messagepage = new Userpage({
+    elemId: "pagelist"
+});
 
-$jex.extendClass(listPage, Page);
+$(messagepage).bind("loadlistpage", function(e, page, currentpage) {
+    var data = {
+        totalpage: page,
+        currentpage: currentpage
+    };
+    messagepage.clear();
+    messagepage.updateSource(data);
+    messagepage.render();
+});
+var default_style = [
+    "#remind {display: none;width: 350px;border: 1px solid #b9b9b9;height: auto;overflow: hidden;font-size: 12px;color: #333;background: #fff;clear: both;border-top: 0;border-radius: 0 0 5px 5px;box-shadow: 1px 1px 5px #ddd;}",
+    "#remind h3 {height: 29px;line-height: 29px;color: #333;font-weight: bold;padding: 0 9px;border-bottom: 1px solid #e4e4e4;}",
+    "#remind p {padding: 4px 5px 5px 8px;margin: 0 1px;line-height: 16px;position: relative;border-bottom: 2px solid #e4e4e4;}",
+    "#remind .more {position: relative;text-align: center;height: 31px;line-height: 31px;clear: both;background: #f7f7f7;margin-top: 2px;box-shadow: 0 -1px 5px #ececec;z-index: 1;}",
+    "#remind a {color: #369;text-decoration: none;}",
+    ".remove{float:right;}",
+    "#remind .more a {margin: 0 8px;display: inline;}"
+].join('');
 
-module.exports = listPage;
+function contentInform(opt) {
+    this.width = opt.width;
+    this.initStyles();
+
+};
+
+
+contentInform.prototype.initStyles = function() {
+    if (hasPaint) return;
+    var s = document.createElement("style");
+    s.type = "text/css";
+    var styles = default_style;
+    if (s.styleSheet) {
+        s.styleSheet.cssText = styles;
+    } else {
+        s.appendChild(document.createTextNode(styles));
+    }
+    document.getElementsByTagName("head")[0].appendChild(s);
+    hasPaint = true;
+
+};
+
+contentInform.prototype.listRender = function(opt) {
+    debugger
+    var lists = opt.info;
+    var str = "";
+    for (var i = 0; i < lists.length; i++) {
+        if (!lists[i].check_status) {
+            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a data-nid="' + lists[i]._id + '" href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
+        };
+
+    }
+    return ['<div id="remind" data-type="listbox" style="width":', this.width, 'px;>',
+        '<h3>提醒</h3>', str,
+        '<div class="page-list">',
+        '    <ul id="pagelist">',
+        '    </ul>',
+        '</div>',
+        '<div id="more" class="more">',
+        '<span><a href="" id="cancel_all">忽略全部</a></span>',
+        '</div>',
+        '</div>'].join('');
+};
+
+contentInform.prototype.getContent = function(id, page) {
+    var that = this;
+    $.ajax({
+        url: '/data.json',
+        type: 'post',
+        data: {
+            id: id,
+            page: page
+        },
+        success: function(res) {
+            var $content = that.listRender(res);
+            $("#listcontent").empty().append($content);
+            $("#listcontent").show();
+            $("[data-type='listbox']").show();
+            $(messagepage).trigger("loadlistpage", [res.pageNum, page]);
+            that.eventBind();
+        }
+    });
+};
+
+
+
+contentInform.prototype.eventBind = function() {
+    var that = this;
+    var listbox = $("[data-type='listbox']");
+    $("#pagelist").delegate("a", "click", function(e) {
+        e.preventDefault();
+        var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        that.getContent(id, parseInt($(e.target).text()));
+    });
+    $("#remind").delegate("a", "click", function() {
+        var that = this;
+        $.ajax({
+            url: '/read.do',
+            type: 'POST',
+            data: {
+                id: $(this).data("nid")
+            },
+            success: function(res) {
+                debugger;
+                var num = $(".check_num").text();
+                $(".check_num").text(--num)
+                $(that).closest("p").remove();
+            }
+        });
+    });
+
+    $("body").click(function(e) {
+        if (!$(e.target).closest("#listcontent").length) {
+            that.close()
+        }
+    });
+
+    $("#cancel_all").click(function(e) {
+        e.preventDefault();
+        var uid = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        var me = this;
+        $.ajax({
+            type: "post",
+            url: "/changenote.do",
+            data: {
+                id: uid
+            },
+            success: function(res) {
+                $(".check_num").text(0)
+                that.ignoreAll();
+            }
+        })
+    })
+};
+
+// 单击忽略全部
+contentInform.prototype.ignoreAll = function() {
+    // $.ajax({
+    //  url:'', 
+    //  datatype:'json', 
+    //  data:'post',
+    //  success:function(res){
+    //      // 
+    $("#remind").find(".none-content").remove();
+    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完</div></div>"
+    $("#remind").find("p").remove();
+    $("#remind").find("h3").after(str);
+    //  }
+    // });
+
+};
+
+
+contentInform.prototype.open = function() {
+    var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+    this.getContent(id, 1);
+    flag = true;
+};
+contentInform.prototype.close = function() {
+    $("#listcontent").hide();
+    flag = false;
+};
+
+
+
+$.contentInform = function(opts) {
+    return new contentInform(opts);
+};
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "cb9a367a93bb3bf84379fe5de2420cea" ] = module.exports;
+    __context.____MODULES[ "d51c28027d301e4202df7e9069f15f46" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "fc4978205fba5e3c3358c775806bcb5f" , 
-        filename : "list.js" ,
+        id : "608cf9aae1492fb6a2cb38470aae99bd" , 
+        filename : "UserInfo.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    __context.____MODULES['d51c28027d301e4202df7e9069f15f46'];
+function UserInfo() {
+    UserInfo.superclass.constructor.apply(this, arguments);
+}
+
+
+$jex.extendClass(UserInfo, XControl);
+var superflag = 0;
+
+var searchHandler = function() {
+    var $search = $(".hsearch");
+    $search.find(".tsearch-submit").off("click").on("click", function(e) {
+        var $searchinput = $search.find("input");
+        if ($.trim($searchinput.val()) === "") {
+            alert("请输入搜索的关键字");
+            $searchinput.focus();
+            e.preventDefault();
+        }
+        $searchinput.val($.trim($searchinput.val()));
+    });
+}
+
+UserInfo.prototype.update = function(data) {
+    superflag = 0;
+    if (data.islogin) {
+        this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
+        this.text('<a href="#" class="backinfo">登出</a>');
+        this.text('<a href="#" style="display:none">登录</a>');
+        this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
+        this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
+        if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
+            superflag = 1;
+            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../adminback.html">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
+        }else{
+            this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条消息</a>');
+        }
+        $(this).trigger("userlogin", [data.data]);
+    } else {
+        this.text('<a href="#" class= "loginclick" >登录</a>');
+    }
+    this.onInit(function() {
+        var me = this;
+        $(".backinfo").click(function(e) {
+            me.exituser();
+            e.preventDefault();
+        });
+        $(".loginclick").click(function(e) {
+            me.show();
+            $("#login_alias").focus();
+        })
+        $("body").append('<div id="listcontent"></div>');
+        this.notify();
+        searchHandler();
+        if (superflag === 1 && $(".check_num").text() === "") {
+            this.getActionnum();
+        }else if($(".check_num").text() === ""){
+            var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+            this.getmessage(id);
+        }
+    });
+}
+UserInfo.prototype.loadData = function(examnum) {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/list"),
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+            data.examnum = examnum;
+            $(me).trigger("loaduser", [data]);
+        },
+        error: function(data) {}
+    });
+}
+UserInfo.prototype.getActionnum = function() {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/exam"),
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+            if (!data.ret) {
+                alert("系统出错了~~");
+                return false;
+            }
+            me.loadData(data.examnum);
+        },
+        error: function(data) {}
+    });
+}
+UserInfo.prototype.getmessage = function (uid) {
+    var me = this;
+    $.ajax({
+        type:"post",
+        url: "/allnote.do",
+        data:{
+            id:uid
+        },
+        success:function (res) {
+            me.loadData(res.length);
+        }
+    })
+}
+UserInfo.prototype.exituser = function() {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/exit"),
+        dataType: "json",
+        success: function(data) {
+            me.loadData();
+        },
+        error: function(data) {}
+    });
+}
+
+UserInfo.prototype.bindEvent = function(data) {
+    var $dlglogin = $(".dlglogin")
+    var $overlay = $(".overlay")
+    var me = this;
+    $(".dlglogin-close").click(function(e) {
+        $dlglogin.remove()
+        $(".overlay").hide()
+        e.preventDefault()
+    });
+    $("#btn-submit").click(function(e) {
+        e.preventDefault();
+        if ($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === "") {
+            alert("请输入具体信息")
+            return
+        }
+        $.post("userlogin.do", $(".dlglogin-form").serialize(), function(res) {
+            if (res.ret) {
+                me.loadData()
+                $dlglogin.remove()
+                $(".overlay").hide()
+            } else {
+                alert(res.info);
+            }
+        })
+    })
+}
+UserInfo.prototype.notify = function() {
+    flag = false;
+    var ci = $.contentInform({
+        width:'800'
+    });
+    var informbtn = $("#inform");
+    informbtn.click(function(){
+        if (flag===false) {
+            ci.open()
+        }else{
+            ci.close()
+        }
+
+    });
+}
+UserInfo.prototype.show = 
+function() {
+    var form =
+        '<div class="overlay" style="display: block;"></div>' +
+        '    <div class="dlglogin">' +
+        '        <a href="#" class="dlglogin-close">X</a>' +
+        '        <form class="dlglogin-form" action="userlogin.do" method = "post">' +
+        '            <p id="legend">登录</p>' +
+        '            <fieldset>' +
+        '                <div class="item spec" id="alias">' +
+        '                    <label for="login_alias">学号</label>' +
+        '                    <input type="text" id="login_alias" name="id" class="text pop_email" tabindex="1">' +
+        '                </div>' +
+        '                <div class="item spec">' +
+        '                    <label for="login_password">密码</label>' +
+        '                    <input type="password" id="login_password" name="password" class="text" tabindex="2">' +
+        '                </div>' +
+        '                <div class="item recsubmit">' +
+        '                    <span class="loading"></span>' +
+        '                    <input id="btn-submit" value="登 录" tabindex="5">' +
+        '                </div>' +
+        '            </fieldset>' +
+        '        </form>' +
+        '        <div class="dlglogin-aside">' +
+        '            <div class="dlg-notify">' +
+        '                <p>注:</p>' +
+        '                <ul>' +
+        '                    <li>' +
+        '                        <span>初始密码与自己的学号相同,登陆后可自行修改密码</span>' +
+        '                    </li>' +
+        '                    <li>' +
+        '                       <span>Lets go提供真实的校园社交平台,只能用学号登陆，无注册功能</span>' +
+        '                    </li>' +
+        '                    <li>' +
+        '                        <span>在登陆、使用中遇到任何问题，可与管理员联系，邮箱地址为：751143842@qq.com</span>' +
+        '                    </li>' +
+        '                </ul>' +
+        '            </div>' +
+        '        </div>' +
+        '    </div>'
+    $("body").append(form);
+    this.bindEvent();
+
+}
+
+module.exports = UserInfo;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "608cf9aae1492fb6a2cb38470aae99bd" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "cb25586b7098641c631af8d3e45be618" , 
+        filename : "index.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
@@ -11313,198 +10748,195 @@ module.exports = listPage;
     __context.____MODULES['5f7b82f7cc4ae781c73294e0e18f5c3b'];
 __context.____MODULES['2073df88a429ccbe5dca5e2c40e742b4'];
 __context.____MODULES['3240c65b9719d9fd9fabe924c77f6eb1'];
-__context.____MODULES['18489581f599d9c2525fc0b5b6d32a40'];
-var UserInfo =__context.____MODULES['448c5823fc7a4af727d50a1c7a378874'];
-var Rankuser =__context.____MODULES['70483182195633c7fef777a7f71584ab'];
-var ListType =__context.____MODULES['bbcc6836d3ce1303f10672a0ca662665'];
-var Resultlist =__context.____MODULES['7302570208bfa2a3b0f7573958d30db7'];
-var ListPage =__context.____MODULES['cb9a367a93bb3bf84379fe5de2420cea'];
-var idlist;
-var $pagelist = $(".page-list");
+var rankuser =__context.____MODULES['70483182195633c7fef777a7f71584ab'];
+var selectType =__context.____MODULES['44594d2db9ab86a8d9d98be16647342e'];
+var boardtype =__context.____MODULES['00a14c130e9fd32d062134f4cb08d4a2'];
+var ActionUI =__context.____MODULES['464c4793ab41a89c13db95e7d548b4be'];
+var HotimgInfo =__context.____MODULES['87c87b4b98b3a4913df98de285fba2aa'];
+var singleAction =__context.____MODULES['6e0e343d1f0491ad33645edc80b05e7d'];
+
+var UserInfo =__context.____MODULES['608cf9aae1492fb6a2cb38470aae99bd'];
+
+var Catchtype;
+var Catchuser;
 var EventControl = {};
 
 EventControl.bind = function() {
+    $(hotimg).bind("changehotpic", function(e, elem) {
+        hotimg.changestate(elem);
+        hotimg.loadPicData(parseInt($(elem).text(), 10));
+    });
+    $(hotimg).bind("renderpic", function(e, data) {
+        var renderimg = new HotimgInfo({
+            elemId: "hotpic"
+        });
+        renderimg.clear();
+        renderimg.updateSource(data);
+        renderimg.render();
+    });
+
+    $(boardtype).bind("loadboard", function(e, data) {
+        boardtype.updateSource(data);
+        boardtype.render();
+    });
+    
+    $(rankuser).bind("loaduser", function(e, data) {
+         
+        rankuser.updateSource(data);
+        rankuser.render();
+    });
+    
+    $(action).bind("loadAllaction", function(e, data) {
+        action.updateSource(data);
+        action.render();
+        /*userinfo.loadData();*/
+    });
+    $(action).bind("loadtypelist", function(e, data) {
+        action.loadData(data.data);
+    });
+    $(action).bind("overrender", function(e) {
+        clickActiontype();
+    });
+
     $(userinfo).bind("loaduser", function(e, data) {
+        Catchuser = data.data.user;
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
     });
-
-    $(rankuser).bind("loaduser", function(e, data) {
-        rankuser.updateSource(data);
-        rankuser.render();
+    $(userinfo).bind("userlogin", function(e, data) {
+        if (data.tofirst) {
+            selecttype.show();
+            selecttype.loadData();
+            selecttype.bindclick(data.studentId);
+        }
     });
 
-    $(listtype).bind("loadtypelist", function(e, data, id, sid) {
-        data.itemid = id;
-        data.itemsid = sid;
-        listtype.updateSource(data);
-        listtype.render();
-    });
-    $(listtype).bind("rendercompletelist", function(e) {
-        timeClickHandler();
-    });
-    $(resultlist).bind("loadresultlist", function(e, data, page, currentpage) {
-        resultlist.clear();
-        resultlist.updateSource(data);
-        resultlist.render();
-        $(pagelist).trigger("loadlistpage", [page, currentpage]);
+    $(selecttype).bind("loadselectlist", function(e, data) {
+        selecttype.clear();
+        selecttype.updateSource(data);
+        selecttype.render();
     });
 
-    $(pagelist).bind("loadlistpage", function(e, page, currentpage) {
-        var data = {
-            totalpage: page,
-            currentpage: currentpage
-        };
-        pagelist.clear();
-        pagelist.updateSource(data);
-        pagelist.render();
+    $(saction).bind("changeaction", function(e, data, id) {
+        var reloadac = new singleAction({
+            elemId:"actionlist"+id
+        });
+        reloadac.updateSource(data.data);
+        reloadac.render();
     });
-    $(QDP).bind("datehide", function(e) {
-        loadlistResult(idlist, 1, $("#mydate").val());
-        $(".qunar-dp").hide();
-        $(".selectdate").text($("#mydate").val());
-    });
-};
+}
 
+var uicontrol = $(".ui-control");
+var listtabs;
 
-var rankuser = new Rankuser({
+var action = new ActionUI({
+    elemId: "actiontype"
+});
+
+var hotimg = new HotimgInfo();
+var selecttype = new selectType({
+    elemId: "selectItem"
+});
+
+var rankuser = new rankuser({
     elemId: "rankuser"
+});
+
+var boardtype = new boardtype({
+    elemId: "board-type"
 });
 
 var userinfo = new UserInfo({
     elemId: "userinfo"
 });
 
-var listtype = new ListType({
-    elemId: "nav-list"
-});
+var saction = new singleAction();
 
-var resultlist = new Resultlist({
-    elemId: "actionlist"
-});
 
-var pagelist = new ListPage({
-    elemId: "pagelist"
-});
-
-var getPage = function(data) {
-    loadlistResult(data);
-};
-var loadlistResult;
-
-var getSearchResult = function(data) {
-    $(".tsearch-fields input").val(data[0]);
-    $("#nav-list").html('<div class="searchkeyhint"><span class="hintkey">'+data[0]+'</span>相关的活动</div>');
-    loadlistResult = function(data, page) {
-        resultlist.loadActionListbyword(data[0], page);
-    };
-    var page = location.hash === "" ? 1 : location.hash.slice(1);
-    loadlistResult(data, parseInt(page, 10));
+var init = function() {
+    EventControl.bind();
+    loadEvent();
+    bindEvent();
 };
 
+var loadboardtype = function() {
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("type/list"),
+        dataType: "json",
+        success: function(data) {
+            Catchtype = data;
+            $(action).trigger("loadtypelist", [data]);
+            boardtype.loadData(data.data);
+        },
+        error: function(data) {
 
-var displaytypeListResult = function(data) {
-    if (data.length === 1) {
-        listtype.loadData(data[0], "none");
-        loadlistResult = function(data, page, time) {
-            resultlist.loadActionListbyid({
-                id: data[0]
-            }, "id", page, time);
         }
-    } else {
-        listtype.loadData(data[0], data[1]);
-        loadlistResult = function(data, page, time) {
-            resultlist.loadActionListbyid({
-                sid: data[1]
-            }, "sid", page, time);
-        }
-    }
-    var page = location.hash === "" ? 1 : location.hash.slice(1);
-    loadlistResult(data, parseInt(page, 10), "all");
-};
-
-var UrlType = {
-    "id": displaytypeListResult,
-    "searchword": getSearchResult
-};
-
-var Deptachrender = function(UrlKeyArray) {
-    idlist = QNR.Tools.map(UrlKeyArray, function(elem) {
-        return elem.value;
     });
-    var key = UrlKeyArray[0] === undefined ? "searchword" :UrlKeyArray[0].key;
-    UrlType[key](idlist);
 };
-var clickcreatebtn = function() {
-    $(".btn-text").click(function(e) {
-        if ($(".backinfo").length === 0) {
+
+var loadEvent = function() {
+    hotimg.loadPicData(1);
+    loadboardtype();
+    rankuser.loadData("user/rankuser/list");
+    userinfo.loadData();
+};
+var bindEvent = function() {
+    clickActiontype();
+    clickhotHandler();
+    clickcreatebtn();
+    prevhotclickHandler();
+    nexthotclickHandler();
+};
+var prevhotclickHandler = function(){
+    $(".btn-prev").click(function(e){
+        var curnum = parseInt($(".active").text(),10) - 1;
+        if(curnum === 0){
+            return false;
+        }
+        var preElem = $(".ui-control a").eq(--curnum)[0];
+        $(hotimg).trigger("changehotpic", [preElem]);
+    });
+}
+var nexthotclickHandler = function(){
+    $(".btn-next").click(function(e){
+         ;
+        var curnum = parseInt($(".active").text(),10) - 1;
+        if(curnum === 3){
+            return false;
+        }
+        var nextElem = $(".ui-control a").eq(++curnum)[0];
+        $(hotimg).trigger("changehotpic", [nextElem]);
+    });
+}
+var clickhotHandler = function() {
+    uicontrol.delegate("a", "click", function(e) {
+        $(hotimg).trigger("changehotpic", [e.target]);
+        e.preventDefault();
+    });
+};
+var clickcreatebtn = function(){
+    $(".btn-text").click(function(e){
+        if($(".backinfo").length === 0){
             alert("请先登录");
             $("#qsso-login").trigger("click");
             e.preventDefault();
         }
     });
 }
-var EventHandler = function() {
-    dateHandler();
-    listClickHandler();
-    clickcreatebtn();
-    timeClickHandler();
-}
-var dateHandler = function() {
-    $("#mydate").qdatepicker({
-        ui: 'qunar',
-        forceCorrect: false
-    });
-    $("#mydate").show();
-    $(".qunar-dp").hide();
-}
-var goTop = function() {
-    $("html, body").animate({
-        scrollTop: 0
-    }, 110);
-}
-var listClickHandler = function() {
-    $pagelist.delegate("a", "click", function(e) {
-        var time = $(".type-nav__time .on a").data("val");
-        loadlistResult(idlist, parseInt($(e.target).text(), 10), time);
-        goTop();
-    });
-}
-var timeClickHandler = function() {
-    $(".site-main").css("overflow", "visible");
-    $(".type-nav__time a").click(function(e) {
-        $(".qunar-dp").hide();
-        var a = $(this);
-        if (a.hasClass("selectdate")) {
-            $(".qunar-dp").show();
-            $(".qunar-dp").css({
-                top: '-33px',
-                left: '360px'
-            });
-            QDP.ins.show();
-        } else {
-            var timeval = $.trim(a.data('val'));
-            loadlistResult(idlist, 1, timeval);
-        }
-        a.closest(".type-nav__time").find("li").removeClass();
-        a.closest('li').addClass('on');
+var clickActiontype = function() {
+    listtabs = $(".list-tabs");
+    listtabs.delegate("a", "click", function(e) {
+        var id = e.target.parentElement.id;
+        saction.changestate(e.target);
+        saction.loadSingleAction(id,e.target.id);
         e.preventDefault();
     });
 }
-var init = function() {
-    var UrlKeyArray = QNR.Tools.getUrlValue();
-    Deptachrender(UrlKeyArray);
-    EventControl.bind();
-    loadEvent();
-    EventHandler();
-};
-var loadEvent = function() {
-    rankuser.loadData("user/rankuser/list");
-    userinfo.loadData();
-};
+
 init();
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "fc4978205fba5e3c3358c775806bcb5f" ] = module.exports;
+    __context.____MODULES[ "cb25586b7098641c631af8d3e45be618" ] = module.exports;
 })(this);

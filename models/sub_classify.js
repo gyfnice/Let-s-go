@@ -10,6 +10,10 @@ var sub_classifySchema = new mongoose.Schema({
 	sup_name: {
 		type: String,
 		ref: 'classifys'
+	},
+	state:{
+		type:Boolean,
+		default:true
 	}
 }, {
 	collection: 'sub_classifys'

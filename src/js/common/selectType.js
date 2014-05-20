@@ -57,7 +57,6 @@ selectType.prototype.insertBody = function(data,flist) {
     }
 }
 selectType.prototype.insertlist = function(data,flist) {
-    debugger;
     for (var i = 0, max = data.length; i < max; i++) {
         var flag = 0;
         for(var j = 0,maxs = flist.length;j < maxs;j++){
@@ -66,10 +65,12 @@ selectType.prototype.insertlist = function(data,flist) {
             }
         }
         if(flag === 0){
-            this.text('<li>');
-            this.text('    <input id="', data[i].id, '" name="', data[i].subName, '" type="checkbox">');
-            this.text('    <label for="', data[i].id, '">', data[i].subName, '</label>');
-            this.text('</li>');
+            if(data[i].state){
+                this.text('<li>');
+                this.text('    <input id="', data[i].id, '" name="', data[i].subName, '" type="checkbox">');
+                this.text('    <label for="', data[i].id, '">', data[i].subName, '</label>');
+                this.text('</li>');
+            }
         }
     }
 }

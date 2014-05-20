@@ -87,7 +87,7 @@ ListType.prototype.update = function(data) {
 ListType.prototype.insertBody = function(data) {
     this.insertItem(data.data, data.itemid, data.itemsid);
     for (var i = 0, max = data.data.length; i < max; i++) {
-        if (data.data[i].id == data.itemid) {
+        if (data.data[i]._id == data.itemid) {
             this.insertItemlist(data.data[i].child, data.itemid, data.itemsid);
         }
     }
@@ -99,13 +99,13 @@ ListType.prototype.insertItem = function(data, id, sid) {
     this.text('     <ul class="type-nav__name">');
     for (var i = 0, max = data.length; i < max; i++) {
 
-        if (data[i].id === id) {
+        if (data[i]._id === id) {
             this.text('  <li class="on">');
-            this.text('      <a href="action-list.html?id=', data[i].id, '">', data[i].name, '</a>');
+            this.text('      <a href="action-list.html?id=', data[i]._id, '">', data[i].name, '</a>');
             this.text('  </li>');
         } else {
             this.text('  <li>');
-            this.text('      <a href="action-list.html?id=', data[i].id, '">', data[i].name, '</a>');
+            this.text('      <a href="action-list.html?id=', data[i]._id, '">', data[i].name, '</a>');
             this.text('  </li>');
         }
     }
@@ -121,7 +121,7 @@ ListType.prototype.insertTime = function(data) {
     this.text('             </li>');
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('         <li>');
-        this.text('              <a class="', data[i].id, '" data-val="', data[i].data.join(","), '" href="#">', data[i].desc, '</a>');
+        this.text('              <a class="', data[i]._id, '" data-val="', data[i].data.join(","), '" href="#">', data[i].desc, '</a>');
         this.text('         </li>');
     }
     this.text('         </ul>');
@@ -141,13 +141,13 @@ ListType.prototype.insertItemlist = function(data, id, sid) {
     }
 
     for (var i = 0, max = data.length; i < max; i++) {
-        if (data[i].id === sid) {
+        if (data[i]._id === sid) {
             this.text('     <li class="on">');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].id, '">', data[i].subName, '</a>');
+            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
             this.text('     </li>');
         } else {
             this.text('     <li>');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].id, '">', data[i].subName, '</a>');
+            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
             this.text('     </li>');
         }
     }

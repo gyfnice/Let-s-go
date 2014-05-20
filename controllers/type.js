@@ -9,10 +9,12 @@ exports.listAlltype = function(req, res) {
 		ret: true,
 		data: []
 	};
-	classifyModel.findAll(function(err, docs) {
+	classifyModel.find({}).sort({
+		premium: 1
+	}).exec(function(err, docs) {
 		response.data = docs;
 		res.send(response);
-	})
+	});
 }
 
 exports.getusertype = function(req, res) {
@@ -25,7 +27,67 @@ exports.getusertype = function(req, res) {
 		res.send(response);
 	})
 }
+exports.addsubtype = function (req,res) {
+	console.log(req.body.id)
+	classifyModel.getByid(req.body.id, function(err, docs) {
+		sub_classifyModel.find({
+			state:true,
+			name:req.body.sid
+		},function (err,sdocs) {
+		    if(sdocs.length >=1){
+				res.send({ret:false})
+				return
+			}
+			sub_classifyModel.save(req.body.sid, docs, function(err, docs) {
+				if (err) {
+					return
+				}
+				res.send({
+					ret: true
+				})
+			});
+		})
+	});
+	
+}
+exports.delsubtype = function(req, res) {
+	classifyModel.getByid(req.body.id, function(err, docs) {
+			sub_classifyModel.find({
+					state: true,
+					name: req.body.sid
+				}, function(err, sdocs) {
+					if (sdocs.length === 0) {
+						res.send({
+							ret: false
+						})
+						return
+					}
+					docs.child.forEach(function(elem) {
+						if (elem.subName === req.body.sid) {
+							elem.state = false;
+						}
+					})
+					sub_classifyModel.update({
+						name: req.body.sid
+					}, {
+						$set: {
+							state: false
+						}
+					}, {
+						multi: true
+					}, function(err, docs) {
 
+					})
+					docs.save(function(err, docs) {
+						console.log(docs)
+						res.send({
+							ret: true
+						})
+					})
+		})
+        
+    })
+}
 exports.addtype = function(req, res) {
 	req.body.classifies.forEach(function(elem) {
 		sub_classifyModel.getid(elem, function(err, subtype) {

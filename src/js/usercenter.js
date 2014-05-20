@@ -156,6 +156,7 @@ var followtype = new Followtype({
 
 var getauthorityExec = function() {
     $(".hidden").show();
+    $(".hid").hide();
     $("#picturefile").hide();
     $infolist.prepend('<a href="#" class="uploadpic hidden">修改头像</a>');
     $uploadpic = $(".uploadpic");

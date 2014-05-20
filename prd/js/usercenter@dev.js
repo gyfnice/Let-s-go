@@ -9651,74 +9651,2057 @@ if (!Function.prototype.bind) {
 
 ;(function(__context){
     var module = {
-        id : "70483182195633c7fef777a7f71584ab" , 
-        filename : "Rankuser.js" ,
+        id : "fd7a862d2156dc39643874cb6bac5207" , 
+        filename : "ajaxfileupload.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    function Rankuser() {
-    Rankuser.superclass.constructor.apply(this, arguments);
-}
-
-$jex.extendClass(Rankuser, XControl);
-Rankuser.prototype.update = function(data) {
-    this.insertBody(data.data);
-}
-
-Rankuser.prototype.insertBody = function(data) {
-    if(data.length === 0){
-        this.text('<li class="no-users">还没有成员</li>')
-        return false;
-    }
-    for (var i = 0, max = data.length; i < max; i++) {
-        this.text('<li class="user-items bd">');
-        this.text('   <a href="userinfo.html?userid=',data[i].studentId, '" class="user-img">');
-        this.text('      <img src="', eDomain.getURL("img/headimg")+data[i].headImg, '" alt="', data[i].userName, '">');
-        this.text('   </a>');
-        this.text('   <div class="single-info bd">');
-        this.text('     <h3 class="rankuser-name"><a href=userinfo.html?userid=',data[i].studentId,'>', data[i].userName, '</a></h3>');
-        this.text('     <p class="user-score"><span>积分:</span><span class="uscore">', data[i].totalScore, '</span></p>');
-        this.text('   </div>');
-        this.text('</li>');
-    }
-}
-
-Rankuser.prototype.loadData = function(router,aid) {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL(router),
-        dataType: "json",
-        cache:false,
-        data:{
-            id:aid
-        },
-        success: function(data) {
-            if(!data.ret){
-                alert(data.errmsg);
-                return false;
-            }
-            $(me).trigger("loaduser",[data]);
-        },
-        error: function(data) {
+    jQuery.extend({
+    handleError: function( s, xhr, status, e ) 		{
+        // If a local callback was specified, fire it
+        if ( s.error ) {
 
         }
-    });
-};
+
+        // Fire the global callback
+        if ( s.global ) {
+            (s.context ? jQuery(s.context) : jQuery.event).trigger( "ajaxError", [xhr, s, e] );
+        }
+    },
+    createUploadIframe: function(id, uri)
+    {
+
+        var frameId = 'jUploadFrame' + id;
+
+        if(window.ActiveXObject) {
+            if(jQuery.browser.version=="9.0")
+            {
+                io = document.createElement('iframe');
+                io.id = frameId;
+                io.name = frameId;
+            }
+            else if(jQuery.browser.version=="6.0" || jQuery.browser.version=="7.0" || jQuery.browser.version=="8.0")
+            {
+
+                var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+                if(typeof uri== 'boolean'){
+                    io.src = 'javascript:false';
+                }
+                else if(typeof uri== 'string'){
+                    io.src = uri;
+                }
+            }
+        }
+        else {
+            var io = document.createElement('iframe');
+            io.id = frameId;
+            io.name = frameId;
+        }
+        io.style.position = 'absolute';
+        io.style.top = '-1000px';
+        io.style.left = '-1000px';
+        document.body.appendChild(io);
+        return io;
+    },
+    ajaxUpload:function(s,xml){
+        //if((fromFiles.nodeType&&!((fileList=fromFiles.files)&&fileList[0].name)))
+
+        var uid = new Date().getTime(),idIO='jUploadFrame'+uid,_this=this;
+        var jIO=$('<iframe name="'+idIO+'" id="'+idIO+'" style="display:none">').appendTo('body');
+        var jForm=$('<form action="'+s.url+'" target="'+idIO+'" method="post" enctype="multipart/form-data"></form>').appendTo('body');
+        var oldElement = $('#'+s.fileElementId);
+        var newElement = $(oldElement).clone();
+        $(oldElement).attr('id', 'jUploadFile'+uid);
+        $(oldElement).before(newElement);
+        $(oldElement).appendTo(jForm);
+
+        this.remove=function()
+        {
+            if(_this!==null)
+            {
+                jNewFile.before(jOldFile).remove();
+                jIO.remove();jForm.remove();
+                _this=null;
+            }
+        }
+        this.onLoad=function(){
+
+            var data=$(jIO[0].contentWindow.document.body).text();
 
 
-module.exports = Rankuser;
+            try{
+
+                if(data!=undefined){
+                    data = eval('(' + data + ')');
+                    try {
+
+                        if (s.success)
+                            s.success(data, status);
+
+                        // Fire the global callback
+                        if(s.global)
+                            jQuery.event.trigger("ajaxSuccess", [xml, s]);
+                        if (s.complete)
+                            s.complete(data, status);
+                        xml = null;
+                    } catch(e)
+                    {
+
+                        status = "error";
+                        jQuery.handleError(s, xml, status, e);
+                    }
+
+                    // The request was completed
+                    if(s.global)
+                        jQuery.event.trigger( "ajaxComplete", [xml, s] );
+                    // Handle the global AJAX counter
+                    if (s.global && ! --jQuery.active )
+                        jQuery.event.trigger("ajaxStop");
+
+                    // Process result
+
+                }
+            }catch(ex){
+                alert(ex.message);
+            };
+        }
+        this.start=function(){jForm.submit();jIO.load(_this.onLoad);};
+        return this;
+
+    },
+    createUploadForm: function(id, url,fileElementId, data)
+    {
+        //create form
+        var formId = 'jUploadForm' + id;
+        var fileId = 'jUploadFile' + id;
+        var form = jQuery('<form  action="'+url+'" method="POST" name="' + formId + '" id="' + formId + '" enctype="multipart/form-data"></form>');
+        if(data)
+        {
+            for(var i in data)
+            {
+                jQuery('<input type="hidden" name="' + i + '" value="' + data[i] + '" />').appendTo(form);
+            }
+        }
+
+        var oldElement = jQuery('#' + fileElementId);
+        var newElement = jQuery(oldElement).clone();
+        jQuery(oldElement).attr('id', fileId);
+        jQuery(oldElement).before(newElement);
+        jQuery(oldElement).appendTo(form);
+
+        //set attributes
+        jQuery(form).css('position', 'absolute');
+        jQuery(form).css('top', '-1200px');
+        jQuery(form).css('left', '-1200px');
+        jQuery(form).appendTo('body');
+        return form;
+    },
+    ajaxFileUpload: function(s) {
+        // TODO introduce global settings, allowing the client to modify them for all requests, not only timeout	
+        // Create the request object
+        var xml = {};
+        s = jQuery.extend({}, jQuery.ajaxSettings, s);
+        if(window.ActiveXObject){
+            var upload =  new jQuery.ajaxUpload(s,xml);
+            upload.start();
+
+        }else{
+            var id = new Date().getTime();
+            var form = jQuery.createUploadForm(id,s.url, s.fileElementId, (typeof(s.data)=='undefined'?false:s.data));
+            var io = jQuery.createUploadIframe(id, s.secureuri);
+            var frameId = 'jUploadFrame' + id;
+            var formId = 'jUploadForm' + id;
+            // Watch for a new set of requests
+            if ( s.global && ! jQuery.active++ )
+            {
+                jQuery.event.trigger( "ajaxStart" );
+            }
+            var requestDone = false;
+
+            if ( s.global )
+                jQuery.event.trigger("ajaxSend", [xml, s]);
+            // Wait for a response to come back
+            var uploadCallback = function(isTimeout)
+            {
+                var io = document.getElementById(frameId);
+
+                try
+                {
+                    if(io.contentWindow)
+                    {
+                        xml.responseText = io.contentWindow.document.body?io.contentWindow.document.body.innerHTML:null;
+                        xml.responseXML = io.contentWindow.document.XMLDocument?io.contentWindow.document.XMLDocument:io.contentWindow.document;
+
+                    }else if(io.contentDocument)
+                    {
+                        xml.responseText = io.contentDocument.document.body?io.contentDocument.document.body.innerHTML:null;
+                        xml.responseXML = io.contentDocument.document.XMLDocument?io.contentDocument.document.XMLDocument:io.contentDocument.document;
+                    }
+                }catch(e)
+                {
+                    jQuery.handleError(s, xml, null, e);
+                }
+                if ( xml || isTimeout == "timeout")
+                {
+                    requestDone = true;
+                    var status;
+                    try {
+                        status = isTimeout != "timeout" ? "success" : "error";
+                        // Make sure that the request was successful or notmodified
+                        if ( status != "error" )
+                        {
+                            // process the data (runs the xml through httpData regardless of callback)
+                            var data = jQuery.uploadHttpData(xml, s.dataType);
+                            // If a local callback was specified, fire it and pass it the data
+
+                            if (s.success)
+                                s.success(data, status);
+
+                            // Fire the global callback
+                            if(s.global)
+                                jQuery.event.trigger("ajaxSuccess", [xml, s]);
+                            if (s.complete)
+                                s.complete(data, status);
+
+                        } else
+                            jQuery.handleError(s, xml, status);
+                    } catch(e)
+                    {
+                        status = "error";
+                        jQuery.handleError(s, xml, status, e);
+                    }
+
+                    // The request was completed
+                    if(s.global)
+                        jQuery.event.trigger( "ajaxComplete", [xml, s] );
+                    // Handle the global AJAX counter
+                    if (s.global && ! --jQuery.active )
+                        jQuery.event.trigger("ajaxStop");
+
+                    // Process result
+                    jQuery(io).unbind();
+
+                    setTimeout(function()
+                    {	try
+                    {
+                        jQuery(io).remove();
+                        jQuery(form).remove();
+
+                    } catch(e)
+                    {
+                        jQuery.handleError(s, xml, null, e);
+                    }
+
+                    }, 100);
+
+                    xml = null;
+
+                }
+            };
+            // Timeout checker
+            if (s.timeout>0)
+            {
+                setTimeout(function(){
+                    // Check to see if the request is still happening
+                    if( !requestDone ) uploadCallback("timeout");
+                }, s.timeout);
+            }
+
+            try
+            {
+
+                var form = jQuery('#' + formId);
+                jQuery(form).attr('action', s.url);
+                jQuery(form).attr('method', 'POST');
+                jQuery(form).attr('target', frameId);
+
+                if(form.encoding)
+                {
+                    jQuery(form).attr('encoding', 'multipart/form-data');
+                }
+                else
+                {
+                    jQuery(form).attr('enctype', 'multipart/form-data');
+                }
+
+
+                jQuery(form).submit();
+
+            } catch(e)
+            {
+                jQuery.handleError(s, xml, null, e);
+            }
+
+            jQuery('#'+ frameId).load(uploadCallback);
+            return {abort: function () {}};
+
+        }
+    },
+
+    uploadHttpData: function( r, type ) {
+
+        var data = !type;
+        data = type == "xml" || data ? r.responseXML : r.responseText;
+        // If the type is "script", eval it in global context
+        if ( type == "script" )
+            jQuery.globalEval( data );
+        // Get the JavaScript object, if JSON is used.
+        if ( type == "json" ){
+
+            eval( "data = " + $(data).html() );
+        }
+        // evaluate scripts within html
+        if ( type == "html" )
+            jQuery("<div>").html(data).evalScripts();
+
+        return data;
+    }
+});
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "70483182195633c7fef777a7f71584ab" ] = module.exports;
+    __context.____MODULES[ "fd7a862d2156dc39643874cb6bac5207" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "db5eb7751b69153319fb2dcba7839d9e" , 
+        id : "ed882314c841932770eab4413337b4b0" , 
+        filename : "jquery.Jcrop.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    /**
+ * jquery.Jcrop.js v0.9.8
+ * jQuery Image Cropping Plugin
+ * @author Kelly Hallman <khallman@gmail.com>
+ * Copyright (c) 2008-2009 Kelly Hallman - released under MIT License {{{
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+
+ * }}}
+ */
+
+(function($) {
+
+$.Jcrop = function(obj,opt)
+{
+	// Initialization {{{
+
+	// Sanitize some options {{{
+	var obj = obj, opt = opt;
+
+	if (typeof(obj) !== 'object') obj = $(obj)[0];
+	if (typeof(opt) !== 'object') opt = { };
+
+	// Some on-the-fly fixes for MSIE...sigh
+	if (!('trackDocument' in opt))
+	{
+		opt.trackDocument = $.browser.msie ? false : true;
+		if ($.browser.msie && $.browser.version.split('.')[0] == '8')
+			opt.trackDocument = true;
+	}
+
+	if (!('keySupport' in opt))
+			opt.keySupport = $.browser.msie ? false : true;
+		
+	// }}}
+	// Extend the default options {{{
+	var defaults = {
+
+		// Basic Settings
+		trackDocument:		false,
+		baseClass:			'jcrop',
+		addClass:			null,
+
+		// Styling Options
+		bgColor:			'black',
+		bgOpacity:			.6,
+		borderOpacity:		.4,
+		handleOpacity:		.5,
+
+		handlePad:			5,
+		handleSize:			9,
+		handleOffset:		5,
+		edgeMargin:			14,
+
+		aspectRatio:		0,
+		keySupport:			true,
+		cornerHandles:		true,
+		sideHandles:		true,
+		drawBorders:		true,
+		dragEdges:			true,
+
+		boxWidth:			0,
+		boxHeight:			0,
+
+		boundary:			8,
+		animationDelay:		20,
+		swingSpeed:			3,
+
+		allowSelect:		true,
+		allowMove:			true,
+		allowResize:		true,
+
+		minSelect:			[ 0, 0 ],
+		maxSize:			[ 0, 0 ],
+		minSize:			[ 0, 0 ],
+
+		// Callbacks / Event Handlers
+		onChange: function() { },
+		onSelect: function() { }
+
+	};
+	var options = defaults;
+	setOptions(opt);
+
+	// }}}
+	// Initialize some jQuery objects {{{
+
+	var $origimg = $(obj);
+	var $img = $origimg.clone().removeAttr('id').css({ position: 'absolute' });
+
+	$img.width($origimg.width());
+	$img.height($origimg.height());
+	$origimg.after($img).hide();
+
+	presize($img,options.boxWidth,options.boxHeight);
+
+	var boundx = $img.width(),
+		boundy = $img.height(),
+
+		$div = $('<div />')
+			.width(boundx).height(boundy)
+			.addClass(cssClass('holder'))
+			.css({
+				position: 'relative',
+				backgroundColor: options.bgColor
+			}).insertAfter($origimg).append($img);
+	;
+	
+	if (options.addClass) $div.addClass(options.addClass);
+	//$img.wrap($div);
+
+	var $img2 = $('<img />')/*{{{*/
+			.attr('src',$img.attr('src'))
+			.css('position','absolute')
+			.width(boundx).height(boundy)
+	;/*}}}*/
+	var $img_holder = $('<div />')/*{{{*/
+		.width(pct(100)).height(pct(100))
+		.css({
+			zIndex: 310,
+			position: 'absolute',
+			overflow: 'hidden'
+		})
+		.append($img2)
+	;/*}}}*/
+	var $hdl_holder = $('<div />')/*{{{*/
+		.width(pct(100)).height(pct(100))
+		.css('zIndex',320);
+	/*}}}*/
+	var $sel = $('<div />')/*{{{*/
+		.css({
+			position: 'absolute',
+			zIndex: 300
+		})
+		.insertBefore($img)
+		.append($img_holder,$hdl_holder)
+	;/*}}}*/
+
+	var bound = options.boundary;
+	var $trk = newTracker().width(boundx+(bound*2)).height(boundy+(bound*2))
+		.css({ position: 'absolute', top: px(-bound), left: px(-bound), zIndex: 290 })
+		.mousedown(newSelection);	
+	
+	/* }}} */
+	// Set more variables {{{
+
+	var xlimit, ylimit, xmin, ymin;
+	var xscale, yscale, enabled = true;
+	var docOffset = getPos($img),
+		// Internal states
+		btndown, lastcurs, dimmed, animating,
+		shift_down;
+
+	// }}}
+		
+
+		// }}}
+	// Internal Modules {{{
+
+	var Coords = function()/*{{{*/
+	{
+		var x1 = 0, y1 = 0, x2 = 0, y2 = 0, ox, oy;
+
+		function setPressed(pos)/*{{{*/
+		{
+			var pos = rebound(pos);
+			x2 = x1 = pos[0];
+			y2 = y1 = pos[1];
+		};
+		/*}}}*/
+		function setCurrent(pos)/*{{{*/
+		{
+			var pos = rebound(pos);
+			ox = pos[0] - x2;
+			oy = pos[1] - y2;
+			x2 = pos[0];
+			y2 = pos[1];
+		};
+		/*}}}*/
+		function getOffset()/*{{{*/
+		{
+			return [ ox, oy ];
+		};
+		/*}}}*/
+		function moveOffset(offset)/*{{{*/
+		{
+			var ox = offset[0], oy = offset[1];
+
+			if (0 > x1 + ox) ox -= ox + x1;
+			if (0 > y1 + oy) oy -= oy + y1;
+
+			if (boundy < y2 + oy) oy += boundy - (y2 + oy);
+			if (boundx < x2 + ox) ox += boundx - (x2 + ox);
+
+			x1 += ox;
+			x2 += ox;
+			y1 += oy;
+			y2 += oy;
+		};
+		/*}}}*/
+		function getCorner(ord)/*{{{*/
+		{
+			var c = getFixed();
+			switch(ord)
+			{
+				case 'ne': return [ c.x2, c.y ];
+				case 'nw': return [ c.x, c.y ];
+				case 'se': return [ c.x2, c.y2 ];
+				case 'sw': return [ c.x, c.y2 ];
+			}
+		};
+		/*}}}*/
+		function getFixed()/*{{{*/
+		{
+			if (!options.aspectRatio) return getRect();
+			// This function could use some optimization I think...
+			var aspect = options.aspectRatio,
+				min_x = options.minSize[0]/xscale, 
+				min_y = options.minSize[1]/yscale,
+				max_x = options.maxSize[0]/xscale, 
+				max_y = options.maxSize[1]/yscale,
+				rw = x2 - x1,
+				rh = y2 - y1,
+				rwa = Math.abs(rw),
+				rha = Math.abs(rh),
+				real_ratio = rwa / rha,
+				xx, yy
+			;
+			if (max_x == 0) { max_x = boundx * 10 }
+			if (max_y == 0) { max_y = boundy * 10 }
+			if (real_ratio < aspect)
+			{
+				yy = y2;
+				w = rha * aspect;
+				xx = rw < 0 ? x1 - w : w + x1;
+
+				if (xx < 0)
+				{
+					xx = 0;
+					h = Math.abs((xx - x1) / aspect);
+					yy = rh < 0 ? y1 - h: h + y1;
+				}
+				else if (xx > boundx)
+				{
+					xx = boundx;
+					h = Math.abs((xx - x1) / aspect);
+					yy = rh < 0 ? y1 - h : h + y1;
+				}
+			}
+			else
+			{
+				xx = x2;
+				h = rwa / aspect;
+				yy = rh < 0 ? y1 - h : y1 + h;
+				if (yy < 0)
+				{
+					yy = 0;
+					w = Math.abs((yy - y1) * aspect);
+					xx = rw < 0 ? x1 - w : w + x1;
+				}
+				else if (yy > boundy)
+				{
+					yy = boundy;
+					w = Math.abs(yy - y1) * aspect;
+					xx = rw < 0 ? x1 - w : w + x1;
+				}
+			}
+
+			// Magic %-)
+			if(xx > x1) { // right side
+			  if(xx - x1 < min_x) {
+				xx = x1 + min_x;
+			  } else if (xx - x1 > max_x) {
+				xx = x1 + max_x;
+			  }
+			  if(yy > y1) {
+				yy = y1 + (xx - x1)/aspect;
+			  } else {
+				yy = y1 - (xx - x1)/aspect;
+			  }
+			} else if (xx < x1) { // left side
+			  if(x1 - xx < min_x) {
+				xx = x1 - min_x
+			  } else if (x1 - xx > max_x) {
+				xx = x1 - max_x;
+			  }
+			  if(yy > y1) {
+				yy = y1 + (x1 - xx)/aspect;
+			  } else {
+				yy = y1 - (x1 - xx)/aspect;
+			  }
+			}
+
+			if(xx < 0) {
+				x1 -= xx;
+				xx = 0;
+			} else  if (xx > boundx) {
+				x1 -= xx - boundx;
+				xx = boundx;
+			}
+
+			if(yy < 0) {
+				y1 -= yy;
+				yy = 0;
+			} else  if (yy > boundy) {
+				y1 -= yy - boundy;
+				yy = boundy;
+			}
+
+			return last = makeObj(flipCoords(x1,y1,xx,yy));
+		};
+		/*}}}*/
+		function rebound(p)/*{{{*/
+		{
+			if (p[0] < 0) p[0] = 0;
+			if (p[1] < 0) p[1] = 0;
+
+			if (p[0] > boundx) p[0] = boundx;
+			if (p[1] > boundy) p[1] = boundy;
+
+			return [ p[0], p[1] ];
+		};
+		/*}}}*/
+		function flipCoords(x1,y1,x2,y2)/*{{{*/
+		{
+			var xa = x1, xb = x2, ya = y1, yb = y2;
+			if (x2 < x1)
+			{
+				xa = x2;
+				xb = x1;
+			}
+			if (y2 < y1)
+			{
+				ya = y2;
+				yb = y1;
+			}
+			return [ Math.round(xa), Math.round(ya), Math.round(xb), Math.round(yb) ];
+		};
+		/*}}}*/
+		function getRect()/*{{{*/
+		{
+			var xsize = x2 - x1;
+			var ysize = y2 - y1;
+
+			if (xlimit && (Math.abs(xsize) > xlimit))
+				x2 = (xsize > 0) ? (x1 + xlimit) : (x1 - xlimit);
+			if (ylimit && (Math.abs(ysize) > ylimit))
+				y2 = (ysize > 0) ? (y1 + ylimit) : (y1 - ylimit);
+
+			if (ymin && (Math.abs(ysize) < ymin))
+				y2 = (ysize > 0) ? (y1 + ymin) : (y1 - ymin);
+			if (xmin && (Math.abs(xsize) < xmin))
+				x2 = (xsize > 0) ? (x1 + xmin) : (x1 - xmin);
+
+			if (x1 < 0) { x2 -= x1; x1 -= x1; }
+			if (y1 < 0) { y2 -= y1; y1 -= y1; }
+			if (x2 < 0) { x1 -= x2; x2 -= x2; }
+			if (y2 < 0) { y1 -= y2; y2 -= y2; }
+			if (x2 > boundx) { var delta = x2 - boundx; x1 -= delta; x2 -= delta; }
+			if (y2 > boundy) { var delta = y2 - boundy; y1 -= delta; y2 -= delta; }
+			if (x1 > boundx) { var delta = x1 - boundy; y2 -= delta; y1 -= delta; }
+			if (y1 > boundy) { var delta = y1 - boundy; y2 -= delta; y1 -= delta; }
+
+			return makeObj(flipCoords(x1,y1,x2,y2));
+		};
+		/*}}}*/
+		function makeObj(a)/*{{{*/
+		{
+			return { x: a[0], y: a[1], x2: a[2], y2: a[3],
+				w: a[2] - a[0], h: a[3] - a[1] };
+		};
+		/*}}}*/
+
+		return {
+			flipCoords: flipCoords,
+			setPressed: setPressed,
+			setCurrent: setCurrent,
+			getOffset: getOffset,
+			moveOffset: moveOffset,
+			getCorner: getCorner,
+			getFixed: getFixed
+		};
+	}();
+
+	/*}}}*/
+	var Selection = function()/*{{{*/
+	{
+		var start, end, dragmode, awake, hdep = 370;
+		var borders = { };
+		var handle = { };
+		var seehandles = false;
+		var hhs = options.handleOffset;
+
+		/* Insert draggable elements {{{*/
+
+		// Insert border divs for outline
+		if (options.drawBorders) {
+			borders = {
+					top: insertBorder('hline')
+						.css('top',$.browser.msie?px(-1):px(0)),
+					bottom: insertBorder('hline'),
+					left: insertBorder('vline'),
+					right: insertBorder('vline')
+			};
+		}
+
+		// Insert handles on edges
+		if (options.dragEdges) {
+			handle.t = insertDragbar('n');
+			handle.b = insertDragbar('s');
+			handle.r = insertDragbar('e');
+			handle.l = insertDragbar('w');
+		}
+
+		// Insert side handles
+		options.sideHandles &&
+			createHandles(['n','s','e','w']);
+
+		// Insert corner handles
+		options.cornerHandles &&
+			createHandles(['sw','nw','ne','se']);
+
+		/*}}}*/
+		// Private Methods
+		function insertBorder(type)/*{{{*/
+		{
+			var jq = $('<div />')
+				.css({position: 'absolute', opacity: options.borderOpacity })
+				.addClass(cssClass(type));
+			$img_holder.append(jq);
+			return jq;
+		};
+		/*}}}*/
+		function dragDiv(ord,zi)/*{{{*/
+		{
+			var jq = $('<div />')
+				.mousedown(createDragger(ord))
+				.css({
+					cursor: ord+'-resize',
+					position: 'absolute',
+					zIndex: zi 
+				})
+			;
+			$hdl_holder.append(jq);
+			return jq;
+		};
+		/*}}}*/
+		function insertHandle(ord)/*{{{*/
+		{
+			return dragDiv(ord,hdep++)
+				.css({ top: px(-hhs+1), left: px(-hhs+1), opacity: options.handleOpacity })
+				.addClass(cssClass('handle'));
+		};
+		/*}}}*/
+		function insertDragbar(ord)/*{{{*/
+		{
+			var s = options.handleSize,
+				o = hhs,
+				h = s, w = s,
+				t = o, l = o;
+
+			switch(ord)
+			{
+				case 'n': case 's': w = pct(100); break;
+				case 'e': case 'w': h = pct(100); break;
+			}
+
+			return dragDiv(ord,hdep++).width(w).height(h)
+				.css({ top: px(-t+1), left: px(-l+1)});
+		};
+		/*}}}*/
+		function createHandles(li)/*{{{*/
+		{
+			for(i in li) handle[li[i]] = insertHandle(li[i]);
+		};
+		/*}}}*/
+		function moveHandles(c)/*{{{*/
+		{
+			var midvert  = Math.round((c.h / 2) - hhs),
+				midhoriz = Math.round((c.w / 2) - hhs),
+				north = west = -hhs+1,
+				east = c.w - hhs,
+				south = c.h - hhs,
+				x, y;
+
+			'e' in handle &&
+				handle.e.css({ top: px(midvert), left: px(east) }) &&
+				handle.w.css({ top: px(midvert) }) &&
+				handle.s.css({ top: px(south), left: px(midhoriz) }) &&
+				handle.n.css({ left: px(midhoriz) });
+
+			'ne' in handle &&
+				handle.ne.css({ left: px(east) }) &&
+				handle.se.css({ top: px(south), left: px(east) }) &&
+				handle.sw.css({ top: px(south) });
+
+			'b' in handle &&
+				handle.b.css({ top: px(south) }) &&
+				handle.r.css({ left: px(east) });
+		};
+		/*}}}*/
+		function moveto(x,y)/*{{{*/
+		{
+			$img2.css({ top: px(-y), left: px(-x) });
+			$sel.css({ top: px(y), left: px(x) });
+		};
+		/*}}}*/
+		function resize(w,h)/*{{{*/
+		{
+			$sel.width(w).height(h);
+		};
+		/*}}}*/
+		function refresh()/*{{{*/
+		{
+			var c = Coords.getFixed();
+
+			Coords.setPressed([c.x,c.y]);
+			Coords.setCurrent([c.x2,c.y2]);
+
+			updateVisible();
+		};
+		/*}}}*/
+
+		// Internal Methods
+		function updateVisible()/*{{{*/
+			{ if (awake) return update(); };
+		/*}}}*/
+		function update()/*{{{*/
+		{
+			var c = Coords.getFixed();
+
+			resize(c.w,c.h);
+			moveto(c.x,c.y);
+
+			options.drawBorders &&
+				borders['right'].css({ left: px(c.w-1) }) &&
+					borders['bottom'].css({ top: px(c.h-1) });
+
+			seehandles && moveHandles(c);
+			awake || show();
+
+			options.onChange(unscale(c));
+		};
+		/*}}}*/
+		function show()/*{{{*/
+		{
+			$sel.show();
+			$img.css('opacity',options.bgOpacity);
+			awake = true;
+		};
+		/*}}}*/
+		function release()/*{{{*/
+		{
+			disableHandles();
+			$sel.hide();
+			$img.css('opacity',1);
+			awake = false;
+		};
+		/*}}}*/
+		function showHandles()//{{{
+		{
+			if (seehandles)
+			{
+				moveHandles(Coords.getFixed());
+				$hdl_holder.show();
+			}
+		};
+		//}}}
+		function enableHandles()/*{{{*/
+		{ 
+			seehandles = true;
+			if (options.allowResize)
+			{
+				moveHandles(Coords.getFixed());
+				$hdl_holder.show();
+				return true;
+			}
+		};
+		/*}}}*/
+		function disableHandles()/*{{{*/
+		{
+			seehandles = false;
+			$hdl_holder.hide();
+		};
+		/*}}}*/
+		function animMode(v)/*{{{*/
+		{
+			(animating = v) ? disableHandles(): enableHandles();
+		};
+		/*}}}*/
+		function done()/*{{{*/
+		{
+			animMode(false);
+			refresh();
+		};
+		/*}}}*/
+
+		var $track = newTracker().mousedown(createDragger('move'))
+				.css({ cursor: 'move', position: 'absolute', zIndex: 360 })
+
+		$img_holder.append($track);
+		disableHandles();
+
+		return {
+			updateVisible: updateVisible,
+			update: update,
+			release: release,
+			refresh: refresh,
+			setCursor: function (cursor) { $track.css('cursor',cursor); },
+			enableHandles: enableHandles,
+			enableOnly: function() { seehandles = true; },
+			showHandles: showHandles,
+			disableHandles: disableHandles,
+			animMode: animMode,
+			done: done
+		};
+	}();
+	/*}}}*/
+	var Tracker = function()/*{{{*/
+	{
+		var onMove		= function() { },
+			onDone		= function() { },
+			trackDoc	= options.trackDocument;
+
+		if (!trackDoc)
+		{
+			$trk
+				.mousemove(trackMove)
+				.mouseup(trackUp)
+				.mouseout(trackUp)
+			;
+		}
+
+		function toFront()/*{{{*/
+		{
+			$trk.css({zIndex:450});
+			if (trackDoc)
+			{
+				$(document)
+					.mousemove(trackMove)
+					.mouseup(trackUp)
+				;
+			}
+		}
+		/*}}}*/
+		function toBack()/*{{{*/
+		{
+			$trk.css({zIndex:290});
+			if (trackDoc)
+			{
+				$(document)
+					.unbind('mousemove',trackMove)
+					.unbind('mouseup',trackUp)
+				;
+			}
+		}
+		/*}}}*/
+		function trackMove(e)/*{{{*/
+		{
+			onMove(mouseAbs(e));
+		};
+		/*}}}*/
+		function trackUp(e)/*{{{*/
+		{
+			e.preventDefault();
+			e.stopPropagation();
+
+			if (btndown)
+			{
+				btndown = false;
+
+				onDone(mouseAbs(e));
+				options.onSelect(unscale(Coords.getFixed()));
+				toBack();
+				onMove = function() { };
+				onDone = function() { };
+			}
+
+			return false;
+		};
+		/*}}}*/
+
+		function activateHandlers(move,done)/* {{{ */
+		{
+			btndown = true;
+			onMove = move;
+			onDone = done;
+			toFront();
+			return false;
+		};
+		/* }}} */
+
+		function setCursor(t) { $trk.css('cursor',t); };
+
+		$img.before($trk);
+		return {
+			activateHandlers: activateHandlers,
+			setCursor: setCursor
+		};
+	}();
+	/*}}}*/
+	var KeyManager = function()/*{{{*/
+	{
+		var $keymgr = $('<input type="radio" />')
+				.css({ position: 'absolute', left: '-30px' })
+				.keypress(parseKey)
+				.blur(onBlur),
+
+			$keywrap = $('<div />')
+				.css({
+					position: 'absolute',
+					overflow: 'hidden'
+				})
+				.append($keymgr)
+		;
+
+		function watchKeys()/*{{{*/
+		{
+			if (options.keySupport)
+			{
+				$keymgr.show();
+				$keymgr.focus();
+			}
+		};
+		/*}}}*/
+		function onBlur(e)/*{{{*/
+		{
+			$keymgr.hide();
+		};
+		/*}}}*/
+		function doNudge(e,x,y)/*{{{*/
+		{
+			if (options.allowMove) {
+				Coords.moveOffset([x,y]);
+				Selection.updateVisible();
+			};
+			e.preventDefault();
+			e.stopPropagation();
+		};
+		/*}}}*/
+		function parseKey(e)/*{{{*/
+		{
+			if (e.ctrlKey) return true;
+			shift_down = e.shiftKey ? true : false;
+			var nudge = shift_down ? 10 : 1;
+			switch(e.keyCode)
+			{
+				case 37: doNudge(e,-nudge,0); break;
+				case 39: doNudge(e,nudge,0); break;
+				case 38: doNudge(e,0,-nudge); break;
+				case 40: doNudge(e,0,nudge); break;
+
+				case 27: Selection.release(); break;
+
+				case 9: return true;
+			}
+
+			return nothing(e);
+		};
+		/*}}}*/
+		
+		if (options.keySupport) $keywrap.insertBefore($img);
+		return {
+			watchKeys: watchKeys
+		};
+	}();
+	/*}}}*/
+
+	// }}}
+	// Internal Methods {{{
+
+	function px(n) { return '' + parseInt(n) + 'px'; };
+	function pct(n) { return '' + parseInt(n) + '%'; };
+	function cssClass(cl) { return options.baseClass + '-' + cl; };
+	function getPos(obj)/*{{{*/
+	{
+		// Updated in v0.9.4 to use built-in dimensions plugin
+		var pos = $(obj).offset();
+		return [ pos.left, pos.top ];
+	};
+	/*}}}*/
+	function mouseAbs(e)/*{{{*/
+	{
+		return [ (e.pageX - docOffset[0]), (e.pageY - docOffset[1]) ];
+	};
+	/*}}}*/
+	function myCursor(type)/*{{{*/
+	{
+		if (type != lastcurs)
+		{
+			Tracker.setCursor(type);
+			//Handles.xsetCursor(type);
+			lastcurs = type;
+		}
+	};
+	/*}}}*/
+	function startDragMode(mode,pos)/*{{{*/
+	{
+		docOffset = getPos($img);
+		Tracker.setCursor(mode=='move'?mode:mode+'-resize');
+
+		if (mode == 'move')
+			return Tracker.activateHandlers(createMover(pos), doneSelect);
+
+		var fc = Coords.getFixed();
+		var opp = oppLockCorner(mode);
+		var opc = Coords.getCorner(oppLockCorner(opp));
+
+		Coords.setPressed(Coords.getCorner(opp));
+		Coords.setCurrent(opc);
+
+		Tracker.activateHandlers(dragmodeHandler(mode,fc),doneSelect);
+	};
+	/*}}}*/
+	function dragmodeHandler(mode,f)/*{{{*/
+	{
+		return function(pos) {
+			if (!options.aspectRatio) switch(mode)
+			{
+				case 'e': pos[1] = f.y2; break;
+				case 'w': pos[1] = f.y2; break;
+				case 'n': pos[0] = f.x2; break;
+				case 's': pos[0] = f.x2; break;
+			}
+			else switch(mode)
+			{
+				case 'e': pos[1] = f.y+1; break;
+				case 'w': pos[1] = f.y+1; break;
+				case 'n': pos[0] = f.x+1; break;
+				case 's': pos[0] = f.x+1; break;
+			}
+			Coords.setCurrent(pos);
+			Selection.update();
+		};
+	};
+	/*}}}*/
+	function createMover(pos)/*{{{*/
+	{
+		var lloc = pos;
+		KeyManager.watchKeys();
+
+		return function(pos)
+		{
+			Coords.moveOffset([pos[0] - lloc[0], pos[1] - lloc[1]]);
+			lloc = pos;
+			
+			Selection.update();
+		};
+	};
+	/*}}}*/
+	function oppLockCorner(ord)/*{{{*/
+	{
+		switch(ord)
+		{
+			case 'n': return 'sw';
+			case 's': return 'nw';
+			case 'e': return 'nw';
+			case 'w': return 'ne';
+			case 'ne': return 'sw';
+			case 'nw': return 'se';
+			case 'se': return 'nw';
+			case 'sw': return 'ne';
+		};
+	};
+	/*}}}*/
+	function createDragger(ord)/*{{{*/
+	{
+		return function(e) {
+			if (options.disabled) return false;
+			if ((ord == 'move') && !options.allowMove) return false;
+			btndown = true;
+			startDragMode(ord,mouseAbs(e));
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		};
+	};
+	/*}}}*/
+	function presize($obj,w,h)/*{{{*/
+	{
+		var nw = $obj.width(), nh = $obj.height();
+		if ((nw > w) && w > 0)
+		{
+			nw = w;
+			nh = (w/$obj.width()) * $obj.height();
+		}
+		if ((nh > h) && h > 0)
+		{
+			nh = h;
+			nw = (h/$obj.height()) * $obj.width();
+		}
+		xscale = $obj.width() / nw;
+		yscale = $obj.height() / nh;
+		$obj.width(nw).height(nh);
+	};
+	/*}}}*/
+	function unscale(c)/*{{{*/
+	{
+		return {
+			x: parseInt(c.x * xscale), y: parseInt(c.y * yscale), 
+			x2: parseInt(c.x2 * xscale), y2: parseInt(c.y2 * yscale), 
+			w: parseInt(c.w * xscale), h: parseInt(c.h * yscale)
+		};
+	};
+	/*}}}*/
+	function doneSelect(pos)/*{{{*/
+	{
+		var c = Coords.getFixed();
+		if (c.w > options.minSelect[0] && c.h > options.minSelect[1])
+		{
+			Selection.enableHandles();
+			Selection.done();
+		}
+		else
+		{
+			Selection.release();
+		}
+		Tracker.setCursor( options.allowSelect?'crosshair':'default' );
+	};
+	/*}}}*/
+	function newSelection(e)/*{{{*/
+	{
+		if (options.disabled) return false;
+		if (!options.allowSelect) return false;
+		btndown = true;
+		docOffset = getPos($img);
+		Selection.disableHandles();
+		myCursor('crosshair');
+		var pos = mouseAbs(e);
+		Coords.setPressed(pos);
+		Tracker.activateHandlers(selectDrag,doneSelect);
+		KeyManager.watchKeys();
+		Selection.update();
+
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	};
+	/*}}}*/
+	function selectDrag(pos)/*{{{*/
+	{
+		Coords.setCurrent(pos);
+		Selection.update();
+	};
+	/*}}}*/
+	function newTracker()
+	{
+		var trk = $('<div></div>').addClass(cssClass('tracker'));
+		$.browser.msie && trk.css({ opacity: 0, backgroundColor: 'white' });
+		return trk;
+	};
+
+	// }}}
+	// API methods {{{
+		
+	function animateTo(a)/*{{{*/
+	{
+		var x1 = a[0] / xscale,
+			y1 = a[1] / yscale,
+			x2 = a[2] / xscale,
+			y2 = a[3] / yscale;
+
+		if (animating) return;
+
+		var animto = Coords.flipCoords(x1,y1,x2,y2);
+		var c = Coords.getFixed();
+		var animat = initcr = [ c.x, c.y, c.x2, c.y2 ];
+		var interv = options.animationDelay;
+
+		var x = animat[0];
+		var y = animat[1];
+		var x2 = animat[2];
+		var y2 = animat[3];
+		var ix1 = animto[0] - initcr[0];
+		var iy1 = animto[1] - initcr[1];
+		var ix2 = animto[2] - initcr[2];
+		var iy2 = animto[3] - initcr[3];
+		var pcent = 0;
+		var velocity = options.swingSpeed;
+
+		Selection.animMode(true);
+
+		var animator = function()
+		{
+			return function()
+			{
+				pcent += (100 - pcent) / velocity;
+
+				animat[0] = x + ((pcent / 100) * ix1);
+				animat[1] = y + ((pcent / 100) * iy1);
+				animat[2] = x2 + ((pcent / 100) * ix2);
+				animat[3] = y2 + ((pcent / 100) * iy2);
+
+				if (pcent < 100) animateStart();
+					else Selection.done();
+
+				if (pcent >= 99.8) pcent = 100;
+
+				setSelectRaw(animat);
+			};
+		}();
+
+		function animateStart()
+			{ window.setTimeout(animator,interv); };
+
+		animateStart();
+	};
+	/*}}}*/
+	function setSelect(rect)//{{{
+	{
+		setSelectRaw([rect[0]/xscale,rect[1]/yscale,rect[2]/xscale,rect[3]/yscale]);
+	};
+	//}}}
+	function setSelectRaw(l) /*{{{*/
+	{
+		Coords.setPressed([l[0],l[1]]);
+		Coords.setCurrent([l[2],l[3]]);
+		Selection.update();
+	};
+	/*}}}*/
+	function setOptions(opt)/*{{{*/
+	{
+		if (typeof(opt) != 'object') opt = { };
+		options = $.extend(options,opt);
+
+		if (typeof(options.onChange)!=='function')
+			options.onChange = function() { };
+
+		if (typeof(options.onSelect)!=='function')
+			options.onSelect = function() { };
+
+	};
+	/*}}}*/
+	function tellSelect()/*{{{*/
+	{
+		return unscale(Coords.getFixed());
+	};
+	/*}}}*/
+	function tellScaled()/*{{{*/
+	{
+		return Coords.getFixed();
+	};
+	/*}}}*/
+	function setOptionsNew(opt)/*{{{*/
+	{
+		setOptions(opt);
+		interfaceUpdate();
+	};
+	/*}}}*/
+	function disableCrop()//{{{
+	{
+		options.disabled = true;
+		Selection.disableHandles();
+		Selection.setCursor('default');
+		Tracker.setCursor('default');
+	};
+	//}}}
+	function enableCrop()//{{{
+	{
+		options.disabled = false;
+		interfaceUpdate();
+	};
+	//}}}
+	function cancelCrop()//{{{
+	{
+		Selection.done();
+		Tracker.activateHandlers(null,null);
+	};
+	//}}}
+	function destroy()//{{{
+	{
+		$div.remove();
+		$origimg.show();
+	};
+	//}}}
+
+	function interfaceUpdate(alt)//{{{
+	// This method tweaks the interface based on options object.
+	// Called when options are changed and at end of initialization.
+	{
+		options.allowResize ?
+			alt?Selection.enableOnly():Selection.enableHandles():
+			Selection.disableHandles();
+
+		Tracker.setCursor( options.allowSelect? 'crosshair': 'default' );
+		Selection.setCursor( options.allowMove? 'move': 'default' );
+
+		$div.css('backgroundColor',options.bgColor);
+
+		if ('setSelect' in options) {
+			setSelect(opt.setSelect);
+			Selection.done();
+			delete(options.setSelect);
+		}
+
+		if ('trueSize' in options) {
+			xscale = options.trueSize[0] / boundx;
+			yscale = options.trueSize[1] / boundy;
+		}
+
+		xlimit = options.maxSize[0] || 0;
+		ylimit = options.maxSize[1] || 0;
+		xmin = options.minSize[0] || 0;
+		ymin = options.minSize[1] || 0;
+
+		if ('outerImage' in options)
+		{
+			$img.attr('src',options.outerImage);
+			delete(options.outerImage);
+		}
+
+		Selection.refresh();
+	};
+	//}}}
+
+	// }}}
+
+	$hdl_holder.hide();
+	interfaceUpdate(true);
+	
+	var api = {
+		animateTo: animateTo,
+		setSelect: setSelect,
+		setOptions: setOptionsNew,
+		tellSelect: tellSelect,
+		tellScaled: tellScaled,
+
+		disable: disableCrop,
+		enable: enableCrop,
+		cancel: cancelCrop,
+
+		focus: KeyManager.watchKeys,
+
+		getBounds: function() { return [ boundx * xscale, boundy * yscale ]; },
+		getWidgetSize: function() { return [ boundx, boundy ]; },
+
+		release: Selection.release,
+		destroy: destroy
+
+	};
+
+	$origimg.data('Jcrop',api);
+	return api;
+};
+
+$.fn.Jcrop = function(options)/*{{{*/
+{
+	function attachWhenDone(from)/*{{{*/
+	{
+		var loadsrc = options.useImg || from.src;
+		var img = new Image();
+		img.onload = function() { $.Jcrop(from,options); };
+		img.src = loadsrc;
+	};
+	/*}}}*/
+	if (typeof(options) !== 'object') options = { };
+
+	// Iterate over each object, attach Jcrop
+	this.each(function()
+	{
+		// If we've already attached to this object
+		if ($(this).data('Jcrop'))
+		{
+			// The API can be requested this way (undocumented)
+			if (options == 'api') return $(this).data('Jcrop');
+			// Otherwise, we just reset the options...
+			else $(this).data('Jcrop').setOptions(options);
+		}
+		// If we haven't been attached, preload and attach
+		else attachWhenDone(this);
+	});
+
+	// Return "this" so we're chainable a la jQuery plugin-style!
+	return this;
+};
+/*}}}*/
+
+})(jQuery);
+
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "ed882314c841932770eab4413337b4b0" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "515aed1a6d4d4606e44543b3aca12538" , 
+        filename : "Page.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    var Maxpagelist = 7;
+
+function Page() {
+    Page.superclass.constructor.apply(this, arguments);
+}
+
+$jex.extendClass(Page, XControl);
+Page.prototype.update = function(page) {
+    if (page.totalpage < Maxpagelist) {
+        this.lessPage(page);
+    } else {
+        this.morePage(page);
+    }
+
+}
+Page.prototype.lessPage = function(page) {
+    if (page.totalpage !== 1) {
+        for (var i = 1, max = page.totalpage; i <= max; i++) {
+            this.fillCorrectPage(page, i);
+        }
+    }
+}
+Page.prototype.morePage = function(page) {
+    if (page.currentpage < Maxpagelist - 2) {
+        this.startPageStyle(page);
+    } else if (page.currentpage > page.totalpage - 4) {
+        this.endPageStyle(page);
+    } else {
+        this.middlePageStyle(page);
+    }
+}
+Page.prototype.middlePageStyle = function(page) {
+    var total = page.totalpage;
+    var current = page.currentpage;
+    var before = 2;
+    var after = 3;
+    var start = (current - before);
+    var end = (current + after);
+    for (var i = 1; i <= total; i++) {
+        if (i == (before)) {
+            i = start;
+            this.insertDot();
+        } else if (i == (current + after)) {
+            i = (total - after + 3);
+            this.insertDot();
+        }
+        this.fillCorrectPage(page, i);
+    }
+}
+Page.prototype.endPageStyle = function(page) {
+    this.insertHead();
+    this.insertDot();
+    var totalpage = page.totalpage;
+    for (var i = totalpage - 4; i <= totalpage; i++) {
+        this.fillCorrectPage(page, i);
+    }
+}
+Page.prototype.startPageStyle = function(page) {
+    for (var i = 1, max = Maxpagelist - 1; i < max; i++) {
+        this.fillCorrectPage(page, i);
+    }
+    this.insertDot();
+    this.insertfinalPage(page.totalpage);
+}
+Page.prototype.fillCorrectPage = function(page, i) {
+    if (i === page.currentpage) {
+        this.insertCurrentPage(i);
+    } else {
+        this.insertNormalPage(i);
+    }
+}
+Page.prototype.insertHead = function() {
+    this.text('<li>');
+    this.text('    <a href="#1">1</a>');
+    this.text('</li>');
+}
+Page.prototype.insertfinalPage = function(end) {
+    this.text('<li>');
+    this.text('    <a href="#', end, '">', end, '</a>');
+    this.text('</li>');
+}
+Page.prototype.insertDot = function() {
+    this.text('<li class="dot">');
+    this.text('    <span>....</span>');
+    this.text('</li>');
+}
+Page.prototype.insertCurrentPage = function(data) {
+    this.text('<li class="page-on">');
+    this.text('    <span href="#', data, '">', data, '</span>');
+    this.text('</li>');
+}
+Page.prototype.insertNormalPage = function(data) {
+    this.text('<li>');
+    this.text('    <a href="#', data, '">', data, '</a>');
+    this.text('</li>');
+}
+
+module.exports = Page;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "515aed1a6d4d4606e44543b3aca12538" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "d51c28027d301e4202df7e9069f15f46" , 
+        filename : "noify.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    var hasPaint = false;
+var Userpage =__context.____MODULES['515aed1a6d4d4606e44543b3aca12538'];
+var messagepage = new Userpage({
+    elemId: "pagelist"
+});
+
+$(messagepage).bind("loadlistpage", function(e, page, currentpage) {
+    var data = {
+        totalpage: page,
+        currentpage: currentpage
+    };
+    messagepage.clear();
+    messagepage.updateSource(data);
+    messagepage.render();
+});
+var default_style = [
+    "#remind {display: none;width: 350px;border: 1px solid #b9b9b9;height: auto;overflow: hidden;font-size: 12px;color: #333;background: #fff;clear: both;border-top: 0;border-radius: 0 0 5px 5px;box-shadow: 1px 1px 5px #ddd;}",
+    "#remind h3 {height: 29px;line-height: 29px;color: #333;font-weight: bold;padding: 0 9px;border-bottom: 1px solid #e4e4e4;}",
+    "#remind p {padding: 4px 5px 5px 8px;margin: 0 1px;line-height: 16px;position: relative;border-bottom: 2px solid #e4e4e4;}",
+    "#remind .more {position: relative;text-align: center;height: 31px;line-height: 31px;clear: both;background: #f7f7f7;margin-top: 2px;box-shadow: 0 -1px 5px #ececec;z-index: 1;}",
+    "#remind a {color: #369;text-decoration: none;}",
+    ".remove{float:right;}",
+    "#remind .more a {margin: 0 8px;display: inline;}"
+].join('');
+
+function contentInform(opt) {
+    this.width = opt.width;
+    this.initStyles();
+
+};
+
+
+contentInform.prototype.initStyles = function() {
+    if (hasPaint) return;
+    var s = document.createElement("style");
+    s.type = "text/css";
+    var styles = default_style;
+    if (s.styleSheet) {
+        s.styleSheet.cssText = styles;
+    } else {
+        s.appendChild(document.createTextNode(styles));
+    }
+    document.getElementsByTagName("head")[0].appendChild(s);
+    hasPaint = true;
+
+};
+
+contentInform.prototype.listRender = function(opt) {
+    debugger
+    var lists = opt.info;
+    var str = "";
+    for (var i = 0; i < lists.length; i++) {
+        if (!lists[i].check_status) {
+            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a data-nid="' + lists[i]._id + '" href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
+        };
+
+    }
+    return ['<div id="remind" data-type="listbox" style="width":', this.width, 'px;>',
+        '<h3>提醒</h3>', str,
+        '<div class="page-list">',
+        '    <ul id="pagelist">',
+        '    </ul>',
+        '</div>',
+        '<div id="more" class="more">',
+        '<span><a href="" id="cancel_all">忽略全部</a></span>',
+        '</div>',
+        '</div>'].join('');
+};
+
+contentInform.prototype.getContent = function(id, page) {
+    var that = this;
+    $.ajax({
+        url: '/data.json',
+        type: 'post',
+        data: {
+            id: id,
+            page: page
+        },
+        success: function(res) {
+            var $content = that.listRender(res);
+            $("#listcontent").empty().append($content);
+            $("#listcontent").show();
+            $("[data-type='listbox']").show();
+            $(messagepage).trigger("loadlistpage", [res.pageNum, page]);
+            that.eventBind();
+        }
+    });
+};
+
+
+
+contentInform.prototype.eventBind = function() {
+    var that = this;
+    var listbox = $("[data-type='listbox']");
+    $("#pagelist").delegate("a", "click", function(e) {
+        e.preventDefault();
+        var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        that.getContent(id, parseInt($(e.target).text()));
+    });
+    $("#remind").delegate("a", "click", function() {
+        var that = this;
+        $.ajax({
+            url: '/read.do',
+            type: 'POST',
+            data: {
+                id: $(this).data("nid")
+            },
+            success: function(res) {
+                debugger;
+                var num = $(".check_num").text();
+                $(".check_num").text(--num)
+                $(that).closest("p").remove();
+            }
+        });
+    });
+
+    $("body").click(function(e) {
+        if (!$(e.target).closest("#listcontent").length) {
+            that.close()
+        }
+    });
+
+    $("#cancel_all").click(function(e) {
+        e.preventDefault();
+        var uid = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+        var me = this;
+        $.ajax({
+            type: "post",
+            url: "/changenote.do",
+            data: {
+                id: uid
+            },
+            success: function(res) {
+                $(".check_num").text(0)
+                that.ignoreAll();
+            }
+        })
+    })
+};
+
+// 单击忽略全部
+contentInform.prototype.ignoreAll = function() {
+    // $.ajax({
+    //  url:'', 
+    //  datatype:'json', 
+    //  data:'post',
+    //  success:function(res){
+    //      // 
+    $("#remind").find(".none-content").remove();
+    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完</div></div>"
+    $("#remind").find("p").remove();
+    $("#remind").find("h3").after(str);
+    //  }
+    // });
+
+};
+
+
+contentInform.prototype.open = function() {
+    var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+    this.getContent(id, 1);
+    flag = true;
+};
+contentInform.prototype.close = function() {
+    $("#listcontent").hide();
+    flag = false;
+};
+
+
+
+$.contentInform = function(opts) {
+    return new contentInform(opts);
+};
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "d51c28027d301e4202df7e9069f15f46" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "608cf9aae1492fb6a2cb38470aae99bd" , 
+        filename : "UserInfo.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    __context.____MODULES['d51c28027d301e4202df7e9069f15f46'];
+function UserInfo() {
+    UserInfo.superclass.constructor.apply(this, arguments);
+}
+
+
+$jex.extendClass(UserInfo, XControl);
+var superflag = 0;
+
+var searchHandler = function() {
+    var $search = $(".hsearch");
+    $search.find(".tsearch-submit").off("click").on("click", function(e) {
+        var $searchinput = $search.find("input");
+        if ($.trim($searchinput.val()) === "") {
+            alert("请输入搜索的关键字");
+            $searchinput.focus();
+            e.preventDefault();
+        }
+        $searchinput.val($.trim($searchinput.val()));
+    });
+}
+
+UserInfo.prototype.update = function(data) {
+    superflag = 0;
+    if (data.islogin) {
+        this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
+        this.text('<a href="#" class="backinfo">登出</a>');
+        this.text('<a href="#" style="display:none">登录</a>');
+        this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
+        this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
+        if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
+            superflag = 1;
+            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../adminback.html">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
+        }else{
+            this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条消息</a>');
+        }
+        $(this).trigger("userlogin", [data.data]);
+    } else {
+        this.text('<a href="#" class= "loginclick" >登录</a>');
+    }
+    this.onInit(function() {
+        var me = this;
+        $(".backinfo").click(function(e) {
+            me.exituser();
+            e.preventDefault();
+        });
+        $(".loginclick").click(function(e) {
+            me.show();
+            $("#login_alias").focus();
+        })
+        $("body").append('<div id="listcontent"></div>');
+        this.notify();
+        searchHandler();
+        if (superflag === 1 && $(".check_num").text() === "") {
+            this.getActionnum();
+        }else if($(".check_num").text() === ""){
+            var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+            this.getmessage(id);
+        }
+    });
+}
+UserInfo.prototype.loadData = function(examnum) {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/list"),
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+            data.examnum = examnum;
+            $(me).trigger("loaduser", [data]);
+        },
+        error: function(data) {}
+    });
+}
+UserInfo.prototype.getActionnum = function() {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/exam"),
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+            if (!data.ret) {
+                alert("系统出错了~~");
+                return false;
+            }
+            me.loadData(data.examnum);
+        },
+        error: function(data) {}
+    });
+}
+UserInfo.prototype.getmessage = function (uid) {
+    var me = this;
+    $.ajax({
+        type:"post",
+        url: "/allnote.do",
+        data:{
+            id:uid
+        },
+        success:function (res) {
+            me.loadData(res.length);
+        }
+    })
+}
+UserInfo.prototype.exituser = function() {
+    var me = this;
+    $.ajax({
+        type: "GET",
+        url: eDomain.getURL("user/exit"),
+        dataType: "json",
+        success: function(data) {
+            me.loadData();
+        },
+        error: function(data) {}
+    });
+}
+
+UserInfo.prototype.bindEvent = function(data) {
+    var $dlglogin = $(".dlglogin")
+    var $overlay = $(".overlay")
+    var me = this;
+    $(".dlglogin-close").click(function(e) {
+        $dlglogin.remove()
+        $(".overlay").hide()
+        e.preventDefault()
+    });
+    $("#btn-submit").click(function(e) {
+        e.preventDefault();
+        if ($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === "") {
+            alert("请输入具体信息")
+            return
+        }
+        $.post("userlogin.do", $(".dlglogin-form").serialize(), function(res) {
+            if (res.ret) {
+                me.loadData()
+                $dlglogin.remove()
+                $(".overlay").hide()
+            } else {
+                alert(res.info);
+            }
+        })
+    })
+}
+UserInfo.prototype.notify = function() {
+    flag = false;
+    var ci = $.contentInform({
+        width:'800'
+    });
+    var informbtn = $("#inform");
+    informbtn.click(function(){
+        if (flag===false) {
+            ci.open()
+        }else{
+            ci.close()
+        }
+
+    });
+}
+UserInfo.prototype.show = 
+function() {
+    var form =
+        '<div class="overlay" style="display: block;"></div>' +
+        '    <div class="dlglogin">' +
+        '        <a href="#" class="dlglogin-close">X</a>' +
+        '        <form class="dlglogin-form" action="userlogin.do" method = "post">' +
+        '            <p id="legend">登录</p>' +
+        '            <fieldset>' +
+        '                <div class="item spec" id="alias">' +
+        '                    <label for="login_alias">学号</label>' +
+        '                    <input type="text" id="login_alias" name="id" class="text pop_email" tabindex="1">' +
+        '                </div>' +
+        '                <div class="item spec">' +
+        '                    <label for="login_password">密码</label>' +
+        '                    <input type="password" id="login_password" name="password" class="text" tabindex="2">' +
+        '                </div>' +
+        '                <div class="item recsubmit">' +
+        '                    <span class="loading"></span>' +
+        '                    <input id="btn-submit" value="登 录" tabindex="5">' +
+        '                </div>' +
+        '            </fieldset>' +
+        '        </form>' +
+        '        <div class="dlglogin-aside">' +
+        '            <div class="dlg-notify">' +
+        '                <p>注:</p>' +
+        '                <ul>' +
+        '                    <li>' +
+        '                        <span>初始密码与自己的学号相同,登陆后可自行修改密码</span>' +
+        '                    </li>' +
+        '                    <li>' +
+        '                       <span>Lets go提供真实的校园社交平台,只能用学号登陆，无注册功能</span>' +
+        '                    </li>' +
+        '                    <li>' +
+        '                        <span>在登陆、使用中遇到任何问题，可与管理员联系，邮箱地址为：751143842@qq.com</span>' +
+        '                    </li>' +
+        '                </ul>' +
+        '            </div>' +
+        '        </div>' +
+        '    </div>'
+    $("body").append(form);
+    this.bindEvent();
+
+}
+
+module.exports = UserInfo;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "608cf9aae1492fb6a2cb38470aae99bd" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "44594d2db9ab86a8d9d98be16647342e" , 
         filename : "selectType.js" ,
         exports : {}
     };
@@ -9784,7 +11767,6 @@ selectType.prototype.insertBody = function(data,flist) {
     }
 }
 selectType.prototype.insertlist = function(data,flist) {
-    debugger;
     for (var i = 0, max = data.length; i < max; i++) {
         var flag = 0;
         for(var j = 0,maxs = flist.length;j < maxs;j++){
@@ -9793,10 +11775,12 @@ selectType.prototype.insertlist = function(data,flist) {
             }
         }
         if(flag === 0){
-            this.text('<li>');
-            this.text('    <input id="', data[i].id, '" name="', data[i].subName, '" type="checkbox">');
-            this.text('    <label for="', data[i].id, '">', data[i].subName, '</label>');
-            this.text('</li>');
+            if(data[i].state){
+                this.text('<li>');
+                this.text('    <input id="', data[i].id, '" name="', data[i].subName, '" type="checkbox">');
+                this.text('    <label for="', data[i].id, '">', data[i].subName, '</label>');
+                this.text('</li>');
+            }
         }
     }
 }
@@ -9859,651 +11843,331 @@ selectType.prototype.loadData = function() {
 module.exports = selectType;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "db5eb7751b69153319fb2dcba7839d9e" ] = module.exports;
+    __context.____MODULES[ "44594d2db9ab86a8d9d98be16647342e" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "12dd4cc6208fb46c52011b018321d9cd" , 
-        filename : "boardtype.js" ,
+        id : "91213603641dba67d80537e199b895dc" , 
+        filename : "Followtype.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    function boardtype() {
-    boardtype.superclass.constructor.apply(this, arguments);
+    function Followtype() {
+    Followtype.superclass.constructor.apply(this, arguments);
 }
 
-$jex.extendClass(boardtype, XControl);
-boardtype.prototype.update = function(data) {
-    this.insertBody(data);
-}
-boardtype.prototype.insertBody = function(data) {
-    for (var i = 0, max = data.length; i < max; i++) {
-        if(i === max - 1){
-            this.text('<li class="categories c-last">');
-        }else{
-            this.text('<li class="categories">');
-        }
-        this.text('   <h5>');
-        this.text('       <a href="action-list.html?id=',data[i].id,'">',data[i].name, '»</a>');
-        this.text('   </h5>');
-        this.text('   <ul>');
-        this.insertlist(data[i].child,data[i]);
-        this.text('   </ul>');
-        this.text('</li>');
-    }
-}
-boardtype.prototype.insertlist = function(data,parent) {
-    for (var i = 0, max = data.length; i < max; i++) {
-        this.text('       <li>');
-        this.text('           <a href="action-list.html?id=', parent.id, '&sid=',data[i].id,'">', data[i].subName, '</a>');
-        this.text('       </li>');
-    }
-}
-boardtype.prototype.loadData = function(data){
-    $(this).trigger("loadboard",[data]);
-}
-module.exports = boardtype;
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "12dd4cc6208fb46c52011b018321d9cd" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "5f04e819c0491d4bbf550cab4bd7a076" , 
-        filename : "ActionUI.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    function ActionUI() {
-    ActionUI.superclass.constructor.apply(this, arguments);
-}
-$jex.extendClass(ActionUI, XControl);
-
-ActionUI.prototype.update = function(data) {
-    for (var i = 0, max = data.data.length; i < max; i++) {
-        this.text('<div class="type-list" id="single_action">');
-        this.insertHead(data.data[i]);
-        this.inserttypelist(data, data.data[i]);
-        this.text('<div class="list-body" id="actionlist',data.data[i].id,'">');
-        this.singleAction(data.data[i].activities);
-        this.text("</div>");
-        this.text('</div>');
-    }
-    this.onInit(function() {
-        $(this).trigger("overrender");
-    });
-}
-
-ActionUI.prototype.insertHead = function(data) {
-    this.text('<ul class="content-bars">');
-    this.text('    <li class="content-bar__ones"></li>');
-    this.text('    <li class="content-bar__titles">', data.name, '</li>');
-    this.text('    <li class="content-bar__twos"></li>');
-    this.text('    <li class="content-bar__nums"><a href="action-list.html?id=', data.id, '" class="type-many">更多>></a></li>');
-    this.text('    <li class="content-bar__threes"></li>');
-    this.text('</ul>');
-}
-ActionUI.prototype.inserttypelist = function(data, currentdata) {
-    var singlelist = QNR.Tools.filter(data.typelist, function(elem) {
-        return elem.id === currentdata.id
-    })[0].child;
-
-    this.text('<div class="list-head">');
-    this.text('    <div class="list-tabs" id="',currentdata.id,'">');
-    this.text('        <a class="on" href="#" id="hot">最热</a>');
-    for (var i = 0, max = singlelist.length; i < max; i++) {
-        this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
-    }
-    this.text('    </div>');
-    this.text('</div>');
-}
-ActionUI.prototype.singleAction = function(data) {
-    this.text('     <ul class="action-type">');
-    for (var i = 0, max = data.length; i < max; i++) {
-        this.text('         <li class="action-list bd">');
-        this.text('             <a href="action-info.html?actionid=', data[i].id, '" class="action-img">');
-        this.text('                 <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
-        this.text('             <div class="action-info bd">');
-        this.text('                 <h3 class="action-name"><a href="action-info.html?actionid=', data[i].id, '">', data[i].title, '</a></h3>');
-        this.text('                 <p class="action-time">');
-        this.text('                     <span class="date">', data[i].startDay, '</span>');
-        this.text('                     <span class="actiom-time">', data[i].startHHMM, '</span>');
-        this.text('                 </p>');
-        this.text('                 <address class="action-place" title = "', data[i].place, '">', data[i].place, '</address>');
-        this.text('                 <p class="action-people">', data[i].peopleNum, '人参加</p>');
-        this.text('             </div>');
-        this.text('           </li>');
+$jex.extendClass(Followtype, XControl);
+Followtype.prototype.update = function(data) {
+    debugger;
+    for(var i = 0,max = data.length;i < max;i++){
+            this.getfollowlist(data[i]); 
     }
     if(data.length === 0){
-        this.text('<div class="noaction">还没有活动信息</div>');
+        this.text('<div class="notype">没有分组信息</div>')
     }
-    this.text('      </ul>');
-
 }
-ActionUI.prototype.loadData = function(typelist) {
+Followtype.prototype.getfollowlist = function(data){
+        this.text('<li>');
+        this.text('<span>',data.type_name,'</span>');
+        this.text('</li>');
+}
+Followtype.prototype.getfollowlist = function(data){
+        this.text('<li>');
+        this.text('<span>',data.type_name,'</span>');
+        this.text('<div class="closetype hidden" ><a href="#" id="',data.type_id,'">x</a></div>');
+        this.text('</li>');
+}
+Followtype.prototype.loadData = function(uid) {
     var me = this;
     $.ajax({
-        type: "GET",
-        url: eDomain.getURL("actiontype/list"),
+        type: "post",
+        url: eDomain.getURL("usercenter/followtype"),
         dataType: "json",
-        cache:false,
+        cache: false,
+        data:{
+            user_id:uid
+        },
         success: function(data) {
+            debugger;
             if(!data.ret){
                 alert(data.errmsg);
                 return false;
             }
-            data.typelist = typelist;
-            $(me).trigger("loadAllaction", data);
+            $(me).trigger("loadfollowlist", [data]);
         },
         error: function(data) {
 
         }
     });
 }
-
-module.exports = ActionUI;
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "5f04e819c0491d4bbf550cab4bd7a076" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "d1fc17a69ad1cf1f232ec551f23774e3" , 
-        filename : "HotimgInfo.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    function HotimgInfo() {
-   
-    HotimgInfo.superclass.constructor.apply(this, arguments);
-}
-
-$jex.extendClass(HotimgInfo, XControl);
-
-var $atitle = $(".action-title");
-
-function minText(text, len) {
-    if(text.length > len){
-        return text.substr(0, len) + "...";
-    }
-    return text;
-}
-
-HotimgInfo.prototype.update = function(data) {
-    this.insertbody(data.data);
-};
-HotimgInfo.prototype.insertbody = function(data) {
-    if(data.length === 0){
-        this.text('<li class="no-hotact">没有更多热门活动了哦</li>')
-    }
-    for (var i = 0, max = data.length; i < max; i++) {
-        this.text('<li>');
-        this.text('    <div class="action-pic">');
-        this.text('         <a href="action-info.html?actionid=', data[i].id, '">');
-        this.text('             <img alt="', data[i].poster, '" src="', eDomain.getURL("img/posterimg")+data[i].poster, '" height="260" width="190">');
-        this.text('         </a>');
-        this.text('    </div>');
-        this.text('    <div class="action-title">');
-        this.text('         <a href="action-info.html?actionid=', data[i].id, '" title="', data[i].title, '">', minText(data[i].title,20), '</a>');
-        this.text('    </div>');
-        this.text('</li>');
-    }
-};
-
-HotimgInfo.prototype.changestate = function(elem) {
-    $(elem).addClass("active");
-    $(elem).siblings().removeClass("active");
-};
-HotimgInfo.prototype.loadPicData = function(page) {
+Followtype.prototype.deletetype = function(userid,subid,event){
     var me = this;
     $.ajax({
-        type: "GET",
-        url: eDomain.getURL("hotimg/list"),
+        type: "POST",
+        url: eDomain.getURL("usercenter/deletetype"),
         dataType: "json",
         cache:false,
         data:{
-            pageNum:page
+            userId:userid,
+            subClaId:subid
         },
         success: function(data) {
-            if(!data.ret){
-                alert(data.errmsg);
-                return false;
-            }
-            $(me).trigger("renderpic", [data]);
-        },
-        error: function(data) {
-
-        }
-    });
-};
-module.exports = HotimgInfo;
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "d1fc17a69ad1cf1f232ec551f23774e3" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "54b6592c2f23b9c2e0c875456534241a" , 
-        filename : "single_actionUI.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    var ActionUI =__context.____MODULES['5f04e819c0491d4bbf550cab4bd7a076'];
-
-function single_actionUI() {
-    single_actionUI.superclass.constructor.apply(this, arguments);
-}
-$jex.extendClass(single_actionUI, ActionUI);
-single_actionUI.prototype.update = function(data) {
-    
-    this.singleAction(data);
-};
-single_actionUI.prototype.changestate = function(elem) {
-    $(elem).addClass("on");
-    $(elem).siblings().removeClass("on");
-}
-single_actionUI.prototype.loadSingleAction = function(id, sid) {
-    var me = this;
-    var aurl,Pdata;
-    if(sid === "hot"){
-        Pdata = {
-           claId:id 
-        }
-        aurl = eDomain.getURL("actiontype/list");
-    }else{
-        Pdata = {
-            subClaId:sid
-        }
-        aurl = eDomain.getURL("actiontype/slist");
-    }
-    $.ajax({
-        type: "GET",
-        url: aurl,
-        dataType: "json",
-        cache:false,
-        data:Pdata,
-        success: function(data) {
-            if(!data.ret){
-                alert(data.errmsg);
-                return false;
-            }
-            $(me).trigger("changeaction", [data, id]);
+            debugger;
+            $(me).trigger("deletefollowlist",[data,event]);
         },
         error: function(data) {
             
         }
     });
 }
-module.exports = single_actionUI;
+
+
+module.exports = Followtype;
+
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "54b6592c2f23b9c2e0c875456534241a" ] = module.exports;
+    __context.____MODULES[ "91213603641dba67d80537e199b895dc" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "e5b5a21667488477a43c41e979b24d80" , 
-        filename : "noify.js" ,
+        id : "c8beaf3563ee7847bdd048ccf71295ca" , 
+        filename : "UserbaseInfo.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    var hasPaint = false;
-var default_style = [
-    "#remind {display: none;width: 350px;border: 1px solid #b9b9b9;height: auto;overflow: hidden;font-size: 12px;color: #333;background: #fff;clear: both;border-top: 0;border-radius: 0 0 5px 5px;box-shadow: 1px 1px 5px #ddd;}",
-    "#remind h3 {height: 29px;line-height: 29px;color: #333;font-weight: bold;padding: 0 9px;border-bottom: 1px solid #e4e4e4;}",
-    "#remind p {padding: 4px 5px 5px 8px;margin: 0 1px;line-height: 16px;position: relative;border-bottom: 2px solid #e4e4e4;}",
-    "#remind .more {position: relative;text-align: center;height: 31px;line-height: 31px;clear: both;background: #f7f7f7;margin-top: 2px;box-shadow: 0 -1px 5px #ececec;z-index: 1;}",
-    "#remind a {color: #369;text-decoration: none;}",
-    ".remove{float:right;}",
-    "#remind .more a {margin: 0 8px;display: inline;}"
-].join('');
-
-function contentInform(opt) {
-    this.width = opt.width;
-    this.initStyles();
-
-};
-
-
-contentInform.prototype.initStyles = function() {
-    debugger
-    if (hasPaint) return;
-    var s = document.createElement("style");
-    s.type = "text/css";
-    var styles = default_style;
-    if (s.styleSheet) {
-        s.styleSheet.cssText = styles;
-    } else {
-        s.appendChild(document.createTextNode(styles));
-    }
-    document.getElementsByTagName("head")[0].appendChild(s);
-    hasPaint = true;
-
-};
-
-contentInform.prototype.listRender = function(opt) {
-    debugger
-    var lists = opt.info;
-    var str = "";
-    for (var i = 0; i < lists.length; i++) {
-        if (!lists[i].check_status) {
-            str += '<p class="clearfix">' + '<span>' + lists[i].content + ' <a href="javascript::" class="remove" title="忽略">×</a></span>' + '</p>';
-        };
-
-    }
-    return ['<div id="remind" data-type="listbox" style="width":', this.width, 'px;>',
-        '<h3>提醒</h3>', str,
-        '<div id="more" class="more">',
-        '   <span><a href="" id="see_all">查看全部</a></span>',
-        '<span><a href="" id="cancel_all">忽略全部</a></span>',
-        '</div>',
-        '</div>'].join('');
-};
-
-contentInform.prototype.getContent = function() {
-    var that = this;
-    $.ajax({
-        url: '/data.json',
-        type: 'get',
-        datatype: 'json',
-        success: function(res) {
-            debugger
-            var $content = that.listRender(res);
-            $("#listcontent").empty().append($content);
-            $("[data-type='listbox']").show();
-            that.eventBind();
-
-        }
-    });
-};
-
-
-
-contentInform.prototype.eventBind = function() {
-    debugger
-    var that = this;
-    var listbox = $("[data-type='listbox']");
-
-    listbox.find("#cancel_all").bind("click", function(event) {
-        debugger
-        that.ignoreAll();
-        event.preventDefault();
-    });
-
-
-    $("#remind").delegate("a", "click", function() {
-        debugger
-        // 
-        $(this).closest("p").remove();
-    });
-
-};
-
-// 单击忽略全部
-contentInform.prototype.ignoreAll = function() {
-    // $.ajax({
-    //  url:'', 
-    //  datatype:'json', 
-    //  data:'post',
-    //  success:function(res){
-    //      // 
-    var str = "<div class='none-content' style='margin:0 70px'><div class='none'>已全部处理完,点此<a href=res.link target='_blank' title='查看历史提醒'>查看历史提醒</a></div></div>"
-    $("#remind").find("p").remove();
-    $("#remind").find("h3").after(str);
-    //  }
-    // });
-
-};
-
-
-contentInform.prototype.open = function() {
-    this.getContent();
-    flag = true;
-};
-contentInform.prototype.close = function() {
-    $("[data-type='listbox']").hide();
-    flag = false;
-};
-
-
-
-$.contentInform = function(opts) {
-    return new contentInform(opts);
-};
-
-    })( module.exports , module , __context );
-    __context.____MODULES[ "e5b5a21667488477a43c41e979b24d80" ] = module.exports;
-})(this);
-
-
-;(function(__context){
-    var module = {
-        id : "448c5823fc7a4af727d50a1c7a378874" , 
-        filename : "UserInfo.js" ,
-        exports : {}
-    };
-    if( !__context.____MODULES ) { __context.____MODULES = {}; }
-    var r = (function( exports , module , global ){
-
-    __context.____MODULES['e5b5a21667488477a43c41e979b24d80'];
-function UserInfo() {
-    UserInfo.superclass.constructor.apply(this, arguments);
+    var Followtype =__context.____MODULES['91213603641dba67d80537e199b895dc'];
+var followlist = new Followtype();
+function UserbaseInfo() {
+    UserbaseInfo.superclass.constructor.apply(this, arguments);
 }
 
-
-$jex.extendClass(UserInfo, XControl);
-var superflag = 0;
-
-var searchHandler = function() {
-    var $search = $(".hsearch");
-    $search.find(".tsearch-submit").off("click").on("click", function(e) {
-        var $searchinput = $search.find("input");
-        if ($.trim($searchinput.val()) === "") {
-            alert("请输入搜索的关键字");
-            $searchinput.focus();
-            e.preventDefault();
-        }
-        $searchinput.val($.trim($searchinput.val()));
-    });
-}
-
-UserInfo.prototype.update = function(data) {
-    superflag = 0;
+$jex.extendClass(UserbaseInfo, XControl);
+UserbaseInfo.prototype.update = function(data) {
     debugger;
-    if (data.islogin) {
-        this.text('<a class = "u-name" href="userinfo.html?userid=', data.data.studentId, '">', data.data.userName, '</a>');
-        this.text('<a href="#" class="backinfo">登出</a>');
-        this.text('<a href="#" style="display:none">登录</a>');
-        this.text('<span class = "userid" style="display:none">', data.data.studentId, '</span>');
-        this.text('<a href="userinfo.html?userid=', data.data.studentId, '" class= "line">个人中心</a>');
-        this.text('<a href="#" style="color: rgb(253, 99, 13);font-weight: bold;" id ="inform" class= "line">你有<span style="color: rgb(255, 247, 64);" class="check_num">', 3, '</span>条消息</a>');
-        if (data.data.role === "SUPERMANAGER" || data.data.role === "MANAGER") {
-            superflag = 1;
-            this.text('<a style="color: rgb(253, 99, 13);font-weight: bold;" href="../admin/index.do">后台管理(有<span style="color: rgb(255, 247, 64);" class="check_num">', data.examnum, '</span>条活动待审核)</a>');
-        }
-        $(this).trigger("userlogin", [data.data]);
-    } else {
-        this.text('<a href="#" class= "loginclick" >登录</a>');
-    }
-    this.onInit(function() {
-        var me = this;
-        $(".backinfo").click(function(e) {
-            me.exituser();
-            e.preventDefault();
-        });
-        if (superflag === 1 && $(".check_num").text() === "") {
-            this.getActionnum();
-        }
-        $(".loginclick").click(function(e) {
-            me.show();
+    var userinfo = data.data;
+    var ftype = data.followtype;
+    this.text('<a href="userinfo.html?userid=',userinfo.studentId,'" class="info-img">');
+    this.text('     <img src="',eDomain.getURL("img/headimg")+userinfo.headImg,'" alt="',userinfo.userName,'">');
+    this.text('</a>');
+    this.text('<div class="info-info bd">');
+    this.text('     <h3 class="info-name">');
+    this.text('         <a href="userinfo.html?userid=',userinfo.studentId,'">',userinfo.userName,'</a><span class="fa fa-heart"><span class="info-score">',userinfo.totalScore,'</span></span>');
+    this.text('     </h3>');
+    this.text('     <p class="info-score">');
+    this.text('         <span>积分: </span><span class="date">',userinfo.totalScore,'</span>');
+    this.text('     </p>');
+    this.text('     <p class="info-fee"><span >邮箱:  </span><span class="email">',userinfo.email,'</span> <span class="changpid hidden" style="cursor:pointer">更改密码 </span><input type="text" placeholder="输入你需要更改的密码" class="hid hinput hidden" /><input type="button" class="hid hidden" id="yes" value="确定"/></p>');
+    this.text('     <p class="info-author">');
+    this.text('         <span>已关注</span>');
+    this.text('         <ul class="user-type" id="followlist">');
+    followlist.clear();
+    followlist.updateSource(ftype);
+    this.append('',followlist,'');
+    this.text('         </ul>');
+    this.text('     <div class="btn-add hidden"><a href="#" id="addbtntype">添加分组</a></div>');
+    this.text('     </p>');
+    this.text('</div>');
+    this.onInit(function(){
+        $(this).trigger("completeinfo",[userinfo.studentId]);
+        $(".changpid").click(function (e) {
+            $(".hid").toggle()
+            $("#yes").click(function (e) {
+                e.preventDefault()
+                var me = this;
+                var paid = $(".hinput").val()
+                if(!paid){
+                    alert("请输入密码")
+                    return
+                }
+                $.post("changepid.do",{
+                    pid:paid
+                },function (res) {
+                    alert("更改密码成功")
+                    $(".hid").hide()
+                    $(me).unbind();
+                })
+            })
         })
-        $("body").append('<div id="listcontent"></div>');
-        this.notify();
-        searchHandler();
     });
-}
-UserInfo.prototype.loadData = function(examnum) {
+};
+UserbaseInfo.prototype.loadData = function(uid,followlist) {
     var me = this;
     $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/list"),
+        type: "POST",
+        url: eDomain.getURL("usercenter/baseinfo"),
         dataType: "json",
-        cache: false,
-        success: function(data) {
-            data.examnum = examnum;
-            $(me).trigger("loaduser", [data]);
+        cache:false,
+        data:{
+            userId:uid
         },
-        error: function(data) {}
-    });
-}
-UserInfo.prototype.getActionnum = function() {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/exam"),
-        dataType: "json",
-        cache: false,
         success: function(data) {
-            if (!data.ret) {
-                alert("系统出错了~~");
+            if(!data.ret){
+                alert(data.errmsg);
                 return false;
             }
-            me.loadData(data.data);
+            data.followtype = followlist;
+            $(me).trigger("loaduserinfo", [data]);
         },
-        error: function(data) {}
-    });
-}
+        error: function(data) {
 
-UserInfo.prototype.exituser = function() {
-    var me = this;
-    $.ajax({
-        type: "GET",
-        url: eDomain.getURL("user/exit"),
-        dataType: "json",
-        success: function(data) {
-            debugger;
-            me.loadData();
-        },
-        error: function(data) {}
-    });
-}
-
-UserInfo.prototype.bindEvent = function(data) {
-    var $dlglogin = $(".dlglogin")
-    var $overlay = $(".overlay")
-    var me = this;
-    $(".dlglogin-close").click(function(e) {
-        $dlglogin.remove()
-        $(".overlay").hide()
-        e.preventDefault()
-    });
-    $("#btn-submit").click(function(e) {
-        e.preventDefault();
-        if ($.trim($("#login_alias").val()) === "" || $.trim($("#login_password").val()) === "") {
-            alert("请输入具体信息")
-            return
         }
-        $.post("userlogin.do", $(".dlglogin-form").serialize(), function(res) {
-            if (res.ret) {
-                me.loadData()
-                $dlglogin.remove()
-                $(".overlay").hide()
-            } else {
-                alert(res.info);
-            }
-        })
-    })
-}
-UserInfo.prototype.notify = function() {
-    var flag = false;
-    var ci = $.contentInform({
-        width:'800'
     });
-    var informbtn = $("#inform");
-    informbtn.click(function(){
-        debugger
-        if (flag===false) {
-            ci.open();
-        }else{
-            ci.close();
-        }
+};
 
-    });
-}
-UserInfo.prototype.show = function() {
-    var form =
-        '<div class="overlay" style="display: block;"></div>' +
-        '    <div class="dlglogin">' +
-        '        <a href="#" class="dlglogin-close">X</a>' +
-        '        <form class="dlglogin-form" action="userlogin.do" method = "post">' +
-        '            <p id="legend">登录</p>' +
-        '            <fieldset>' +
-        '                <div class="item spec" id="alias">' +
-        '                    <label for="login_alias">学号</label>' +
-        '                    <input type="text" id="login_alias" name="id" class="text pop_email" tabindex="1">' +
-        '                </div>' +
-        '                <div class="item spec">' +
-        '                    <label for="login_password">密码</label>' +
-        '                    <input type="password" id="login_password" name="password" class="text" tabindex="2">' +
-        '                </div>' +
-        '                <div class="item recsubmit">' +
-        '                    <span class="loading"></span>' +
-        '                    <input id="btn-submit" value="登 录" tabindex="5">' +
-        '                </div>' +
-        '            </fieldset>' +
-        '        </form>' +
-        '        <div class="dlglogin-aside">' +
-        '            <div class="dlg-notify">' +
-        '                <p>注:</p>' +
-        '                <ul>' +
-        '                    <li>' +
-        '                        <span>初始密码与自己的学号相同,登陆后可自行修改密码</span>' +
-        '                    </li>' +
-        '                    <li>' +
-        '                       <span>Lets go提供真实的校园社交平台,只能用学号登陆，无注册功能</span>' +
-        '                    </li>' +
-        '                    <li>' +
-        '                        <span>在登陆、使用中遇到任何问题，可与管理员联系，邮箱地址为：751143842@qq.com</span>' +
-        '                    </li>' +
-        '                </ul>' +
-        '            </div>' +
-        '        </div>' +
-        '    </div>'
-    $("body").append(form);
-    this.bindEvent();
-
-}
-
-module.exports = UserInfo;
+module.exports = UserbaseInfo;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "448c5823fc7a4af727d50a1c7a378874" ] = module.exports;
+    __context.____MODULES[ "c8beaf3563ee7847bdd048ccf71295ca" ] = module.exports;
 })(this);
 
 
 ;(function(__context){
     var module = {
-        id : "cb25586b7098641c631af8d3e45be618" , 
-        filename : "index.js" ,
+        id : "7550cd1ceb8cf1e1d9257cbf9f3496ec" , 
+        filename : "UserAction.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    function UserAction() {
+    UserAction.superclass.constructor.apply(this, arguments);
+}
+
+$jex.extendClass(UserAction, XControl);
+UserAction.prototype.update = function(data) {
+    this.insertaction(data);
+};
+UserAction.prototype.loadData = function(url,uid,page) {
+    var me = this;
+    $.ajax({
+        type: "POST",
+        url: eDomain.getURL(url),
+        dataType: "json",
+        cache:false,
+        data:{
+            id:uid,
+            page:page
+        },
+        success: function(data) {
+            if(!data.ret){
+                alert(data.errmsg);
+                return false;
+            }
+            var totalpage = parseInt(data.pageNum,10);
+            $(me).trigger("loaduseraction", [data,totalpage,page]);
+        },
+        error: function(data) {
+
+        }
+    });
+};
+UserAction.prototype.insertaction = function(data) {
+    this.text('     <ul class="action-type">');
+    for (var i = 0, max = data.length; i < max; i++) {
+        this.text('         <li class="action-list bd">');
+        this.text('             <a href="action-info.html?actionid=', data[i]._id, '" class="action-img">');
+        this.text('                 <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
+        this.text('             <div class="action-info bd">');
+        this.text('                 <h3 class="action-name"><a href="action-info.html?actionid=', data[i]._id, '">', data[i].title, '</a></h3>');
+        this.text('                 <p class="action-time">');
+        this.text('                     <span class="date">', data[i].startDay, '</span>');
+        this.text('                 </p>');
+        this.text('                 <p class="actiom-time">', data[i].startHHMM, ' - ',data[i].endHHMM,'</p>');
+        this.text('                 <address class="action-place" title = "', data[i].place, '">', data[i].place, '</address>');
+        this.text('                 <p class="action-people">', data[i].peopleNum, '人参加</p>');
+        this.text('             </div>');
+        this.text('           </li>');
+    }
+    if(data.length === 0){
+        this.text('<div class="noaction">还没有信息</div>');
+    }
+    this.text('      </ul>');
+};
+module.exports = UserAction;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "7550cd1ceb8cf1e1d9257cbf9f3496ec" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "c6a242b616d55f463f91b3caded5780a" , 
+        filename : "ProceedAction.js" ,
+        exports : {}
+    };
+    if( !__context.____MODULES ) { __context.____MODULES = {}; }
+    var r = (function( exports , module , global ){
+
+    function ProceedAction() {
+    ProceedAction.superclass.constructor.apply(this, arguments);
+}
+$jex.extendClass(ProceedAction, XControl);
+ProceedAction.prototype.update = function(data) {
+    for (var i = 0, max = data.length; i < max; i++) {
+        this.text('<li class="bd">');
+        this.text('    <a href="action-info.html?actionid=', data[i]._id, '" class="user-img">');
+        this.text('        <img src="', eDomain.getURL("img/posterimg")+data[i].poster, '" alt="', data[i].title, '"></a>');
+        this.text('    <div class="single-info bd">');
+        this.text('        <h3 class="action-name"><a href="action-info.html?actionid=', data[i]._id, '">', data[i].title, '</a></h3>');
+        this.text('        <p class="action-time">');
+        this.text('            <span class="date">', data[i].startDay, '</span>');
+        this.text('            <span class="actiom-time">', data[i].startHHMM, '-',data[i].endHHMM,'</span>');
+        this.text('        </p>');
+        this.text('        <address class="action-place" title = "', data[i].place, '">', data[i].place, '</address>');
+        this.text('        <p class="action-people">', data[i].peopleNum, '人参加</p>');
+        this.text('    </div>');
+        this.text('</li>');
+    }
+    if(data.length === 0){
+        this.text('<div class="noaction">还没有信息</div>');
+    }
+}
+ProceedAction.prototype.loadData = function(userid,page){
+    var me = this;
+    $.ajax({
+        type: "POST",
+        url: eDomain.getURL("usercenter/proceedaction"),
+        dataType: "json",
+        cache:false,
+        data:{
+            id:userid,
+            page:page
+        },
+        success: function(data) {
+            if(!data.ret){
+                alert(data.errmsg);
+                return false;
+            }
+            var totalpage = parseInt(data.pageNum,10);
+            $(me).trigger("loadproceedaction",[data,totalpage,page]);
+        },
+        error: function(data) {
+
+        }
+    });
+}
+
+module.exports = ProceedAction;
+
+    })( module.exports , module , __context );
+    __context.____MODULES[ "c6a242b616d55f463f91b3caded5780a" ] = module.exports;
+})(this);
+
+
+;(function(__context){
+    var module = {
+        id : "c6b3dfd33667a4cca25b27e3f754452d" , 
+        filename : "usercenter.js" ,
         exports : {}
     };
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
@@ -10512,173 +12176,357 @@ module.exports = UserInfo;
     __context.____MODULES['5f7b82f7cc4ae781c73294e0e18f5c3b'];
 __context.____MODULES['2073df88a429ccbe5dca5e2c40e742b4'];
 __context.____MODULES['3240c65b9719d9fd9fabe924c77f6eb1'];
-var rankuser =__context.____MODULES['70483182195633c7fef777a7f71584ab'];
-var selectType =__context.____MODULES['db5eb7751b69153319fb2dcba7839d9e'];
-var boardtype =__context.____MODULES['12dd4cc6208fb46c52011b018321d9cd'];
-var ActionUI =__context.____MODULES['5f04e819c0491d4bbf550cab4bd7a076'];
-var HotimgInfo =__context.____MODULES['d1fc17a69ad1cf1f232ec551f23774e3'];
-var singleAction =__context.____MODULES['54b6592c2f23b9c2e0c875456534241a'];
-
-var UserInfo =__context.____MODULES['448c5823fc7a4af727d50a1c7a378874'];
-
-var Catchtype;
+__context.____MODULES['fd7a862d2156dc39643874cb6bac5207'];
+__context.____MODULES['ed882314c841932770eab4413337b4b0'];
+var UserCenterPage =__context.____MODULES['515aed1a6d4d4606e44543b3aca12538'];
+var UserInfo =__context.____MODULES['608cf9aae1492fb6a2cb38470aae99bd'];
+var selectType =__context.____MODULES['44594d2db9ab86a8d9d98be16647342e'];
+var UserbaseInfo =__context.____MODULES['c8beaf3563ee7847bdd048ccf71295ca'];
+var Followtype =__context.____MODULES['91213603641dba67d80537e199b895dc'];
+var UserAction =__context.____MODULES['7550cd1ceb8cf1e1d9257cbf9f3496ec'];
+var ProceedAction =__context.____MODULES['c6a242b616d55f463f91b3caded5780a'];
+var userid;
 var Catchuser;
+var Catchfollowlist;
+
+var filechangeflag = 0;
+var flagpic = 0;
+var cutpicflag = 0;
+
+var preheadimg = eDomain.getURL("img/headimg");
+var $joinpage = $('#joinpagelist');
+var $pubpage = $('#pubpagelist');
+var $proceedpage = $('#proceedpagelist');
+var $uploadpic;
+var $addbtntype;
+var $closetype;
+var $picturefile = $('#picturefile'); 
+var $infolist = $(".info-list");
 var EventControl = {};
 
 EventControl.bind = function() {
-    $(hotimg).bind("changehotpic", function(e, elem) {
-        hotimg.changestate(elem);
-        hotimg.loadPicData(parseInt($(elem).text(), 10));
-    });
-    $(hotimg).bind("renderpic", function(e, data) {
-        var renderimg = new HotimgInfo({
-            elemId: "hotpic"
-        });
-        renderimg.clear();
-        renderimg.updateSource(data);
-        renderimg.render();
-    });
-
-    $(boardtype).bind("loadboard", function(e, data) {
-        boardtype.updateSource(data);
-        boardtype.render();
-    });
-    
-    $(rankuser).bind("loaduser", function(e, data) {
-         
-        rankuser.updateSource(data);
-        rankuser.render();
-    });
-    
-    $(action).bind("loadAllaction", function(e, data) {
-        action.updateSource(data);
-        action.render();
-        /*userinfo.loadData();*/
-    });
-    $(action).bind("loadtypelist", function(e, data) {
-        action.loadData(data.data);
-    });
-    $(action).bind("overrender", function(e) {
-        clickActiontype();
-    });
-
     $(userinfo).bind("loaduser", function(e, data) {
-        Catchuser = data.data.user;
+        Catchuser = data;
         userinfo.clear();
         userinfo.updateSource(data);
         userinfo.render();
+        debugger;
+        followtype.loadData(userid);
     });
-    $(userinfo).bind("userlogin", function(e, data) {
-        if (data.tofirst) {
-            selecttype.show();
-            selecttype.loadData();
-            selecttype.bindclick(data.studentId);
+
+    $(followtype).bind("loadfollowlist", function(e, flist) {
+        Catchfollowlist = flist.data;
+        baseinfo.loadData(userid, flist.data);
+    });
+    $(followtype).bind("deletefollowlist", function(e, data, event) {
+        followtype.loadData(userid);
+    });
+
+    $(baseinfo).bind("loaduserinfo", function(e, data) {
+        baseinfo.clear();
+        baseinfo.updateSource(data);
+        baseinfo.render();
+    });
+    $(baseinfo).bind("completeinfo", function(e, uid) {
+        var UrlKeyArray = QNR.Tools.getUrlValue();
+        tuserid = UrlKeyArray[0].value;
+        if (Catchuser.islogin) {
+            if (Catchuser.data.studentId === tuserid) {
+                getauthorityExec();
+            }
         }
     });
 
+    $(pubuseraction).bind("loaduseraction", function(e, data, page, currentpage) {
+        pubuseraction.clear();
+        pubuseraction.updateSource(data.data);
+        pubuseraction.render();
+        $(pubpagelist).trigger("loadlistpage", [page, currentpage]);
+    });
+
+    $(joinuseraction).bind("loaduseraction", function(e, data, page, currentpage) {
+        joinuseraction.clear();
+        joinuseraction.updateSource(data.data);
+        joinuseraction.render();
+        $(joinpagelist).trigger("loadlistpage", [page, currentpage]);
+    });
+    $(joinpagelist).bind("loadlistpage", function(e, page, currentpage) {
+        var data = {
+            totalpage: page,
+            currentpage: currentpage
+        };
+        joinpagelist.clear();
+        joinpagelist.updateSource(data);
+        joinpagelist.render();
+    });
+    $(proceedaction).bind("loadproceedaction", function(e, data,page, currentpage) {
+        proceedaction.clear();
+        proceedaction.updateSource(data.data);
+        proceedaction.render();
+        $(proccedpagelist).trigger("loadpolistpage", [page, currentpage]);
+    });
+    $(pubpagelist).bind("loadlistpage", function(e, page, currentpage) {
+        var data = {
+            totalpage: page,
+            currentpage: currentpage
+        };
+        pubpagelist.clear();
+        pubpagelist.updateSource(data);
+        pubpagelist.render();
+    });
+    $(proccedpagelist).bind("loadpolistpage",function(e,page,currentpage) {
+        var data = {
+            totalpage: page,
+            currentpage: currentpage
+        };
+        proccedpagelist.clear();
+        proccedpagelist.updateSource(data);
+        proccedpagelist.render();
+    })
     $(selecttype).bind("loadselectlist", function(e, data) {
+        data.selectflist = Catchfollowlist;
         selecttype.clear();
         selecttype.updateSource(data);
         selecttype.render();
     });
 
-    $(saction).bind("changeaction", function(e, data, id) {
-        var reloadac = new singleAction({
-            elemId:"actionlist"+id
-        });
-        reloadac.updateSource(data.data);
-        reloadac.render();
-    });
-}
 
-var uicontrol = $(".ui-control");
-var listtabs;
+};
 
-var action = new ActionUI({
-    elemId: "actiontype"
-});
-
-var hotimg = new HotimgInfo();
-var selecttype = new selectType({
-    elemId: "selectItem"
-});
-
-var rankuser = new rankuser({
-    elemId: "rankuser"
-});
-
-var boardtype = new boardtype({
-    elemId: "board-type"
-});
 
 var userinfo = new UserInfo({
     elemId: "userinfo"
 });
 
-var saction = new singleAction();
+var baseinfo = new UserbaseInfo({
+    elemId: "baseinfo"
+});
+
+var pubuseraction = new UserAction({
+    elemId: 'pubaction'
+});
+var pubpagelist = new UserCenterPage({
+    elemId: "pubpagelist"
+});
+var proccedpagelist = new UserCenterPage({
+    elemId:"proceedpagelist"
+});
+var joinuseraction = new UserAction({
+    elemId: "joinaction"
+});
+var joinpagelist = new UserCenterPage({
+    elemId: "joinpagelist"
+});
+var proceedaction = new ProceedAction({
+    elemId: "proceedaction"
+});
+var selecttype = new selectType({
+    elemId: "selectItem"
+});
+var followtype = new Followtype({
+    elemId: "followlist"
+});
 
 
-var init = function() {
-    EventControl.bind();
-    loadEvent();
-    bindEvent();
+
+var getauthorityExec = function() {
+    $(".hidden").show();
+    $(".hid").hide();
+    $("#picturefile").hide();
+    $infolist.prepend('<a href="#" class="uploadpic hidden">修改头像</a>');
+    $uploadpic = $(".uploadpic");
+    $addbtntype = $("#addbtntype");
+    $closetype = $(".closetype");
+    infoImgmouseHandler();
+    uploadpicmouseHandler();
+    uploadpicClickHandler();
+    clickaddtype();
+    clickclosetype();
 };
 
-var loadboardtype = function() {
+var clickclosetype = function() {
+    $closetype.delegate("a", "click", function(e) {
+        var subid = e.target.id;
+        followtype.deletetype(userid, subid, e);
+        e.preventDefault();
+    });
+};
+var infoImgmouseHandler = function() {
+    $(".info-img img").mouseenter(function(e) {
+        $uploadpic.show();
+    }).mouseleave(function(e) {
+        $uploadpic.hide();
+    });
+};
+var uploadpicmouseHandler = function() {
+    $uploadpic.mouseenter(function(e) {
+        $uploadpic.show();
+    }).mouseleave(function(e) {
+        $uploadpic.hide();
+    });
+};
+
+var showloadpic = function(){
+    $("#mask").show();
+    $(".uploadpic-overlay").slideDown();
+};
+var cancelpic = function() {
+    selecttype.hide();
+    $(".uploadpic-overlay").slideUp();
+};
+var savepic = function() {
+    if(cutpicflag === 0){
+        showPreview({x:0,y:0,w:204/flagpic,h:204/flagpic});
+    }
+    ajaxpicload();
+    cancelpic();
+    $uploadpic.remove();
+};
+var ajaxpicload = function(){
+    $.ajaxFileUpload({
+        url: eDomain.getURL('user/updatehead'),
+        fileElementId: 'picturefile',
+        data: {
+            picx: $("#picx").val(),
+            picy: $("#picy").val(),
+            picw: $("#picw").val(),
+            pich: $("#pich").val(),
+            flagPic:flagpic,
+            picType:"head"
+        },
+        success: function(data) {
+            imgName = JSON.parse($(data.getElementsByTagName("pre")[0]).text()).data;
+            $(".info-img img").prop("src",preheadimg+imgName);
+            updateHead(imgName);
+        },
+        error: function() {
+            alert("error");
+        }
+    });
+};
+var updateHead = function(imgname){
     $.ajax({
         type: "GET",
-        url: eDomain.getURL("type/list"),
+        url: eDomain.getURL('user/updatehead'),
         dataType: "json",
+        data:{
+            imgName:imgname
+        },
         success: function(data) {
-            Catchtype = data;
-            $(action).trigger("loadtypelist", [data]);
-            boardtype.loadData(data.data);
+            if(!data.ret){
+                alert("上传失败");
+            }
         },
         error: function(data) {
 
         }
     });
 };
+var readImage = function(file) {
 
-var loadEvent = function() {
-    hotimg.loadPicData(1);
-    loadboardtype();
-    rankuser.loadData("user/rankuser/list");
-    userinfo.loadData();
+    var reader = new FileReader();
+    var image = new Image();
+
+    reader.readAsDataURL(file);
+    reader.onload = function(_file) {
+        image.src = _file.target.result;
+        image.onload = function() {
+            var w = this.width,
+                h = this.height,
+                t = file.type,
+                n = file.name,
+                s = ~~ (file.size / 1024) + 'KB';
+            if (w > 1284 || h > 768) {
+                alert("图片太大");
+                return false;
+            }
+            $('#crop_preview').prop("src",'');
+            $('#uploadPreview img').prop("src", this.src);
+            $('#crop_preview').prop("src", this.src);
+            flagpic = 1;
+            if (w > 600) {
+                $('#uploadPreview img').width(w / 2);
+                $('#uploadPreview img').height(h / 2);
+                flagpic = 2;
+            }
+            cutPicture();
+        };
+        image.onerror = function() {
+            alert('Invalid file type: ' + file.type);
+        };
+    };
 };
-var bindEvent = function() {
-    clickActiontype();
-    clickhotHandler();
+
+function cutPicture() {
+    //记得放在jQuery(window).load(...)内调用，否则Jcrop无法正确初始化
+    $("#img").Jcrop({
+        onChange: showPreview,
+        onSelect: showPreview,
+        aspectRatio: 204 / 204
+        //minSize :[200,200] 
+    });
+    //简单的事件处理程序，响应自onChange,onSelect事件，按照上面的Jcrop调用
+}
+function showPreview(coords) {
+        cutpicflag = 1;
+        if (parseInt(coords.w,10) > 0) {
+            //计算预览区域图片缩放的比例，通过计算显示区域的宽度(与高度)与剪裁的宽度(与高度)之比得到
+            var rx = $("#preview_box").width() / coords.w;
+            var ry = $("#preview_box").height() / coords.h;
+            //通过比例值控制图片的样式与显示
+            $("#crop_preview").css({
+                width: Math.round(rx * $("#img").width()) + "px", //预览图片宽度为计算比例值与原图片宽度的乘积
+                height: Math.round(rx * $("#img").height()) + "px", //预览图片高度为计算比例值与原图片高度的乘积
+                marginLeft: "-" + Math.round(rx * coords.x) + "px",
+                marginTop: "-" + Math.round(ry * coords.y) + "px"
+            });
+            $("#picx").val(coords.x);
+            $("#picy").val(coords.y);
+            $("#picw").val(coords.w);
+            $("#pich").val(coords.h);
+        }
+}
+var uploadpicClickHandler = function() {
+    $uploadpic.click(function(e) {
+        $picturefile.trigger("click");
+        if(filechangeflag === 1){
+            showloadpic();
+        }
+    });
+};
+
+var pubpageclickHandler = function() {
+    $pubpage.delegate("a", "click", function(e) {
+        var page = parseInt($(e.target).text(), 10);
+        pubuseraction.loadData("usercenter/publishaction", userid, page);
+    });
+};
+var proceedpageclickHandler = function() {
+    $proceedpage.delegate("a", "click", function(e) {
+        var page = parseInt($(e.target).text(), 10);
+        proceedaction.loadData(userid,page);
+    });
+};
+var joinpageclickHandler = function() {
+    $joinpage.delegate("a", "click", function(e) {
+        var page = parseInt($(e.target).text(), 10);
+        joinuseraction.loadData("usercenter/joinaction", userid, page);
+    });
+};
+
+var clickaddtype = function() {
+    $addbtntype.click(function(e) {
+        selecttype.show();
+        selecttype.loadData();
+        selecttype.bindclick(userid, followtype);
+    });
+};
+var clickEventHandler = function() {
+    pubpageclickHandler();
+    joinpageclickHandler();
+    proceedpageclickHandler();
+    inputfile();
     clickcreatebtn();
-    prevhotclickHandler();
-    nexthotclickHandler();
-};
-var prevhotclickHandler = function(){
-    $(".btn-prev").click(function(e){
-        var curnum = parseInt($(".active").text(),10) - 1;
-        if(curnum === 0){
-            return false;
-        }
-        var preElem = $(".ui-control a").eq(--curnum)[0];
-        $(hotimg).trigger("changehotpic", [preElem]);
-    });
-}
-var nexthotclickHandler = function(){
-    $(".btn-next").click(function(e){
-         ;
-        var curnum = parseInt($(".active").text(),10) - 1;
-        if(curnum === 3){
-            return false;
-        }
-        var nextElem = $(".ui-control a").eq(++curnum)[0];
-        $(hotimg).trigger("changehotpic", [nextElem]);
-    });
-}
-var clickhotHandler = function() {
-    uicontrol.delegate("a", "click", function(e) {
-        $(hotimg).trigger("changehotpic", [e.target]);
-        e.preventDefault();
-    });
 };
 var clickcreatebtn = function(){
     $(".btn-text").click(function(e){
@@ -10689,18 +12537,45 @@ var clickcreatebtn = function(){
         }
     });
 }
-var clickActiontype = function() {
-    listtabs = $(".list-tabs");
-    listtabs.delegate("a", "click", function(e) {
-        var id = e.target.parentElement.id;
-        saction.changestate(e.target);
-        saction.loadSingleAction(id,e.target.id);
-        e.preventDefault();
+var inputfile = function(){
+    $picturefile.change(function(e) {
+    cutpicflag = 0;
+    $("#uploadPreview img").remove();
+    $(".crop_preview img").remove();
+    $("#uploadPreview").html('<img src="" id="img" name="picture">');
+    $(".crop_preview").html('<img id="crop_preview" src="" />');
+    if (this.disabled) return alert('File upload not supported!');
+    if(!window.FileReader){
+       return alert("亲你使用的浏览器w版本过低，请升级浏览器,否则使用默认图片"); 
+    }
+    filechangeflag = 1;
+    showloadpic();
+    var F = this.files;
+    if (F && F[0])
+        for (var i = 0; i < F.length; i++) readImage(F[i]);
     });
-}
+    $("#mask").click(cancelpic);
+    $("#submit").click(savepic);
+    $("#piccancel").click(cancelpic);
+};
+var init = function() {
+    var UrlKeyArray = QNR.Tools.getUrlValue();
+    userid = UrlKeyArray[0].value;
+    EventControl.bind();
+    loadEvent();
+    clickEventHandler();
+};
+
+var loadEvent = function() {
+    userinfo.loadData();
+    var initpage = 1;
+    pubuseraction.loadData("usercenter/publishaction", userid, initpage);
+    joinuseraction.loadData("usercenter/joinaction", userid, initpage);
+    proceedaction.loadData(userid,initpage);
+};
 
 init();
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "cb25586b7098641c631af8d3e45be618" ] = module.exports;
+    __context.____MODULES[ "c6b3dfd33667a4cca25b27e3f754452d" ] = module.exports;
 })(this);

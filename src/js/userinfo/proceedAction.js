@@ -34,7 +34,6 @@ ProceedAction.prototype.loadData = function(userid,page){
             page:page
         },
         success: function(data) {
-            debugger;
             if(!data.ret){
                 alert(data.errmsg);
                 return false;

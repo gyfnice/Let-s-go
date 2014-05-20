@@ -3,6 +3,15 @@ exports.requiresLogin = function (req, res, next) {
   res.redirect('/index.html');
 }
 
+exports.requireAdmin = function (req,res,next) {
+    if (req.session.user){
+        if(req.session.user.role === "SUPERMANAGER" || req.session.user.role === "MANAGER"){
+            return next()     
+        }
+    }
+    res.redirect('/index.html')
+}
+
 /*
  *  User authorization routing middleware
  */

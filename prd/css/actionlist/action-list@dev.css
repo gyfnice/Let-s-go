@@ -388,7 +388,13 @@ body{
       display:none;
       z-index: 99;
 }
-
+#listcontent{
+    width: 400px;
+    position: absolute;
+    z-index: 9999;
+    top: 30px;
+    right: 0;
+}
 
 .join-logo {
     background:url(http://sources.corp.qunar.com/QNR-play/resources/buttonbg.png);

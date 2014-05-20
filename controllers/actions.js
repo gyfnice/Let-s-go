@@ -26,25 +26,6 @@ exports.create = function(req, res) {
 			info: "活动添加成功",
 			ret: true
 		})
-		classifyModel.findAll(function(err, docs) {
-			docs.forEach(function(elem) {
-				elem.addActiveties();
-			});
-		})
-		user_classifyModel.gettypeid(docs.subClaId,function (err,udocs) {
-		    udocs.forEach(function (elem) {
-		        var str = '你关注的<a href="#">'+elem.type_name+'</a>有新的<a target="_blank" href="action-info.html?actionid='
-		        + docs._id + '" title="'+docs.title+'" target="_blank">活动</a>发布啦';
-				var note = {
-					type: "活动分类",
-					studentId: elem.user_id,
-					content: str
-				}
-				notifiedModel.savetype(note, function(err, docs) {
-					console.log(docs);
-				})
-		    })
-		})
 	});
 
 }
@@ -73,6 +54,7 @@ exports.uploadpic = function(req, res) {
 }
 exports.searchbykey = function(req, res) {
 	var query = {
+		state: true,
 		$or: [{
 			title: new RegExp(decodeURIComponent(req.body.keywords), "i")
 		}, {
@@ -117,6 +99,7 @@ exports.searchbyid = function(req, res) {
 	} else {
 		query.subClaId = req.body.sid
 	}
+	query.state = true
 	action.paginate(query, req.body.page, 10, function(err, count, docs) {
 		response.data = docs
 		response.totalPage = count;
@@ -133,7 +116,8 @@ exports.enrolleduser = function(req, res) {
 		evaluateStatus: req.body.id,
 		endtime: {
 			$gt: Date.now()
-		}
+		},
+		state: true
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
@@ -150,7 +134,8 @@ exports.joinedaction = function(req, res) {
 		evaluateStatus: req.body.id,
 		endtime: {
 			$lt: Date.now()
-		}
+		},
+		state: true
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
@@ -164,7 +149,8 @@ exports.joinedaction = function(req, res) {
 }
 exports.lookpublish = function(req, res) {
 	var query = {
-		create_userid: req.body.id
+		create_userid: req.body.id,
+		state: true
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
@@ -178,3 +164,69 @@ exports.lookpublish = function(req, res) {
 
 }
 
+exports.countnum = function(req, res) {
+	var query = {
+		state: false
+	}
+	action.find(query, function(err, docs) {
+		response.examnum = docs.length;
+		res.send(response);
+	});
+}
+
+exports.actionlist = function(req, res) {
+	action.paginate(req.body.query, req.body.page, 7, function(err, count, docs) {
+		response.data = docs
+		response.pageNum = count;
+		res.send(response);
+	}, {
+		sortBy: {
+			createTime: -1
+		}
+	});
+}
+
+exports.updateState = function(req, res) {
+	action.find({
+		_id: req.body.aid
+	}, function(err, docs) {
+		docs[0].state = true
+		docs[0].passState = req.body.state
+		docs[0].save(function(err, docs) {
+			if (docs.passState === true) {
+				usersModel.update({
+					studentId: docs.create_userid
+				}, {
+					$inc: {
+						totalScore: 1
+					}
+				}, function(err, docs) {
+					res.send({
+						ret: true
+					})
+				})
+				user_classifyModel.gettypeid(docs.subClaId, function(err, udocs) {
+					udocs.forEach(function(elem) {
+						var str = '你关注的<a href="#">' + elem.type_name + '</a>有新的<a target="_blank" href="action-info.html?actionid=' + docs._id + '" title="' + docs.title + '" target="_blank">活动</a>发布啦';
+						var note = {
+							type: "活动分类",
+							studentId: elem.user_id,
+							content: str
+						}
+						notifiedModel.savetype(note, function(err, docs) {
+							console.log(docs);
+						})
+					})
+				})
+				classifyModel.findAll(function(err, docs) {
+					docs.forEach(function(elem) {
+						elem.addActiveties();
+					});
+				})
+			}
+		})
+		res.send({
+			ret: true
+		});
+	})
+}

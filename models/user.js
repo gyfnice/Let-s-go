@@ -36,6 +36,22 @@ usersSchema.statics = {
 			callback(null, res);
 		});
 	},
+	saveadmin:function(users, callback) {
+		var newuser = new usersModel(users);
+		usersModel.getByid(users.studentId, function(err, docs) {
+			if (docs.length === 0) {
+				newuser.save(function(err, res) {
+					if (err) {
+						return callback(err);
+					}
+					callback(true, res);
+				});
+			}else{
+				callback(false);
+			}
+		})
+		
+	},
 	getByid: function(studentId, callback) {
 		var query = {
 			studentId: studentId

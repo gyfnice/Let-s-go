@@ -1,0 +1,176 @@
+<!doctype html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7">
+    <![endif]-->
+    <!--[if IE 7]>
+    <html class="no-js lt-ie9 lt-ie8">
+        <![endif]-->
+        <!--[if IE 8]>
+        <html class="no-js lt-ie9">
+            <![endif]-->
+            <!--[if gt IE 8]>
+            <!-->
+            <html class="no-js">
+                <!--<![endif]-->
+<head>
+                <meta charset="utf-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+                <title></title>
+                <meta name="description" content="">
+                <meta name="viewport" content="width=device-width">
+                <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+                <!-- build:css({.tmp,app}) styles/main.css -->
+                <link rel="stylesheet" href="http://freshzz.corp.qunar.com/QNR-play/prd/css/main.css">
+                <!-- endbuild -->
+                <!-- build:js scripts/vendor/modernizr.js -->
+                <!-- endbuild -->
+</head>
+<body>
+                <div class="container">
+                    <div class="header">
+                        <h1 class="th-title">Let's go后台管理系统</h1>
+                        <div class="user-info">
+                            <span class="sign">Signed in as</span>
+                            <a href="#" class="user-name" title=""></a>
+                            <span class="arrow inlineblock"></span>
+                            <a href="/index.html" title="Sign out">back</a>
+                        </div>
+                        <ul class="nav-tag">
+                            <li data-navname="checkaction" class="tag-active">审核活动</li>
+                            <li data-navname="auth">权限管理</li>
+                            <li data-navname="classifys">管理分组</li>
+                        </ul>
+                    </div>
+                    <div class="mainwrap clear">
+                        <div class="head-bar">
+                            <span class="head-title">Info</span>
+                            <a href="#" data-nav="all" class="btn-default">All</a>
+                            <a href="#" data-nav="uncheck" class="btn-default btn-active">unchecked</a>
+                            <a href="#" data-nav="success" class="btn-default">Success</a>
+                            <a href="#" data-nav="fail" class="btn-default">Failed</a>
+                        </div>
+                        <div class="site-aside">
+                            <div class="inner-content">
+                                <table border="0">
+                                    <caption>Nav-title</caption>
+                                    <tr>
+                                        <td>All</td>
+                                        <td>查看所有活动</td>
+                                    </tr>
+                                    <tr>
+                                        <td>unchecked</td>
+                                        <td>未审核的活动</td>
+                                    </tr>
+                                    <tr>
+                                        <td>success</td>
+                                        <td>审核成功的活动</td>
+                                    </tr>
+                                    <tr>
+                                        <td>failed</td>
+                                        <td>未通过的活动</td>
+                                    </tr>
+                                </table>
+                                <table border="0">
+                                    <caption>Note</caption>
+                                    <tr>
+                                        <td>1.请仔细审核活动</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            2.点击列表中的活动标题能查看活动详情</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3.对已经做出的审核结果可以修改</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            4.点击All，能查看系统中的所有活动，可用于查看过往的所有记录
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            5.在审核活动中遇到问题请及时与管理员联系
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            6.绿色的活动列表状态代表活动审核成功
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            7.黄色的活动列表状态代表活动审核失败
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            制作者：刘佩 龚一峰
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>感谢使用Let's go</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="site-main bd">
+                            <ul class="th-items" id="items"></ul>
+                            <div class="page-list">
+                        <ul id="pagelist">
+                        </ul>
+                        <div class="people hidden">
+                            请添加相应的管理员<br><br>
+                            <label for="">帐号ID </label><input type="text" class="addpeo"><br><br>
+                            <label for="">密码 </label><input type="text" class="password"><br><br>
+                            <a href="#" class="pbtn">提交</a>
+                            <hr>
+                            管理员列表
+                            <br>
+                            <br>
+                            <div class="peoplelist">
+                                <p>nice</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="board-list hidden mod">
+                        <ul id="board-type" class="clearfix"></ul>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                         <hr style="margin-top:100px;clear:left;zoom:1;overflow:hidden">                    
+                    1.在相应的大类分组的输入框输入你要添加分组的名称<br>
+                    2.在相应的大类分钟的输入框输入你要删除分组的具体名称
+                    </div>
+                    </div>
+                    </div>
+
+                    <div class="th-dialog" id="dialog">
+                        <div class="mwt_border">
+                            <span class="arrow_t_int"></span>
+                            <span class="arrow_t_out"></span>
+                            <p>(separate multiple resources name with commas)</p>
+                            <p>
+                                <input type="text" class="add-tag"></p>
+                            <a href="" id="addbtn" class="btn-default btn-active">Add resources</a>
+                            <a href="" id ="close" class="btn-default btn-active">Close</a>
+                            <b class="hint hide">请添加合适的标签</b>
+                        </div>
+                    </div>
+                </div>
+                <!--[if lt IE 7]>
+                <p class="chromeframe">
+                    You are using an <strong>outdated</strong>
+                    browser. Please
+                    <a href="http://browsehappy.com/">upgrade your browser</a>
+                    or
+                    <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a>
+                    to improve your experience.
+                </p>
+                <![endif]-->
+                <script src="http://freshzz.corp.qunar.com/QNR-play/prd/js/common/jex@dev123.js"></script>
+    <script src="http://freshzz.corp.qunar.com/QNR-play/prd/js/common/XControl@dev123.js"></script>
+    <script src="http://freshzz.corp.qunar.com/QNR-play/prd/js/admin@dev123.js"></script>
+
+</body>
+            </html>

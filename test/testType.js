@@ -22,6 +22,10 @@ describe('test Type', function() {
 		it('should return null when the value is inserted', function(done) {
 			classifyModel.savetype("运动",function(err, result) {
 				elemid = result._id.valueOf();
+				result.premium = 1;
+				result.save(function () {
+				    
+				})
 				assert.equal(null, err);
 				done();
 			});
@@ -53,6 +57,10 @@ describe('test sub_Type', function() {
 		it('should return null when the value is inserted', function(done) {
 			classifyModel.savetype("运动",function(err,res){
 				supid = res._id.valueOf();
+				res.premium = 1;
+				res.save(function () {
+				    
+				})
 				sub_typeArray.forEach(function(elem){
 					sub_classifyModel.save(elem,res,function(err,docs){
 						if(err){
@@ -66,6 +74,29 @@ describe('test sub_Type', function() {
 		})
 		it('should return null when the value is inserted', function(done) {
 			classifyModel.savetype("聚会",function(err,res){
+				res.premium = 2;
+				res.save(function () {
+				    
+				})
+				classifyModel.savetype("其它",function (err,res) {
+					res.premium = 5;
+					res.save(function () {
+					    
+					})
+			    	classifyModel.savetype("学习",function (err,res) {
+			    		res.premium = 3;
+			    		res.save(function () {
+			    		    
+			    		})
+			    		classifyModel.savetype("电影",function (err,res) {
+			    			res.premium = 4;
+			    			res.save(function () {
+			    			    
+			    			})
+			    
+						})
+					})
+				})
 				h_array.forEach(function(elem){
 					sub_classifyModel.save(elem,res,function(err,docs){
 						if(err){
@@ -76,6 +107,7 @@ describe('test sub_Type', function() {
 				});
 				done();
 			});
+
 		})
 	});
 	describe('#find subtype by superid', function() {

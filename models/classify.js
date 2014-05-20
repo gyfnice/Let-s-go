@@ -4,10 +4,15 @@ var action = mongoose.model('action');
 var paginate = require('mongoose-paginate');
 var classifySchema = new mongoose.Schema({
 	name: String,
+	premium:Number,
 	id: Schema.Types.ObjectId,
 	child: [{
 		subName: String,
-		id: String
+		id: String,
+		state:{
+			type:Boolean,
+			default:true
+		}
 	}],
 	activities: [{
 		subClaId: String,
@@ -107,7 +112,9 @@ classifySchema.statics = {
 		});
 	},
 	findAll: function(callback) {
-		this.find({}, function(err, docs) {
+		classifyModel.find({}).sort({
+			premium: 1
+		}).exec(function(err, docs) {
 			if (err) {
 				return callback(err);
 			}
