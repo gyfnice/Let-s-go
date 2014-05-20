@@ -364,12 +364,14 @@ var loadsubtypelist = function(id) {
     var str;
     var option;
     for (var i = 0, max = childlist.length; i < max; i++) {
-        str = "<li class ='" + childlist[i].id + "'>" + childlist[i].subName + "</li>";
-        option = "<option value ='" + childlist[i].id + "'>" + childlist[i].subName + "</option>";
-        datalist.push(str);
-        optionlist.push(option);
-        $sublist.html(datalist.join(""));
-        $subselect.html(optionlist.join(""));
+        if(childlist[i].state){
+            str = "<li class ='" + childlist[i].id + "'>" + childlist[i].subName + "</li>";
+            option = "<option value ='" + childlist[i].id + "'>" + childlist[i].subName + "</option>";
+            datalist.push(str);
+            optionlist.push(option);
+            $sublist.html(datalist.join(""));
+            $subselect.html(optionlist.join(""));
+        }
     }
 };
 

@@ -36,7 +36,9 @@ ActionUI.prototype.inserttypelist = function(data, currentdata) {
     this.text('    <div class="list-tabs" id="',currentdata.id,'">');
     this.text('        <a class="on" href="#" id="hot">最热</a>');
     for (var i = 0, max = singlelist.length; i < max; i++) {
-        this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
+        if(singlelist[i].state){            
+            this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
+        }
     }
     this.text('    </div>');
     this.text('</div>');

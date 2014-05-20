@@ -88,6 +88,7 @@ ListType.prototype.insertBody = function(data) {
     this.insertItem(data.data, data.itemid, data.itemsid);
     for (var i = 0, max = data.data.length; i < max; i++) {
         if (data.data[i]._id == data.itemid) {
+
             this.insertItemlist(data.data[i].child, data.itemid, data.itemsid);
         }
     }
@@ -98,7 +99,6 @@ ListType.prototype.insertItem = function(data, id, sid) {
     this.text('     <label class="type-nav__title">类型</label>');
     this.text('     <ul class="type-nav__name">');
     for (var i = 0, max = data.length; i < max; i++) {
-
         if (data[i]._id === id) {
             this.text('  <li class="on">');
             this.text('      <a href="action-list.html?id=', data[i]._id, '">', data[i].name, '</a>');
@@ -141,14 +141,16 @@ ListType.prototype.insertItemlist = function(data, id, sid) {
     }
 
     for (var i = 0, max = data.length; i < max; i++) {
-        if (data[i]._id === sid) {
-            this.text('     <li class="on">');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
-        } else {
-            this.text('     <li>');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
+        if(data[i].state){
+            if (data[i]._id === sid) {
+                this.text('     <li class="on">');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('     </li>');
+            } else {
+                this.text('     <li>');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('     </li>');
+            }
         }
     }
     this.text('</ul>');
