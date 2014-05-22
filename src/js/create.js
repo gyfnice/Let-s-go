@@ -241,10 +241,7 @@ var readImage = function(file) {
                 t = file.type,
                 n = file.name,
                 s = ~~ (file.size / 1024) + 'KB';
-            if (w > 1584 || h > 1268) {
-                alert("图片太大");
-                return false;
-            }
+            
             $('#crop_preview').prop("src",'');
             $('#uploadPreview img').prop("src", this.src);
             $('#crop_preview').prop("src", this.src);

@@ -11029,7 +11029,7 @@ module.exports = Rankuser;
 
 ;(function(__context){
     var module = {
-        id : "aa00128fd1d56fd10f46ec7b1e2a2c74" , 
+        id : "74d2a2b2bdd5857b364741b46d7534e6" , 
         filename : "ListType.js" ,
         exports : {}
     };
@@ -11126,6 +11126,7 @@ ListType.prototype.insertBody = function(data) {
     this.insertItem(data.data, data.itemid, data.itemsid);
     for (var i = 0, max = data.data.length; i < max; i++) {
         if (data.data[i]._id == data.itemid) {
+
             this.insertItemlist(data.data[i].child, data.itemid, data.itemsid);
         }
     }
@@ -11136,7 +11137,6 @@ ListType.prototype.insertItem = function(data, id, sid) {
     this.text('     <label class="type-nav__title">类型</label>');
     this.text('     <ul class="type-nav__name">');
     for (var i = 0, max = data.length; i < max; i++) {
-
         if (data[i]._id === id) {
             this.text('  <li class="on">');
             this.text('      <a href="action-list.html?id=', data[i]._id, '">', data[i].name, '</a>');
@@ -11179,14 +11179,16 @@ ListType.prototype.insertItemlist = function(data, id, sid) {
     }
 
     for (var i = 0, max = data.length; i < max; i++) {
-        if (data[i]._id === sid) {
-            this.text('     <li class="on">');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
-        } else {
-            this.text('     <li>');
-            this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
-            this.text('     </li>');
+        if(data[i].state){
+            if (data[i]._id === sid) {
+                this.text('     <li class="on">');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('     </li>');
+            } else {
+                this.text('     <li>');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('     </li>');
+            }
         }
     }
     this.text('</ul>');
@@ -11213,7 +11215,7 @@ ListType.prototype.loadData = function(id, sid) {
 module.exports = ListType;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "aa00128fd1d56fd10f46ec7b1e2a2c74" ] = module.exports;
+    __context.____MODULES[ "74d2a2b2bdd5857b364741b46d7534e6" ] = module.exports;
 })(this);
 
 
@@ -11381,7 +11383,7 @@ __context.____MODULES['3240c65b9719d9fd9fabe924c77f6eb1'];
 __context.____MODULES['18489581f599d9c2525fc0b5b6d32a40'];
 var UserInfo =__context.____MODULES['608cf9aae1492fb6a2cb38470aae99bd'];
 var Rankuser =__context.____MODULES['70483182195633c7fef777a7f71584ab'];
-var ListType =__context.____MODULES['aa00128fd1d56fd10f46ec7b1e2a2c74'];
+var ListType =__context.____MODULES['74d2a2b2bdd5857b364741b46d7534e6'];
 var Resultlist =__context.____MODULES['7302570208bfa2a3b0f7573958d30db7'];
 var ListPage =__context.____MODULES['cb9a367a93bb3bf84379fe5de2420cea'];
 var idlist;

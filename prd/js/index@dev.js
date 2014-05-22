@@ -9974,7 +9974,7 @@ module.exports = boardtype;
 
 ;(function(__context){
     var module = {
-        id : "464c4793ab41a89c13db95e7d548b4be" , 
+        id : "aef99eca9bab557b56e1e8536c02940a" , 
         filename : "ActionUI.js" ,
         exports : {}
     };
@@ -10019,7 +10019,9 @@ ActionUI.prototype.inserttypelist = function(data, currentdata) {
     this.text('    <div class="list-tabs" id="',currentdata.id,'">');
     this.text('        <a class="on" href="#" id="hot">最热</a>');
     for (var i = 0, max = singlelist.length; i < max; i++) {
-        this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
+        if(singlelist[i].state){            
+            this.text('    <a href="#" data-i="0" id="',singlelist[i].id,'">', singlelist[i].subName, '</a>');
+        }
     }
     this.text('    </div>');
     this.text('</div>');
@@ -10071,7 +10073,7 @@ ActionUI.prototype.loadData = function(typelist) {
 module.exports = ActionUI;
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "464c4793ab41a89c13db95e7d548b4be" ] = module.exports;
+    __context.____MODULES[ "aef99eca9bab557b56e1e8536c02940a" ] = module.exports;
 })(this);
 
 
@@ -10163,7 +10165,7 @@ module.exports = HotimgInfo;
     if( !__context.____MODULES ) { __context.____MODULES = {}; }
     var r = (function( exports , module , global ){
 
-    var ActionUI =__context.____MODULES['464c4793ab41a89c13db95e7d548b4be'];
+    var ActionUI =__context.____MODULES['aef99eca9bab557b56e1e8536c02940a'];
 
 function single_actionUI() {
     single_actionUI.superclass.constructor.apply(this, arguments);
@@ -10751,7 +10753,7 @@ __context.____MODULES['3240c65b9719d9fd9fabe924c77f6eb1'];
 var rankuser =__context.____MODULES['70483182195633c7fef777a7f71584ab'];
 var selectType =__context.____MODULES['44594d2db9ab86a8d9d98be16647342e'];
 var boardtype =__context.____MODULES['00a14c130e9fd32d062134f4cb08d4a2'];
-var ActionUI =__context.____MODULES['464c4793ab41a89c13db95e7d548b4be'];
+var ActionUI =__context.____MODULES['aef99eca9bab557b56e1e8536c02940a'];
 var HotimgInfo =__context.____MODULES['87c87b4b98b3a4913df98de285fba2aa'];
 var singleAction =__context.____MODULES['6e0e343d1f0491ad33645edc80b05e7d'];
 

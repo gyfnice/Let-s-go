@@ -14469,7 +14469,7 @@ module.exports = FinalStep;
 
 ;(function(__context){
     var module = {
-        id : "91a748d6360469592e13a065f7f40318" , 
+        id : "c44828a0e3067e79b3ec7c76a94a8f82" , 
         filename : "create.js" ,
         exports : {}
     };
@@ -14719,10 +14719,7 @@ var readImage = function(file) {
                 t = file.type,
                 n = file.name,
                 s = ~~ (file.size / 1024) + 'KB';
-            if (w > 1584 || h > 1268) {
-                alert("图片太大");
-                return false;
-            }
+            
             $('#crop_preview').prop("src",'');
             $('#uploadPreview img').prop("src", this.src);
             $('#crop_preview').prop("src", this.src);
@@ -14842,12 +14839,14 @@ var loadsubtypelist = function(id) {
     var str;
     var option;
     for (var i = 0, max = childlist.length; i < max; i++) {
-        str = "<li class ='" + childlist[i].id + "'>" + childlist[i].subName + "</li>";
-        option = "<option value ='" + childlist[i].id + "'>" + childlist[i].subName + "</option>";
-        datalist.push(str);
-        optionlist.push(option);
-        $sublist.html(datalist.join(""));
-        $subselect.html(optionlist.join(""));
+        if(childlist[i].state){
+            str = "<li class ='" + childlist[i].id + "'>" + childlist[i].subName + "</li>";
+            option = "<option value ='" + childlist[i].id + "'>" + childlist[i].subName + "</option>";
+            datalist.push(str);
+            optionlist.push(option);
+            $sublist.html(datalist.join(""));
+            $subselect.html(optionlist.join(""));
+        }
     }
 };
 
@@ -15125,5 +15124,5 @@ var loadEvent = function() {
 init();
 
     })( module.exports , module , __context );
-    __context.____MODULES[ "91a748d6360469592e13a065f7f40318" ] = module.exports;
+    __context.____MODULES[ "c44828a0e3067e79b3ec7c76a94a8f82" ] = module.exports;
 })(this);
