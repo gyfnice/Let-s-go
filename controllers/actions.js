@@ -55,6 +55,7 @@ exports.uploadpic = function(req, res) {
 exports.searchbykey = function(req, res) {
 	var query = {
 		state: true,
+		passState:true,
 		$or: [{
 			title: new RegExp(decodeURIComponent(req.body.keywords), "i")
 		}, {
@@ -100,6 +101,7 @@ exports.searchbyid = function(req, res) {
 		query.subClaId = req.body.sid
 	}
 	query.state = true
+	query.passState = true
 	action.paginate(query, req.body.page, 10, function(err, count, docs) {
 		response.data = docs
 		response.totalPage = count;
@@ -135,7 +137,8 @@ exports.joinedaction = function(req, res) {
 		endtime: {
 			$lt: Date.now()
 		},
-		state: true
+		state: true,
+		passState:true
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
@@ -150,7 +153,8 @@ exports.joinedaction = function(req, res) {
 exports.lookpublish = function(req, res) {
 	var query = {
 		create_userid: req.body.id,
-		state: true
+		state: true,
+		passState:true
 	}
 	action.paginate(query, req.body.page, 4, function(err, count, docs) {
 		response.data = docs
@@ -220,6 +224,7 @@ exports.updateState = function(req, res) {
 				})
 				classifyModel.findAll(function(err, docs) {
 					docs.forEach(function(elem) {
+						console.log(81)
 						elem.addActiveties();
 					});
 				})

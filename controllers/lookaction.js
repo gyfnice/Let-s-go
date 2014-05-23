@@ -20,6 +20,7 @@ exports.listAllhot = function(req, res) {
 
 exports.singlelist = function(req,res){
 	req.body.state = true
+	req.body.passState = true
 	action.paginate(req.body, 1, 10, function(err, count, docs) {
 		response.data = docs
 		res.send(response);
@@ -31,7 +32,7 @@ exports.singlelist = function(req,res){
 }
 
 exports.hotaction = function (req,res) {
-    action.paginate({state:true}, req.body.pageNum, 3, function(err, count, docs) {
+    action.paginate({state:true,passState:true}, req.body.pageNum, 3, function(err, count, docs) {
 		response.data = docs
 		res.send(response);
 	}, {
