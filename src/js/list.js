@@ -49,6 +49,7 @@ EventControl.bind = function() {
         pagelist.render();
     });
     $(QDP).bind("datehide", function(e) {
+        
         loadlistResult(idlist, 1, $("#mydate").val());
         $(".qunar-dp").hide();
         $(".selectdate").text($("#mydate").val());

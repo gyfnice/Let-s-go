@@ -39,7 +39,7 @@ ActionInfo.prototype.update = function(data) {
 ActionInfo.prototype.actionbar = function(data) {
     this.text('<a href="action-list.html?id=',data.classifyid,'" class="action-type">', data.classifyname, '</a>');
     this.text('     <span>></span>');
-    this.text('<a href="action-list.html?id=',data.classifyid,'&sid=',data.subClaId,'" class="type-sec">', data.classifyname, '-', data.subname, '</a>');
+    this.text('<a href="action-list.html?id=',data.classifyid,'&sid=',data.subname,'" class="type-sec">', data.classifyname, '-', data.subname, '</a>');
 }
 ActionInfo.prototype.actionlist = function(data) {
     this.text('<a href="action-info.html?action=',data._id,'" class="action-img">');

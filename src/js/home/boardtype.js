@@ -65,7 +65,7 @@ boardtype.prototype.insertlist = function(data,parent,node) {
         if(data[i].state){    
             this.text('       <li>');
             this.text('<div class="closetype hidden" ><a href="#" id="',data.type_id,'">x</a></div>');
-            this.text('           <a data-usid="',data[i]._id,'" href="action-list.html?id=', parent.id, '&sid=',data[i]._id,'">', data[i].subName, '</a>');
+            this.text('           <a data-usid="',data[i]._id,'" href="action-list.html?id=', parent.id, '&sid=',data[i].subName,'">', data[i].subName, '</a>');
             this.text('       </li>');
         }
     }

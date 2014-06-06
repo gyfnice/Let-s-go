@@ -143,6 +143,7 @@ var init = function() {
 var loadEvent = function() {
     actionuser.loadData(actionid,1);
     userinfo.loadData();
+    //actioninfo.loadData(actionid);
     messagelist.loadData(actionid, parseInt(initpage, 10));
 };
 

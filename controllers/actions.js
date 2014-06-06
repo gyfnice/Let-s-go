@@ -95,13 +95,15 @@ exports.searchbyid = function(req, res) {
 		}
 	}
 
+console.log(query);
 	if (req.body.id) {
 		query.classifyid = req.body.id
 	} else {
-		query.subClaId = req.body.sid
+		query.subname = req.body.sid
 	}
 	query.state = true
 	query.passState = true
+	console.log(query)
 	action.paginate(query, req.body.page, 10, function(err, count, docs) {
 		response.data = docs
 		response.totalPage = count;
@@ -198,6 +200,15 @@ exports.updateState = function(req, res) {
 		docs[0].passState = req.body.state
 		docs[0].save(function(err, docs) {
 			if (docs.passState === true) {
+				var nstr = '管理员通过了' + '你发布的<a target="_blank" href="action-info.html?actionid=' + docs._id + '">' + docs.title + '</a>活动';
+				var note = {
+					type: "评论活动",
+					studentId: docs.create_userid,
+					content: nstr
+				}
+				notifiedModel.savetype(note, function(err, docs) {
+					console.log(docs);
+				})
 				usersModel.update({
 					studentId: docs.create_userid
 				}, {
@@ -227,6 +238,16 @@ exports.updateState = function(req, res) {
 						console.log(81)
 						elem.addActiveties();
 					});
+				})
+			}else{
+				var nstr = '管理员拒绝了通过' + '你发布的<a target="_blank" href="action-info.html?actionid=' + docs._id + '">' + docs.title + '</a>活动';
+				var note = {
+					type: "评论活动",
+					studentId: docs.create_userid,
+					content: nstr
+				}
+				notifiedModel.savetype(note, function(err, docs) {
+					console.log(docs);
 				})
 			}
 		})

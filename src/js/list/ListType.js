@@ -8,11 +8,11 @@ function convertdate(date) {
 }
 
 function sectionconvert(date) {
-    var year = date.getFullYear();
-    var month = (1 + date.getMonth()).toString();
-    month = month.length > 1 ? month : '0' + month;
-    var day = date.getDate().toString();
-    day = day.length > 1 ? day : '0' + day;
+    var year = date.getFullYear()
+    var month = (1 + date.getMonth()).toString()
+    month = month.length > 1 ? month : '0' + month
+    var day = date.getDate().toString()
+    day = day.length > 1 ? day : '0' + day
     return year + '/' + month + '/' + day + " " + "23:59:59"
 }
 var today = function() {
@@ -121,7 +121,7 @@ ListType.prototype.insertTime = function(data) {
     this.text('             </li>');
     for (var i = 0, max = data.length; i < max; i++) {
         this.text('         <li>');
-        this.text('              <a class="', data[i]._id, '" data-val="', data[i].data.join(","), '" href="#">', data[i].desc, '</a>');
+        this.text('              <a class="', data[i].id, '" data-val="', data[i].data.join(","), '" href="#">', data[i].desc, '</a>');
         this.text('         </li>');
     }
     this.text('         </ul>');
@@ -142,13 +142,13 @@ ListType.prototype.insertItemlist = function(data, id, sid) {
 
     for (var i = 0, max = data.length; i < max; i++) {
         if(data[i].state){
-            if (data[i]._id === sid) {
+            if (data[i].subName === sid) {
                 this.text('     <li class="on">');
-                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].subName, '">', data[i].subName, '</a>');
                 this.text('     </li>');
             } else {
                 this.text('     <li>');
-                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i]._id, '">', data[i].subName, '</a>');
+                this.text('         <a href="action-list.html?id=', id, '&sid=', data[i].subName, '">', data[i].subName, '</a>');
                 this.text('     </li>');
             }
         }

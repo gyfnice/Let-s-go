@@ -12,14 +12,14 @@ var userid;
 
 describe('relate users', function() {
 	describe('#userinfo', function() {
-		var fb = {
-			studentId: "6",
-			userName: "zfb",
+		var testuser = {
+			studentId: "nice",
+			userName: "我是测试",
 			role: "custom",
 			email: "out@qq.com"
 		}
 		it("should return null when insert users", function(done) {
-			usersModel.save(fb, function(err, docs) {
+			usersModel.save(testuser, function(err, docs) {
 				user = docs;
 				userid = user._id.valueOf();
 				assert.equal(null, err);

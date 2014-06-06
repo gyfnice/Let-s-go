@@ -40,6 +40,7 @@ UserInfo.prototype.update = function(data) {
     }
     this.onInit(function() {
         var me = this;
+        debugger;
         $(".backinfo").click(function(e) {
             me.exituser();
             e.preventDefault();
@@ -54,8 +55,12 @@ UserInfo.prototype.update = function(data) {
         if (superflag === 1 && $(".check_num").text() === "") {
             this.getActionnum();
         }else if($(".check_num").text() === ""){
-            var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
-            this.getmessage(id);
+            try{ 
+                var id = $(".u-name").prop("href").match(/=\d+/)[0].slice(1);
+                this.getmessage(id);
+            }catch(e){
+                var a2 = 1;
+            }
         }
     });
 }
